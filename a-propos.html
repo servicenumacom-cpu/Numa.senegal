@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — NUMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--black:#0a0a0a;--gray:#f1f1f1;--line:#e5e5e5;--red:#e11d48;--green:#16a34a;--max:1280px}
+  body{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;color:var(--black);background:#fff;padding-bottom:76px;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  img{display:block;max-width:100%}
+  svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ===== HEADER ===== */
+  .header{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.06)}
+  .header-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{width:48px;height:48px;border-radius:12px;object-fit:cover;background:var(--black)}
+  .brand-word{height:22px;width:auto;color:var(--black)}
+  .actions{display:flex;gap:18px}
+  .actions a,.actions button{position:relative;width:30px;height:30px;display:block}
+  .actions svg{width:28px;height:28px}
+  .badge{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 5px;background:var(--black);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:grid;place-items:center}
+  .search-bar{display:none;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px}
+  .search-bar.open{display:block}
+  .search-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;gap:12px}
+  .search-inner input{flex:1;padding:12px 16px;border:1.5px solid var(--line);border-radius:8px;font:inherit;font-size:15px;outline:none}
+  .search-inner input:focus{border-color:var(--black)}
+  .search-close{width:36px;height:36px;display:grid;place-items:center;border-radius:50%}
+  .search-close:hover{background:var(--gray)}
+  .nav-desktop{display:none}
+  .nav-mobile{display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 8px;font-size:12.5px;font-weight:600;white-space:nowrap;overflow-x:auto}
+  .nav-mobile::-webkit-scrollbar{display:none}
+
+  /* ===== TABBAR ===== */
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding:8px 0 10px}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;position:relative}
+  .tabbar svg{width:26px;height:26px}
+  .tabbar a.active{font-weight:700}
+  .tabbar a.active::before{content:"";position:absolute;top:-9px;left:10%;right:10%;height:3px;background:var(--black)}
+  .tabbar a.active svg{fill:var(--black)}
+
+  /* ===== CONTENU ===== */
+  .legal-wrap{max-width:900px;margin:0 auto;padding:32px 16px 60px}
+  .legal-head{padding:16px 0 28px;border-bottom:2px solid var(--black);margin-bottom:36px}
+  .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+  .legal-head h1{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.01em}
+  .legal-head p.lead{font-size:13.5px;color:#555;margin-top:10px;max-width:560px}
+
+  /* HERO visuel */
+  .about-hero{position:relative;border-radius:16px;overflow:hidden;background:#0a0a0a;color:#fff;padding:48px 28px;margin-bottom:44px}
+  .about-hero::before{content:"";position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;background:rgba(225,29,72,.18)}
+  .about-hero::after{content:"";position:absolute;right:60px;bottom:-80px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .about-hero .eyebrow{color:#fda4af;position:relative;z-index:1}
+  .about-hero h2{font-size:26px;font-weight:800;line-height:1.15;margin-bottom:14px;position:relative;z-index:1;max-width:520px}
+  .about-hero p{font-size:13.5px;color:#d1d1d1;line-height:1.7;max-width:520px;position:relative;z-index:1}
+  .about-hero .sig{margin-top:22px;font-size:12px;color:#9ca3af;position:relative;z-index:1;letter-spacing:.02em}
+  .about-hero .sig strong{color:#fff;font-weight:700}
+
+  /* Sections */
+  .legal-wrap h2{font-size:16px;font-weight:800;margin:38px 0 12px}
+  .legal-wrap h2:first-of-type{margin-top:0}
+  .legal-wrap p{font-size:14px;line-height:1.8;color:#333;margin-bottom:14px}
+  .legal-wrap strong{font-weight:700;color:var(--black)}
+  .legal-wrap a{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+  .legal-wrap a:hover{color:#a0102f}
+
+  /* Valeurs — cartes */
+  .values{display:grid;grid-template-columns:1fr;gap:12px;margin:18px 0 26px}
+  @media(min-width:640px){.values{grid-template-columns:1fr 1fr}}
+  .value{background:var(--gray);border-radius:12px;padding:20px 22px}
+  .value .icon{width:40px;height:40px;border-radius:10px;background:#fff;display:grid;place-items:center;margin-bottom:12px}
+  .value .icon svg{width:20px;height:20px;color:var(--black)}
+  .value h3{font-size:14px;font-weight:800;margin-bottom:6px}
+  .value p{font-size:13px;color:#555;line-height:1.6;margin:0}
+
+  /* Chiffres clés */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 26px;text-align:center}
+  .stat{background:#0a0a0a;color:#fff;border-radius:12px;padding:20px 10px}
+  .stat .num{font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em}
+  .stat .lbl{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-top:8px}
+  .stat.red{background:var(--red)}
+  .stat.red .lbl{color:rgba(255,255,255,.85)}
+
+  /* Paragraphe signature */
+  .quote{border-left:3px solid var(--red);padding:6px 0 6px 20px;margin:22px 0 26px;font-size:15px;line-height:1.7;color:#222;font-weight:500;font-style:italic}
+  .quote .author{display:block;font-size:12.5px;font-weight:700;font-style:normal;color:#888;margin-top:10px;letter-spacing:.02em}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:26px;margin:18px 0 30px}
+  .timeline::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{position:relative;padding-bottom:22px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-23px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--black);border:2px solid #fff;box-shadow:0 0 0 2px var(--line)}
+  .tl-item.now::before{background:var(--red);box-shadow:0 0 0 2px rgba(225,29,72,.2)}
+  .tl-item .when{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+  .tl-item .what{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--black)}
+  .tl-item p{font-size:13px;color:#555;line-height:1.6;margin:0}
+
+  /* CTA */
+  .cta{background:var(--black);color:#fff;border-radius:12px;padding:28px 24px;margin:36px 0 0;text-align:center;position:relative;overflow:hidden}
+  .cta::before{content:"";position:absolute;left:-30px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(225,29,72,.15)}
+  .cta h3{font-size:17px;font-weight:800;margin-bottom:8px;position:relative}
+  .cta p{font-size:13px;color:#c9c9c9;margin-bottom:18px;position:relative}
+  .cta .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative}
+  .cta a{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none}
+  .cta .primary{background:#fff;color:var(--black)}
+  .cta .primary:hover{background:var(--red);color:#fff}
+  .cta .ghost{border:1.5px solid #444;color:#fff}
+  .cta .ghost:hover{border-color:#fff;background:#1a1a1a}
+  .cta svg{width:16px;height:16px}
+
+  /* Footer */
+  .legal-foot{margin-top:44px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:#888}
+  .legal-foot .links{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .legal-foot a{color:#777;text-decoration:underline;text-underline-offset:3px}
+  .legal-foot a:hover{color:var(--black)}
+
+  @media(min-width:1024px){
+    body{padding-bottom:0}
+    .tabbar,.nav-mobile{display:none}
+    .header-inner{padding:18px 40px}
+    .nav-desktop{display:flex;gap:36px;font-size:14px;font-weight:600}
+    .nav-desktop a{position:relative;padding:6px 0}
+    .nav-desktop a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--black);transition:width .25s}
+    .nav-desktop a:hover::after{width:100%}
+    .legal-wrap{padding:56px 40px 100px}
+    .legal-head{padding:24px 0 36px;margin-bottom:44px}
+    .legal-head h1{font-size:42px}
+    .legal-wrap h2{font-size:18px;margin:46px 0 14px}
+    .about-hero{padding:64px 48px}
+    .about-hero h2{font-size:34px}
+    .about-hero p{font-size:15px}
+    .stat .num{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" aria-label="NUMA accueil">
+      <img src="image/logo.jpeg" alt="" class="brand-icon">
+      <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+        <g fill="none" stroke="currentColor" stroke-width="11">
+          <path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+        </g>
+      </svg>
+    </a>
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <a href="nouveautes.html">Nouveautés</a>
+      <a href="categories.html?sexe=homme">Homme</a>
+      <a href="categories.html?sexe=femme">Femme</a>
+      <a href="promotions.html">Promotions</a>
+      <a href="a-propos.html">À propos</a>
+    </nav>
+    <div class="actions">
+      <button aria-label="Rechercher" id="searchToggle"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+      <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+      <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+      <a href="compte.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+    </div>
+  </div>
+  <div class="search-bar" id="searchBar">
+    <div class="search-inner">
+      <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off">
+      <button class="search-close" id="searchClose" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>
+  <nav class="nav-mobile" aria-label="Navigation mobile">
+    <a href="nouveautes.html">NOUVEAUTÉS</a><span>|</span>
+    <a href="categories.html?sexe=homme">HOMME</a><span>|</span>
+    <a href="categories.html?sexe=femme">FEMME</a><span>|</span>
+    <a href="promotions.html">PROMOTIONS</a>
+  </nav>
+</header>
+
+<main class="legal-wrap">
+  <div class="legal-head">
+    <p class="eyebrow">Notre histoire</p>
+    <h1>À propos de NUMA</h1>
+    <p class="lead">Une marque sénégalaise née d'une idée simple : proposer des vêtements qui durent, à un prix juste, sans jamais sacrifier la qualité.</p>
+  </div>
+
+  <!-- =============== HERO =============== -->
+  <div class="about-hero">
+    <p class="eyebrow">Né à Dakar</p>
+    <h2>Le style qui vous ressemble,<br>fabriqué pour durer.</h2>
+    <p>NUMA est une marque de vêtements basée à Petit Mbao, Dakar. Chaque pièce est sélectionnée avec soin pour sa coupe, sa matière et sa durabilité. Nous croyons qu'on peut s'habiller avec style sans acheter jetable — et sans se ruiner.</p>
+    <div class="sig">Fondée par <strong>Boubacar Diallo</strong> — Sénégal</div>
+  </div>
+
+  <!-- =============== CHIFFRES =============== -->
+  <div class="stats">
+    <div class="stat red"><div class="num">5j</div><div class="lbl">Retours</div></div>
+    <div class="stat"><div class="num">24-72h</div><div class="lbl">Livraison</div></div>
+    <div class="stat"><div class="num">100%</div><div class="lbl">Sénégalais</div></div>
+  </div>
+
+  <!-- =============== NOTRE HISTOIRE =============== -->
+  <h2>Notre histoire</h2>
+  <p>NUMA est née d'un constat simple : il est difficile de trouver au Sénégal des vêtements de qualité à un prix accessible, avec un vrai service client et des délais de livraison fiables.</p>
+  <p>Plutôt que de subir cette réalité, nous avons décidé de la changer. À <strong>Petit Mbao, Dakar</strong>, nous avons commencé à sélectionner les meilleures pièces, à travailler directement avec des fournisseurs sérieux, et à construire une marque qui parle à tous : homme, femme, tous les âges.</p>
+  <p>Aujourd'hui, NUMA grandit chaque mois grâce à vous — et chaque commande est préparée avec la même attention que la première.</p>
+
+  <!-- =============== CITATION FONDATEUR =============== -->
+  <div class="quote">
+    « Je voulais créer une marque dans laquelle les Sénégalais auraient vraiment confiance. Pas juste des vêtements : une expérience. Du moment où tu commandes jusqu'à celui où tu reçois ton colis chez toi. »
+    <span class="author">— Boubacar Diallo, fondateur</span>
+  </div>
+
+  <!-- =============== VALEURS =============== -->
+  <h2>Ce en quoi nous croyons</h2>
+  <div class="values">
+    <div class="value">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+      <h3>Qualité d'abord</h3>
+      <p>Chaque pièce est contrôlée avant expédition. Une couture, un grammage, une teinte — tout compte.</p>
+    </div>
+    <div class="value">
+      <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div>
+      <h3>Prix juste</h3>
+      <p>Nous supprimons les intermédiaires inutiles pour proposer des prix honnêtes, toute l'année.</p>
+    </div>
+    <div class="value">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg></div>
+      <h3>Made in Sénégal</h3>
+      <p>Basés à Dakar, nous livrons partout au Sénégal via nos partenaires logistiques locaux.</p>
+    </div>
+    <div class="value">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+      <h3>Service humain</h3>
+      <p>Une question ? Un WhatsApp, un appel, un e-mail — quelqu'un de vrai vous répond.</p>
+    </div>
+  </div>
+
+  <!-- =============== PARCOURS =============== -->
+  <h2>Notre parcours</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="when">Le début</div>
+      <div class="what">Une idée, un ordinateur</div>
+      <p>Boubacar lance NUMA en tant qu'auto-entrepreneur avec une mission claire : rendre la mode accessible et fiable au Sénégal.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when">Première année</div>
+      <div class="what">Premiers clients, premiers retours</div>
+      <p>Les premières commandes arrivent, les retours aussi. Nous écoutons, nous ajustons, nous améliorons à chaque fois.</p>
+    </div>
+    <div class="tl-item">
+      <div class="when">Aujourd'hui</div>
+      <div class="what">Une marque qui grandit</div>
+      <p>Livraison partout au Sénégal, paiement Wave / Orange Money / Free Money, service client réactif. Et ce n'est que le début.</p>
+    </div>
+    <div class="tl-item now">
+      <div class="when">Prochaine étape</div>
+      <div class="what">Aller plus loin</div>
+      <p>Plus de collections, plus de tailles, plus de régions livrées — et bientôt d'autres pays de la sous-région.</p>
+    </div>
+  </div>
+
+  <!-- =============== ENGAGEMENT =============== -->
+  <h2>Notre engagement</h2>
+  <p>Quand vous commandez chez NUMA, vous n'achetez pas juste un vêtement. Vous choisissez :</p>
+  <ul style="padding-left:20px;margin:10px 0 18px;font-size:14px;line-height:1.9;color:#333">
+    <li>Des pièces <strong>sélectionnées avec soin</strong> ;</li>
+    <li>Une <strong>livraison rapide</strong> — 24 à 72h selon la région ;</li>
+    <li>Une <strong>politique de retour claire</strong> — 5 jours après réception ;</li>
+    <li>Un <strong>remboursement sous 14 jours</strong> après vérification ;</li>
+    <li>Un service client <strong>joignable et humain</strong>.</li>
+  </ul>
+  <p>Notre siège est à <strong>Petit Mbao, Dakar</strong>. Vous pouvez nous contacter via WhatsApp au <strong>+221 76 658 95 98</strong>, par e-mail à <strong>service.numa.com@gmail.com</strong>, ou directement via la page <a href="contact.html">Contact</a>.</p>
+
+  <!-- =============== CTA =============== -->
+  <div class="cta">
+    <h3>Envie de découvrir nos pièces ?</h3>
+    <p>Parcourez la nouvelle collection ou écrivez-nous — on vous conseille volontiers.</p>
+    <div class="btns">
+      <a href="nouveautes.html" class="primary">
+        Voir la collection
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="contact.html" class="ghost">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+        Nous écrire
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="legal-foot">
+    <div class="links">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="cgv.html">CGV</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="livraison-retours.html">Livraison & Retours</a>
+      <a href="contact.html">Contact</a>
+      <a href="a-propos.html">À propos</a>
+    </div>
+    <div>© <span id="y"></span> NUMA Sénégal — Tous droits réservés.</div>
+  </div>
+</main>
+
+<nav class="tabbar" aria-label="Navigation du bas">
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+  <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+  <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+  <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+  <a href="compte.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+</nav>
+<!-- ================= DÉBUT FOOTER NUMA ================= -->
+<style>
+  /* CSS scopé uniquement pour le footer */
+  .numa-footer {
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a0a0a;
+    color: #fff;
+    margin-top: 60px; /* Espace avant le footer */
+    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+  }
+  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  
+  .numa-footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+  
+  /* Grille principale */
+  .numa-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+  }
+
+  /* Colonne Marque */
+  .numa-footer-brand .numa-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .numa-footer-brand p {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+  .numa-footer-contact {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+
+  /* Titres colonnes */
+  .numa-footer-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  /* Liens */
+  .numa-footer-col ul { list-style: none; }
+  .numa-footer-col ul li { margin-bottom: 12px; }
+  .numa-footer-col ul li a {
+    font-size: 13.5px;
+    color: #9ca3af;
+  }
+  .numa-footer-col ul li a:hover { color: #fff; }
+
+  /* Réseaux sociaux */
+  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .numa-socials a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    display: grid; place-items: center;
+    color: #d1d5db;
+  }
+  .numa-socials a:hover { background: #e11d48; color: #fff; }
+  .numa-socials svg { width: 18px; height: 18px; }
+
+  /* Barre du bas */
+  .numa-footer-bottom {
+    border-top: 1px solid #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .numa-footer-bottom-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-bottom-inner { flex-direction: row; }
+    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+  }
+  
+  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .numa-payments span {
+    background: #1f1f1f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+</style>
+
+<footer class="numa-footer">
+  <div class="numa-footer-inner">
+    <div class="numa-footer-grid">
+      
+      <!-- Colonne 1 : Marque & Contact -->
+      <div class="numa-footer-brand">
+        <a href="index.html" class="numa-logo">NUMA.</a>
+        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+        
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Petit Mbao, Dakar, Sénégal
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          +221 76 658 95 98
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          service.numa.com@gmail.com
+        </div>
+
+        <div class="numa-socials">
+          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Colonne 2 : Boutique -->
+      <div class="numa-footer-col">
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="nouveautes.html">Nouveautés</a></li>
+          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
+          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
+          <li><a href="promotions.html">Promotions</a></li>
+          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 3 : Aide -->
+      <div class="numa-footer-col">
+        <h4>Aide & Services</h4>
+        <ul>
+          <li><a href="contact.html">Nous contacter</a></li>
+          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
+          <li><a href="compte.html">Mon compte</a></li>
+          <li><a href="favoris.html">Mes favoris</a></li>
+          <li><a href="a-propos.html">À propos de NUMA</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 4 : Légal -->
+      <div class="numa-footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre inférieure -->
+  <div class="numa-footer-bottom">
+    <div class="numa-footer-bottom-inner">
+      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+      
+      <div class="numa-payments">
+        <span>Wave</span>
+        <span>Orange Money</span>
+        <span>Free Money</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Script ultra-léger pour l'année automatique
+  document.getElementById('numaYear').textContent = new Date().getFullYear();
+</script>
+<!-- ================= FIN FOOTER NUMA ================= -->
+<script>
+  const CART_KEY="numa_cart", FAV_KEY="numa_favs";
+  const readLS=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??f}catch(e){return f}};
+  function updateBadges(){
+    const cart=readLS(CART_KEY,[]), favs=readLS(FAV_KEY,[]);
+    document.getElementById("cartCount").textContent=cart.reduce((s,x)=>s+(x.qty||1),0);
+    const f=document.getElementById("favCount");
+    if(favs.length>0){f.textContent=favs.length;f.style.display="grid";}
+    else{f.textContent="0";f.style.display="none";}
+  }
+  updateBadges();
+  window.addEventListener("storage",e=>{if(e.key===CART_KEY||e.key===FAV_KEY)updateBadges()});
+  document.getElementById("y").textContent=new Date().getFullYear();
+
+  const sb=document.getElementById("searchBar"),st=document.getElementById("searchToggle"),sc=document.getElementById("searchClose"),si=document.getElementById("searchInput");
+  st.addEventListener("click",()=>{sb.classList.toggle("open");if(sb.classList.contains("open"))si.focus();});
+  sc.addEventListener("click",()=>{sb.classList.remove("open");});
+  si.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();location.href="index.html";}});
+</script>
+</body>
+</html>

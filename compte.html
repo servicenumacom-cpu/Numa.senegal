@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon compte – NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { 
+      --black: #0a0a0a; 
+      --gray: #f9f9f9; 
+      --line: #e5e5e5; 
+      --text-muted: #666;
+      --red: #e11d48; 
+      --green: #16a34a; 
+      --max: 1280px; 
+    }
+    body { 
+      font-family: "Montserrat", Arial, sans-serif; 
+      color: var(--black); 
+      background: #fff; 
+      padding-bottom: 76px; 
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions a, .actions button { position: relative; width: 30px; height: 30px; display: block; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    
+    .nav-desktop { display: none; }
+    .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+    .nav-desktop a.current, .nav-mobile a.current { font-weight: 800; }
+    .nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
+
+    .page { max-width: var(--max); margin: 0 auto; padding: 24px 16px 40px; }
+    .page-head { margin-bottom: 24px; }
+    .page-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+    .page-head p { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
+
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; }
+    .loading-state .spinner { width: 36px; height: 36px; border: 3px solid var(--line); border-top-color: var(--black); border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 16px; }
+    .loading-state p { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .onboarding-banner { display: none; background: #fff; border: 2px solid var(--black); border-radius: 16px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,.08); max-width: 700px; margin: 0 auto; }
+    .onboarding-banner.show { display: block; animation: fadeIn .4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    
+    .onboarding-banner h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+    .onboarding-banner p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; text-align: center; line-height: 1.5; }
+    
+    .onboarding-form { display: flex; flex-direction: column; gap: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--black); }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap svg { position: absolute; left: 14px; width: 20px; height: 20px; color: #999; pointer-events: none; }
+    .input-wrap input { width: 100%; padding: 14px 14px 14px 44px; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; font-size: 14px; background: #fff; color: var(--black); transition: .2s; }
+    .input-wrap input:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(10,10,10,.06); }
+    
+    .geo-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border: 1.5px solid var(--line); border-radius: 10px; font-weight: 700; font-size: 14px; color: var(--black); background: #fff; transition: .2s; margin-top: 4px; }
+    .geo-btn:hover { border-color: var(--black); }
+    .geo-btn.ok { border-color: var(--green); color: var(--green); background: #e7f6ec; }
+    .geo-btn svg { width: 20px; height: 20px; }
+    .geo-btn .spinner-small { display: none; width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.1); border-top-color: var(--black); border-radius: 50%; animation: spin .7s linear infinite; }
+    
+    .geo-status { font-size: 12.5px; color: var(--text-muted); margin-top: 8px; text-align: center; line-height: 1.4; }
+    .geo-status.ok { color: var(--green); font-weight: 600; }
+    .geo-status a { text-decoration: underline; font-weight: 700; color: var(--black); }
+
+    .btn-black { display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px; border-radius: 10px; background: var(--black); color: #fff; font-size: 15px; font-weight: 700; transition: .2s; margin-top: 8px; }
+    .btn-black:hover { opacity: .85; }
+    .btn-black:disabled { background: #bbb; cursor: not-allowed; }
+
+    #dashboard { display: none; }
+    #dashboard.show { display: block; animation: fadeIn .4s ease; }
+
+    .welcome-card { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(135deg, #fafafa 0%, #fff 100%); margin-bottom: 24px; flex-wrap: wrap; }
+    .welcome-left { display: flex; align-items: center; gap: 16px; }
+    .avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--black); color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 800; flex-shrink: 0; }
+    .welcome-info h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+    .welcome-info p { font-size: 13.5px; color: var(--text-muted); }
+    .welcome-actions { display: flex; gap: 10px; }
+    .mini-btn { padding: 10px 16px; border: 1.5px solid var(--black); border-radius: 8px; font-size: 13px; font-weight: 700; transition: .2s; }
+    .mini-btn:hover { background: var(--black); color: #fff; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+    .stat { padding: 20px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; text-align: center; }
+    .stat .label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .stat .val { font-size: 24px; font-weight: 800; }
+
+    .account-wrap { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+    .account-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .account-nav button { padding: 12px 16px; font-size: 14px; font-weight: 700; color: var(--text-muted); white-space: nowrap; border-radius: 8px; transition: .2s; }
+    .account-nav button:hover { background: var(--gray); }
+    .account-nav button.active { background: var(--black); color: #fff; }
+    
+    .panel { display: none; animation: fadeIn .3s ease; }
+    .panel.active { display: block; }
+    
+    .card { border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 24px; }
+    .card h3 { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 14px; gap: 16px; }
+    .info-row:last-child { border-bottom: 0; }
+    .info-row .label { color: var(--text-muted); font-weight: 500; flex-shrink: 0; }
+    .info-row .value { font-weight: 700; text-align: right; word-break: break-word; }
+
+    .btn-outline { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border: 1.5px solid var(--black); border-radius: 8px; font-size: 14px; font-weight: 700; transition: .2s; }
+    .btn-outline:hover { background: var(--black); color: #fff; }
+    
+    .btn-danger { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border: 1.5px solid var(--red); border-radius: 8px; color: var(--red); font-size: 14px; font-weight: 700; background: #fff; transition: .2s; }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+
+    .toast { position: fixed; left: 50%; bottom: 96px; z-index: 100; transform: translate(-50%, 20px); background: var(--black); color: #fff; padding: 14px 24px; border-radius: 99px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: .3s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; position: relative; color: var(--text-muted); }
+    .tabbar svg { width: 24px; height: 24px; }
+    .tabbar a.current { color: var(--black); font-weight: 800; }
+    .tabbar a.current::before { content: ""; position: absolute; top: -8px; width: 20px; height: 3px; border-radius: 2px; background: var(--black); }
+
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar, .nav-mobile { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .brand-icon { width: 52px; height: 52px; }
+      .brand-word { height: 26px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .nav-desktop a { position: relative; padding: 6px 0; }
+      .nav-desktop a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--black); transition: width .25s; }
+      .nav-desktop a:hover::after, .nav-desktop a.current::after { width: 100%; }
+      
+      .page { padding: 48px 40px 80px; }
+      .page-head h1 { font-size: 32px; }
+      
+      .onboarding-banner { padding: 40px; }
+      .onboarding-banner h2 { font-size: 24px; }
+      
+      .account-wrap { grid-template-columns: 260px 1fr; gap: 40px; }
+      .account-nav { flex-direction: column; gap: 6px; border-bottom: 0; border-right: 1px solid var(--line); padding-right: 20px; padding-bottom: 0; }
+      .account-nav button { text-align: left; border-radius: 8px; padding: 14px 18px; }
+      
+      .welcome-card { padding: 30px; }
+      .welcome-info h2 { font-size: 22px; }
+      .stats { gap: 20px; }
+      .stat { padding: 24px; }
+      .stat .val { font-size: 28px; }
+      
+      .toast { bottom: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand" aria-label="NUMA accueil">
+        <img src="image/logo.jpeg" alt="" class="brand-icon">
+        <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+          <g fill="none" stroke="currentColor" stroke-width="11">
+            <path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+          </g>
+        </svg>
+      </a>
+
+      <nav class="nav-desktop" aria-label="Navigation principale">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html?sexe=homme" id="navHomme">Homme</a>
+        <a href="categories.html?sexe=femme" id="navFemme">Femme</a>
+        <a href="promotions.html">Promotions</a>
+      </nav>
+
+      <div class="actions">
+        <button aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+        <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+        <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+        <a href="compte.html" aria-label="Mon compte" class="current"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      </div>
+    </div>
+
+    <nav class="nav-mobile" aria-label="Navigation mobile">
+      <a href="nouveautes.html">NOUVEAUTÉS</a><span>|</span>
+      <a href="categories.html?sexe=homme" id="mobHomme">HOMME</a><span>|</span>
+      <a href="categories.html?sexe=femme" id="mobFemme">FEMME</a><span>|</span>
+      <a href="promotions.html">PROMOTIONS</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <h1>MON COMPTE</h1>
+      <p id="pageSub">Chargement...</p>
+    </div>
+
+    <!-- 1. ÉTAT DE CHARGEMENT -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p>Chargement de vos informations...</p>
+    </div>
+
+    <!-- 2. BANNIÈRE D'ONBOARDING -->
+    <div class="onboarding-banner" id="onboardingBanner">
+      <h2>Bienvenue chez NUMA ! 👋</h2>
+      <p>Pour faciliter vos livraisons, merci de compléter vos informations de contact.</p>
+      <form class="onboarding-form" id="onboardingForm">
+        <div class="field">
+          <label for="obPhone">Numéro WhatsApp *</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+            <input id="obPhone" type="tel" placeholder="Ex: 77 123 45 67" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="obPhone2">Deuxième numéro (Optionnel)</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+            <input id="obPhone2" type="tel" placeholder="Ex: 70 000 00 00">
+          </div>
+        </div>
+        <div class="field">
+          <label for="obAddress">Adresse de livraison *</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            <input id="obAddress" type="text" placeholder="Quartier, rue, repère..." required>
+          </div>
+        </div>
+        
+        <div>
+          <button type="button" class="geo-btn" id="geoBtn">
+            <svg id="geoIcon" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            <div class="spinner-small" id="geoSpinner"></div>
+            <span id="geoBtnText">Partager ma position exacte</span>
+          </button>
+          <p class="geo-status" id="geoStatus">Appuyez pour utiliser le GPS</p>
+        </div>
+        
+        <button type="submit" class="btn-black" id="saveOnboardingBtn">Enregistrer mes informations</button>
+      </form>
+    </div>
+
+    <!-- 3. TABLEAU DE BORD -->
+    <div id="dashboard">
+      
+      <div class="welcome-card">
+        <div class="welcome-left">
+          <div class="avatar" id="avatar">--</div>
+          <div class="welcome-info">
+            <h2 id="wName">Bonjour !</h2>
+            <p id="wEmail">—</p>
+          </div>
+        </div>
+        <div class="welcome-actions">
+          <a href="favoris.html" class="mini-btn">Mes Favoris</a>
+          <a href="panier.html" class="mini-btn" style="background:var(--black); color:#fff; border-color:var(--black);">Mon Panier</a>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="label">Commandes</div><div class="val" id="sOrders">0</div></div>
+        <div class="stat"><div class="label">Favoris</div><div class="val" id="sFavs">0</div></div>
+        <div class="stat"><div class="label">Panier</div><div class="val" id="sCart">0</div></div>
+      </div>
+
+      <div class="account-wrap">
+        <nav class="account-nav" id="accountNav">
+          <button class="active" data-panel="profil">Profil & Adresse</button>
+          <button data-panel="commandes">Mes Commandes</button>
+          <button data-panel="securite">Sécurité</button>
+        </nav>
+
+        <section class="account-main">
+          
+          <div class="panel active" id="panel-profil">
+            <div class="card">
+              <h3>Vos coordonnées</h3>
+              <div class="info-row"><span class="label">Nom complet</span><span class="value" id="pName">—</span></div>
+              <div class="info-row"><span class="label">Adresse e-mail</span><span class="value" id="pEmail">—</span></div>
+              <div class="info-row"><span class="label">Numéro WhatsApp</span><span class="value" id="pPhone">—</span></div>
+              <div class="info-row"><span class="label">2ème numéro</span><span class="value" id="pPhone2">—</span></div>
+              <div class="info-row"><span class="label">Adresse de livraison</span><span class="value" id="pAddress">—</span></div>
+              <div style="margin-top:24px; text-align: right;">
+                <button class="btn-outline" id="editInfoBtn">Modifier mes informations</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-commandes">
+            <div class="card">
+              <h3>Historique des commandes</h3>
+              <p style="font-size:14px; color:var(--text-muted); line-height:1.6;">Vous n'avez pas encore passé de commande. Vos futures commandes s'afficheront ici avec leur statut.</p>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-securite">
+            <div class="card">
+              <h3>Sécurité</h3>
+              <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">Déconnectez-vous de cet appareil en toute sécurité. Vos favoris et votre profil restent enregistrés sur votre compte.</p>
+              <button class="btn-danger" id="logoutBtn">Se déconnecter</button>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <nav class="tabbar" aria-label="Navigation du bas">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html?sexe=homme" id="tabHomme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+    <a href="categories.html?sexe=femme" id="tabFemme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+    <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="compte.html" class="current"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
+      authDomain: "numa-com.firebaseapp.com",
+      projectId: "numa-com",
+      storageBucket: "numa-com.firebasestorage.app",
+      messagingSenderId: "953579157946",
+      appId: "1:953579157946:web:4fff5a890cf82f1ccec583",
+      measurementId: "G-BHR7THHKXG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const $ = id => document.getElementById(id);
+
+    // ⬇️ NOUVEAU : constante partagée
+    const FAV_KEY = "numa_favs";
+
+    let currentUser = null;
+    let position = null;
+
+    let toastTimer;
+    function toast(text, bad) {
+      const t = $("toast");
+      t.textContent = text;
+      t.style.background = bad ? "var(--red)" : "var(--black)";
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+    }
+
+    // ⬇️ NOUVEAU : mise à jour des stats (badges header + dashboard)
+    function updateBadges() {
+      // Panier
+      let cart = [];
+      try { cart = JSON.parse(localStorage.getItem("numa_cart")) || []; } catch (e) {}
+      const cartQty = cart.reduce((s, x) => s + (x.qty || 1), 0);
+      $("cartCount").textContent = cartQty;
+      $("sCart").textContent = cartQty;
+
+      // Favoris (uniquement des IDs dans le localStorage)
+      let favs = [];
+      try {
+        const raw = localStorage.getItem(FAV_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(parsed)) {
+          const seen = new Set();
+          for (const item of parsed) {
+            const id = typeof item === "string" ? item : (item && item.id ? String(item.id) : null);
+            if (id && !seen.has(id)) { seen.add(id); favs.push(id); }
+          }
+        }
+      } catch (e) {}
+      $("favCount").textContent = favs.length;
+      $("favCount").style.display = favs.length ? "grid" : "none";
+      $("sFavs").textContent = favs.length;
+    }
+
+    // --- Navigation panels ---
+    document.querySelectorAll("#accountNav button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#accountNav button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+        $(`panel-${btn.dataset.panel}`).classList.add("active");
+      });
+    });
+
+    // --- GÉOLOCALISATION ---
+    $("geoBtn").addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        toast("La géolocalisation n'est pas supportée par votre appareil.", true);
+        return;
+      }
+
+      $("geoBtn").classList.remove("ok");
+      $("geoBtn").disabled = true;
+      $("geoIcon").style.display = "none";
+      $("geoSpinner").style.display = "block";
+      $("geoBtnText").textContent = "Recherche en cours...";
+      $("geoStatus").textContent = "Autorisez l'accès à votre position si demandé.";
+      $("geoStatus").className = "geo-status";
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          position = {
+            lat: pos.coords.latitude.toFixed(6),
+            lng: pos.coords.longitude.toFixed(6),
+            acc: pos.coords.accuracy
+          };
+          
+          $("geoBtn").classList.add("ok");
+          $("geoIcon").style.display = "block";
+          $("geoSpinner").style.display = "none";
+          $("geoBtnText").textContent = "Position capturée ✓";
+          $("geoBtn").disabled = false;
+          
+          const mapsLink = `https://www.google.com/maps?q=${position.lat},${position.lng}`;
+          $("geoStatus").className = "geo-status ok";
+          $("geoStatus").innerHTML = `Précision : ± ${Math.round(position.acc)} m — <a href="${mapsLink}" target="_blank" rel="noopener">Vérifier sur Google Maps</a>`;
+        },
+        err => {
+          $("geoBtn").classList.remove("ok");
+          $("geoIcon").style.display = "block";
+          $("geoSpinner").style.display = "none";
+          $("geoBtnText").textContent = "Partager ma position exacte";
+          $("geoBtn").disabled = false;
+          
+          let msg = "Impossible d'obtenir la position.";
+          if (err.code === 1) msg = "Position refusée. Autorisez-la dans les réglages.";
+          
+          $("geoStatus").className = "geo-status";
+          $("geoStatus").textContent = msg;
+          toast(msg, true);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    });
+
+    // --- Affichage ---
+    function showBanner(data = {}) {
+      $("loadingState").style.display = "none";
+      $("dashboard").classList.remove("show");
+      $("onboardingBanner").classList.add("show");
+      
+      if (data.phone) $("obPhone").value = data.phone;
+      if (data.phone2) $("obPhone2").value = data.phone2;
+      if (data.address) $("obAddress").value = data.address;
+    }
+
+    function showDashboard(data) {
+      $("loadingState").style.display = "none";
+      $("onboardingBanner").classList.remove("show");
+      $("dashboard").classList.add("show");
+      
+      $("pName").textContent = data.name || currentUser.displayName || "—";
+      $("pEmail").textContent = data.email || currentUser.email || "—";
+      $("pPhone").textContent = data.phone || "—";
+      $("pPhone2").textContent = data.phone2 || "Non renseigné";
+      $("pAddress").textContent = data.address || "—";
+      
+      $("avatar").textContent = (data.name || currentUser.displayName || "N").charAt(0).toUpperCase();
+      $("wName").textContent = "Bonjour " + (data.name || currentUser.displayName || "Client").split(" ")[0] + " !";
+      $("wEmail").textContent = data.email || currentUser.email || "";
+
+      updateBadges();
+    }
+
+    // --- Auth ---
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "authentification.html";
+        return;
+      }
+
+      currentUser = user;
+      $("pageSub").textContent = user.email || "Client NUMA";
+
+      try {
+        const userRef = doc(db, "utilisateurs", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          
+          localStorage.setItem("numa_user", JSON.stringify({
+            name: data.name || user.displayName,
+            email: data.email || user.email,
+            phone: data.phone || ""
+          }));
+
+          // ⬇️ Si le doc Firestore contient des favoris, on synchronise
+          // le localStorage (au cas où l'utilisateur arrive de compte.html direct)
+          if (Array.isArray(data.favoris)) {
+            try {
+              const currentLocal = (() => {
+                try { const raw = localStorage.getItem(FAV_KEY); const p = raw ? JSON.parse(raw) : []; return Array.isArray(p) ? p : []; } catch(e) { return []; }
+              })();
+              // Union légère : on ne perd rien
+              const idsLocal = currentLocal.map(x => typeof x === "string" ? x : (x && x.id ? String(x.id) : null)).filter(Boolean);
+              const merged = [...new Set([...data.favoris.map(String), ...idsLocal])].slice(0, 200);
+              localStorage.setItem(FAV_KEY, JSON.stringify(merged));
+            } catch (e) {}
+          }
+
+          const hasPhone = data.phone && String(data.phone).trim().length >= 9;
+          const hasAddress = data.address && String(data.address).trim().length > 0;
+
+          if (hasPhone && hasAddress) {
+            showDashboard(data);
+          } else {
+            showBanner(data);
+          }
+        } else {
+          showBanner();
+        }
+      } catch (err) {
+        console.error("Erreur Firestore:", err);
+        showBanner();
+        toast("Erreur de chargement. Vérifiez les règles Firestore.", true);
+      }
+
+      updateBadges();
+    });
+
+    // --- Submit onboarding ---
+    $("onboardingForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const phone = $("obPhone").value.trim();
+      const phone2 = $("obPhone2").value.trim();
+      const address = $("obAddress").value.trim();
+
+      if (!phone || phone.length < 9) { toast("Numéro WhatsApp invalide.", true); return; }
+      if (!address) { toast("L'adresse est requise.", true); return; }
+
+      $("saveOnboardingBtn").disabled = true;
+      $("saveOnboardingBtn").textContent = "Enregistrement...";
+
+      try {
+        const userRef = doc(db, "utilisateurs", currentUser.uid);
+        
+        const dataToSave = {
+          uid: currentUser.uid,
+          name: currentUser.displayName || "Client NUMA",
+          email: currentUser.email || "",
+          phone: phone,
+          phone2: phone2 || "",
+          address: address,
+          updatedAt: new Date().toISOString()
+        };
+
+        if (position) {
+          dataToSave.lat = position.lat;
+          dataToSave.lng = position.lng;
+          dataToSave.acc = position.acc;
+        }
+
+        // ⚠️ IMPORTANT : merge:true → NE SUPPRIME PAS le champ "favoris"
+        await setDoc(userRef, dataToSave, { merge: true });
+
+        localStorage.setItem("numa_user", JSON.stringify({
+          name: dataToSave.name,
+          email: dataToSave.email,
+          phone: dataToSave.phone
+        }));
+
+        toast("Informations enregistrées ✓");
+        showDashboard(dataToSave);
+
+      } catch (err) {
+        console.error(err);
+        toast("Erreur d'enregistrement.", true);
+        $("saveOnboardingBtn").disabled = false;
+        $("saveOnboardingBtn").textContent = "Enregistrer mes informations";
+      }
+    });
+
+    // --- Modifier infos ---
+    $("editInfoBtn").addEventListener("click", async () => {
+      try {
+        const userRef = doc(db, "utilisateurs", currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        const data = userSnap.exists() ? userSnap.data() : {};
+        showBanner(data);
+      } catch (err) {
+        showBanner();
+      }
+    });
+
+    // --- Déconnexion ---
+    $("logoutBtn").addEventListener("click", async () => {
+      // ⬇️ NOUVEAU : vider les favoris locaux AVANT signOut
+      // Les favoris restent dans Firestore (utilisateurs/{uid}.favoris),
+      // ils seront restaurés à la prochaine connexion sur n'importe quel appareil.
+      try { localStorage.removeItem(FAV_KEY); } catch (e) {}
+
+      await signOut(auth);
+      localStorage.removeItem("numa_user");
+      window.location.href = "index.html";
+    });
+
+    // Badges au chargement initial
+    updateBadges();
+  </script>
+  <!-- ================= DÉBUT FOOTER NUMA ================= -->
+<style>
+  /* CSS scopé uniquement pour le footer */
+  .numa-footer {
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a0a0a;
+    color: #fff;
+    margin-top: 60px; /* Espace avant le footer */
+    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+  }
+  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  
+  .numa-footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+  
+  /* Grille principale */
+  .numa-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+  }
+
+  /* Colonne Marque */
+  .numa-footer-brand .numa-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .numa-footer-brand p {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+  .numa-footer-contact {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+
+  /* Titres colonnes */
+  .numa-footer-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  /* Liens */
+  .numa-footer-col ul { list-style: none; }
+  .numa-footer-col ul li { margin-bottom: 12px; }
+  .numa-footer-col ul li a {
+    font-size: 13.5px;
+    color: #9ca3af;
+  }
+  .numa-footer-col ul li a:hover { color: #fff; }
+
+  /* Réseaux sociaux */
+  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .numa-socials a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    display: grid; place-items: center;
+    color: #d1d5db;
+  }
+  .numa-socials a:hover { background: #e11d48; color: #fff; }
+  .numa-socials svg { width: 18px; height: 18px; }
+
+  /* Barre du bas */
+  .numa-footer-bottom {
+    border-top: 1px solid #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .numa-footer-bottom-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-bottom-inner { flex-direction: row; }
+    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+  }
+  
+  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .numa-payments span {
+    background: #1f1f1f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+</style>
+
+<footer class="numa-footer">
+  <div class="numa-footer-inner">
+    <div class="numa-footer-grid">
+      
+      <!-- Colonne 1 : Marque & Contact -->
+      <div class="numa-footer-brand">
+        <a href="index.html" class="numa-logo">NUMA.</a>
+        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+        
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Petit Mbao, Dakar, Sénégal
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          +221 76 658 95 98
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          service.numa.com@gmail.com
+        </div>
+
+        <div class="numa-socials">
+          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Colonne 2 : Boutique -->
+      <div class="numa-footer-col">
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="nouveautes.html">Nouveautés</a></li>
+          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
+          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
+          <li><a href="promotions.html">Promotions</a></li>
+          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 3 : Aide -->
+      <div class="numa-footer-col">
+        <h4>Aide & Services</h4>
+        <ul>
+          <li><a href="contact.html">Nous contacter</a></li>
+          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
+          <li><a href="compte.html">Mon compte</a></li>
+          <li><a href="favoris.html">Mes favoris</a></li>
+          <li><a href="a-propos.html">À propos de NUMA</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 4 : Légal -->
+      <div class="numa-footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre inférieure -->
+  <div class="numa-footer-bottom">
+    <div class="numa-footer-bottom-inner">
+      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+      
+      <div class="numa-payments">
+        <span>Wave</span>
+        <span>Orange Money</span>
+        <span>Free Money</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Script ultra-léger pour l'année automatique
+  document.getElementById('numaYear').textContent = new Date().getFullYear();
+</script>
+<!-- ================= FIN FOOTER NUMA ================= -->
+</body>
+</html>

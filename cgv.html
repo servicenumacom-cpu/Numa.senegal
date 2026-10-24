@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditions Générales de Vente — NUMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--black:#0a0a0a;--gray:#f1f1f1;--line:#e5e5e5;--red:#e11d48;--green:#16a34a;--max:1280px}
+  body{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;color:var(--black);background:#fff;padding-bottom:76px;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  img{display:block;max-width:100%}
+  svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  .header{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.06)}
+  .header-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{width:48px;height:48px;border-radius:12px;object-fit:cover;background:var(--black)}
+  .brand-word{height:22px;width:auto;color:var(--black)}
+  .actions{display:flex;gap:18px}
+  .actions a,.actions button{position:relative;width:30px;height:30px;display:block}
+  .actions svg{width:28px;height:28px}
+  .badge{position:absolute;top:-6px;right:-8px;min-width:20px;height:20px;padding:0 5px;background:var(--black);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:grid;place-items:center}
+  .search-bar{display:none;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px}
+  .search-bar.open{display:block}
+  .search-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;gap:12px}
+  .search-inner input{flex:1;padding:12px 16px;border:1.5px solid var(--line);border-radius:8px;font:inherit;font-size:15px;outline:none}
+  .search-inner input:focus{border-color:var(--black)}
+  .search-close{width:36px;height:36px;display:grid;place-items:center;border-radius:50%}
+  .search-close:hover{background:var(--gray)}
+  .nav-desktop{display:none}
+  .nav-mobile{display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 8px;font-size:12.5px;font-weight:600;white-space:nowrap;overflow-x:auto}
+  .nav-mobile::-webkit-scrollbar{display:none}
+
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding:8px 0 10px}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;position:relative}
+  .tabbar svg{width:26px;height:26px}
+  .tabbar a.active{font-weight:700}
+  .tabbar a.active::before{content:"";position:absolute;top:-9px;left:10%;right:10%;height:3px;background:var(--black)}
+  .tabbar a.active svg{fill:var(--black)}
+
+  .legal-wrap{max-width:900px;margin:0 auto;padding:32px 16px 60px}
+  .legal-head{padding:16px 0 28px;border-bottom:2px solid var(--black);margin-bottom:36px}
+  .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+  .legal-head h1{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.01em}
+  .legal-head .update{font-size:12.5px;color:#777;margin-top:10px}
+  .legal-wrap h2{font-size:16px;font-weight:800;margin:34px 0 12px}
+  .legal-wrap h2:first-of-type{margin-top:0}
+  .legal-wrap p,.legal-wrap li{font-size:14px;line-height:1.75;color:#333}
+  .legal-wrap p{margin-bottom:12px}
+  .legal-wrap ul{padding-left:22px;margin:10px 0 18px}
+  .legal-wrap li{margin-bottom:6px}
+  .legal-wrap strong{font-weight:700;color:var(--black)}
+  .legal-wrap a{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+  .legal-wrap a:hover{color:#a0102f}
+  .info-box{background:var(--gray);border-radius:10px;padding:18px 20px;margin:14px 0 22px}
+  .info-box p{margin-bottom:6px;font-size:13.5px}
+  .info-box p:last-child{margin-bottom:0}
+  .info-box ul{margin:8px 0 0}
+  .note-box{border-left:3px solid var(--red);background:rgba(225,29,72,.04);padding:16px 20px;margin:20px 0 24px;font-size:13.5px;border-radius:0 8px 8px 0}
+  .note-box strong{color:var(--red)}
+  .ph{display:inline-block;background:rgba(225,29,72,.1);color:var(--red);padding:1px 8px;border-radius:4px;font-size:12px;font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--gray);font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#555}
+
+  .legal-foot{margin-top:44px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:#888}
+  .legal-foot .links{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .legal-foot a{color:#777;text-decoration:underline;text-underline-offset:3px}
+  .legal-foot a:hover{color:var(--black)}
+
+  @media(min-width:1024px){
+    body{padding-bottom:0}
+    .tabbar,.nav-mobile{display:none}
+    .header-inner{padding:18px 40px}
+    .nav-desktop{display:flex;gap:36px;font-size:14px;font-weight:600}
+    .nav-desktop a{position:relative;padding:6px 0}
+    .nav-desktop a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--black);transition:width .25s}
+    .nav-desktop a:hover::after{width:100%}
+    .legal-wrap{padding:56px 40px 100px}
+    .legal-head{padding:24px 0 36px;margin-bottom:44px}
+    .legal-head h1{font-size:42px}
+    .legal-wrap h2{font-size:18px;margin:42px 0 14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" aria-label="NUMA accueil">
+      <img src="image/logo.jpeg" alt="" class="brand-icon">
+      <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+        <g fill="none" stroke="currentColor" stroke-width="11">
+          <path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+        </g>
+      </svg>
+    </a>
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <a href="nouveautes.html">Nouveautés</a>
+      <a href="categories.html?sexe=homme">Homme</a>
+      <a href="categories.html?sexe=femme">Femme</a>
+      <a href="promotions.html">Promotions</a>
+    </nav>
+    <div class="actions">
+      <button aria-label="Rechercher" id="searchToggle"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+      <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+      <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+      <a href="compte.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+    </div>
+  </div>
+  <div class="search-bar" id="searchBar">
+    <div class="search-inner">
+      <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off">
+      <button class="search-close" id="searchClose" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>
+  <nav class="nav-mobile" aria-label="Navigation mobile">
+    <a href="nouveautes.html">NOUVEAUTÉS</a><span>|</span>
+    <a href="categories.html?sexe=homme">HOMME</a><span>|</span>
+    <a href="categories.html?sexe=femme">FEMME</a><span>|</span>
+    <a href="promotions.html">PROMOTIONS</a>
+  </nav>
+</header>
+
+<main class="legal-wrap">
+  <div class="legal-head">
+    <p class="eyebrow">Informations légales</p>
+    <h1>Conditions Générales de Vente</h1>
+    <p class="update">Version en vigueur : octobre 2026</p>
+  </div>
+
+  <div class="note-box">
+    <strong>Important :</strong> toute commande passée sur le site NUMA implique l'acceptation pleine et entière des présentes Conditions Générales de Vente. Une case à cocher vous est présentée dans le panier avant le paiement ; sans cette validation, la commande ne peut être finalisée.
+  </div>
+
+  <h2>Article 1 — Objet</h2>
+  <p>Les présentes CGV régissent les relations contractuelles entre <strong>NUMA Sénégal</strong> (auto-entrepreneur, représenté par Boubacar Diallo, Pikine, Dakar, Sénégal) et toute personne physique effectuant un achat via le site.</p>
+
+  <h2>Article 2 — Produits</h2>
+  <p>Les produits proposés sont décrits avec la plus grande exactitude possible. Les photographies sont illustratives et peuvent présenter de légères variations de teinte selon les écrans. Les articles sont proposés dans la limite des stocks disponibles, indiqués sur chaque fiche produit.</p>
+
+  <h2>Article 3 — Prix</h2>
+  <p>Tous les prix sont exprimés en <strong>francs CFA (XOF / FCFA)</strong>, toutes taxes comprises, hors frais de livraison. NUMA Sénégal se réserve le droit de modifier ses prix à tout moment ; les produits sont facturés au tarif en vigueur au moment de la validation de la commande.</p>
+
+  <h2>Article 4 — Commande</h2>
+  <p>Le client valide sa commande après avoir :</p>
+  <ul>
+    <li>sélectionné les produits, tailles et couleurs souhaités ;</li>
+    <li>renseigné ses coordonnées et son adresse de livraison ;</li>
+    <li>coché la case d'acceptation des présentes CGV ;</li>
+    <li>effectué le paiement.</li>
+  </ul>
+  <p>Un récapitulatif de commande est envoyé par e-mail ou par SMS après validation.</p>
+
+  <h2>Article 5 — Moyens de paiement</h2>
+  <div class="info-box">
+    <p><strong>Moyens acceptés :</strong></p>
+    <ul>
+      <li>Wave</li>
+      <li>Orange Money</li>
+      <li>Free Money</li>
+    </ul>
+  </div>
+  <p style="font-size:12.5px;color:#777">Aucune donnée bancaire n'est collectée ni conservée par NUMA Sénégal. Les transactions sont réalisées via les opérateurs de paiement mobile, selon leurs propres conditions.</p>
+
+  <h2>Article 6 — Livraison</h2>
+  <p>NUMA Sénégal livre uniquement au <strong>Sénégal</strong>.</p>
+  <table>
+    <thead>
+      <tr><th>Zone</th><th>Délai estimé</th><th>Transporteur</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Dakar, Thiès, Mbour</td><td>24 à 48 h</td><td>Logistique interne NUMA</td></tr>
+      <tr><td>Autres régions du Sénégal</td><td>24 à 72 h</td><td>Partenaires logistiques NUMA</td></tr>
+    </tbody>
+  </table>
+  <p>Les délais sont indicatifs et peuvent varier en cas de force majeure ou de forte affluence. Le client est contacté par téléphone ou e-mail pour organiser la livraison. Il est de la responsabilité du client de fournir une adresse exacte et un numéro joignable ; l'usage de la position GPS permet de faciliter la livraison.</p>
+
+  <h2>Article 7 — Retours et échanges</h2>
+  <div class="info-box">
+    <p><strong>Politique applicable :</strong></p>
+    <ul>
+      <li>Retours acceptés dans un délai de <span class="ph">7 jours</span> à compter de la réception.</li>
+      <li>Le produit doit être non porté, non lavé, dans son emballage d'origine, étiquettes attachées.</li>
+      <li><strong>Produits non échangeables et non remboursables pour raisons d'hygiène :</strong> tout article sensible en contact direct avec la peau (sous-vêtements, maillots de bain, chaussettes, etc.) ne peut faire l'objet d'un retour une fois l'emballage ouvert.</li>
+      <li>Les frais de retour sont à la charge du client, sauf erreur de NUMA Sénégal ou produit défectueux.</li>
+    </ul>
+  </div>
+
+  <h2>Article 8 — Remboursement</h2>
+  <p>En cas de retour accepté, le remboursement est effectué dans un délai de <span class="ph">14 jours</span> après réception et vérification du produit, par le même moyen de paiement que celui utilisé lors de la commande (Wave, Orange Money ou Free Money) ou par virement, selon accord entre les parties.</p>
+
+  <h2>Article 9 — Garantie et conformité</h2>
+  <p>Le client bénéficie de la garantie légale de conformité prévue par le droit sénégalais. En cas de produit défectueux ou non conforme, le client doit contacter NUMA Sénégal dans les plus brefs délais à <span class="ph">[contact@numa.sn]</span> en joignant photos et description du problème. NUMA Sénégal proposera un échange ou un remboursement.</p>
+
+  <h2>Article 10 — Responsabilité</h2>
+  <p>NUMA Sénégal ne saurait être tenue responsable des retards de livraison imputables au transporteur, à une adresse erronée fournie par le client, ou à un cas de force majeure. Sa responsabilité est limitée au montant de la commande concernée.</p>
+
+  <h2>Article 11 — Données personnelles</h2>
+  <p>Les données collectées lors de la commande (nom, téléphone, e-mail, adresse, position GPS) sont utilisées pour traiter la commande et la livrer. Leur traitement est décrit dans notre <a href="confidentialite.html">politique de confidentialité</a>.</p>
+
+  <h2>Article 12 — Réclamations et litiges</h2>
+  <div class="info-box">
+    <p><strong>Réclamations :</strong> toute réclamation doit être adressée à <span class="ph">[contact@numa.sn]</span> ou par téléphone au +221 76 658 95 98.</p>
+    <p><strong>Médiation :</strong> en cas de litige, les parties s'efforceront de trouver une solution amiable. À défaut, le client peut recourir à un médiateur de la consommation ou à toute autorité compétente.</p>
+    <p><strong>Droit applicable et juridiction :</strong> les présentes CGV sont soumises au droit sénégalais. Tout litige persistant sera porté devant les tribunaux compétents de Dakar, sous réserve des règles protectrices du consommateur.</p>
+  </div>
+
+  <h2>Article 13 — Modification des CGV</h2>
+  <p>NUMA Sénégal se réserve le droit de modifier les présentes CGV à tout moment. Les CGV applicables sont celles en vigueur à la date de la commande.</p>
+
+  <div class="legal-foot">
+    <div class="links">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="cgv.html">CGV</a>
+      <a href="confidentialite.html">Confidentialité</a>
+    </div>
+    <div>© <span id="y"></span> NUMA Sénégal — Tous droits réservés.</div>
+  </div>
+</main>
+
+<nav class="tabbar" aria-label="Navigation du bas">
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+  <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+  <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+  <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+  <a href="compte.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+</nav>
+
+<script>
+  const CART_KEY="numa_cart", FAV_KEY="numa_favs";
+  const readLS=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??f}catch(e){return f}};
+  function updateBadges(){
+    const cart=readLS(CART_KEY,[]), favs=readLS(FAV_KEY,[]);
+    document.getElementById("cartCount").textContent=cart.reduce((s,x)=>s+(x.qty||1),0);
+    const f=document.getElementById("favCount");
+    if(favs.length>0){f.textContent=favs.length;f.style.display="grid";}
+    else{f.textContent="0";f.style.display="none";}
+  }
+  updateBadges();
+  window.addEventListener("storage",e=>{if(e.key===CART_KEY||e.key===FAV_KEY)updateBadges()});
+  document.getElementById("y").textContent=new Date().getFullYear();
+
+  const sb=document.getElementById("searchBar"),st=document.getElementById("searchToggle"),sc=document.getElementById("searchClose"),si=document.getElementById("searchInput");
+  st.addEventListener("click",()=>{sb.classList.toggle("open");if(sb.classList.contains("open"))si.focus();});
+  sc.addEventListener("click",()=>{sb.classList.remove("open");});
+  si.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();location.href="index.html";}});
+</script>
+</body>
+</html>

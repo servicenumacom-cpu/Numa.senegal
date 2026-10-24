@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes commandes – NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --wa: #25d366; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions a { position: relative; width: 30px; height: 30px; display: block; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge-n { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .nav-desktop { display: none; }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 24px 16px 40px; }
+    .page h1 { font-size: 22px; font-weight: 800; margin-bottom: 18px; }
+    .list { display: flex; flex-direction: column; gap: 16px; }
+
+    .card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: #fff; }
+    .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .num { font-size: 14px; font-weight: 800; }
+    .date { font-size: 12px; color: #888; margin-top: 2px; }
+    .pill { font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: .03em; background: var(--gray); }
+    .pill.ok { background: #e7f6ec; color: var(--green); }
+    .pill.no { background: #fde8ed; color: var(--red); }
+    .pill.off { background: #eee; color: #888; }
+
+    .steps { display: flex; justify-content: space-between; position: relative; margin: 6px 4px 18px; }
+    .steps::before { content: ""; position: absolute; top: 9px; left: 8%; right: 8%; height: 3px; background: var(--line); }
+    .step { position: relative; z-index: 1; flex: 1; text-align: center; font-size: 10.5px; font-weight: 600; color: #999; line-height: 1.25; }
+    .step i { display: block; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--line); margin: 0 auto 6px; }
+    .step.done { color: var(--black); }
+    .step.done i { background: var(--black); border-color: var(--black); }
+    .step.now { font-weight: 800; color: var(--black); }
+    .step.now i { box-shadow: 0 0 0 4px rgba(10,10,10,.12); }
+
+    .info { background: var(--gray); border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+    .info.warn { background: #fff4de; color: #7a5410; }
+    .info.cancel { background: #eee; color: #555; }
+
+    .items { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .it { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; font-size: 13px; }
+    .it img { width: 52px; aspect-ratio: 3/4; object-fit: cover; border-radius: 6px; background: var(--gray); }
+    .it .t { font-weight: 600; line-height: 1.25; }
+    .it .s { color: #777; font-size: 12px; margin-top: 2px; }
+    .it .p { font-weight: 800; white-space: nowrap; }
+    .total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; padding-top: 10px; border-top: 1px solid var(--line); }
+    .total span:last-child { color: var(--red); }
+    .free { font-size: 12px; color: var(--green); font-weight: 700; margin-top: 4px; text-align: right; }
+
+    .btns { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 14px; border: 1.5px solid var(--black); background: #fff; }
+    .btn.dark { background: var(--black); color: #fff; }
+    .btn.wa { background: var(--wa); border-color: var(--wa); color: #fff; }
+
+    .empty { text-align: center; padding: 60px 16px; border: 1px dashed var(--line); border-radius: 12px; color: #666; font-weight: 600; }
+    .empty a { display: inline-block; margin-top: 16px; background: var(--black); color: #fff; padding: 14px 26px; border-radius: 6px; font-weight: 700; }
+
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
+    .tabbar svg { width: 26px; height: 26px; }
+    .tabbar a.current { font-weight: 800; }
+    .tabbar a.current::before { content: ""; position: absolute; top: -8px; width: 22px; height: 3px; border-radius: 2px; background: var(--black); }
+
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .btns { flex-direction: row; }
+      .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand"><img src="image/logo.jpeg" alt="" class="brand-icon"><svg class="brand-word" viewBox="0 0 268 72"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/></g></svg></a>
+      <nav class="nav-desktop">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html?sexe=homme">Homme</a>
+        <a href="categories.html?sexe=femme">Femme</a>
+        <a href="promotions.html">Promotions</a>
+      </nav>
+      <div class="actions">
+        <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></a>
+        <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge-n" id="cartCount">0</span></a>
+        <a href="compte.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>MES COMMANDES</h1>
+    <div class="list" id="list"><div class="empty">Chargement...</div></div>
+  </main>
+
+  <nav class="tabbar">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+    <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+    <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="compte.html" class="current"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/";
+    const WHATSAPP_VENDEUR = "221766589598";
+
+    const firebaseConfig = { apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI", authDomain: "numa-com.firebaseapp.com", projectId: "numa-com", storageBucket: "numa-com.firebasestorage.app", messagingSenderId: "953579157946", appId: "1:953579157946:web:4fff5a890cf82f1ccec583" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/ | /g, ".") + " CFA";
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    try { const c = JSON.parse(localStorage.getItem("numa_cart")) || []; $("cartCount").textContent = c.reduce((s, x) => s + (x.qty || 1), 0); } catch (e) {}
+
+    const STEPS = [
+      ["en_attente", "Commande reçue"],
+      ["confirmee", "Paiement confirmé"],
+      ["en_preparation", "En préparation"],
+      ["en_livraison", "En livraison"],
+      ["livree", "Livrée"]
+    ];
+
+    onAuthStateChanged(auth, user => {
+      if (!user) { window.location.href = "authentification.html"; return; }
+      // Une seule condition (uid) : pas besoin d'index Firestore ; on trie ici
+      const q = query(collection(db, "commandes"), where("uid", "==", user.uid));
+      onSnapshot(q, snap => {
+        const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        orders.sort((a, b) => (b.createdAt?.toMillis?.() ?? Date.now()) - (a.createdAt?.toMillis?.() ?? Date.now()));
+        render(orders);
+      }, err => {
+        console.error(err);
+        $("list").innerHTML = `<div class="empty">Impossible de charger vos commandes.<br>Vérifiez votre connexion et réessayez.</div>`;
+      });
+    });
+
+    function render(orders) {
+      if (!orders.length) {
+        $("list").innerHTML = `<div class="empty">Vous n'avez pas encore de commande.<br><a href="index.html">Découvrir la boutique</a></div>`;
+        return;
+      }
+      $("list").innerHTML = orders.map(o => {
+        const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "à l'instant";
+        const annulee = o.statut === "annulee";
+        const paye = o.paiement === "paye";
+        const idx = STEPS.findIndex(s => s[0] === o.statut);
+
+        const pill = annulee ? `<span class="pill off">Annulée</span>` : paye ? `<span class="pill ok">Payée</span>` : `<span class="pill no">En attente de paiement</span>`;
+
+        const steps = annulee ? "" : `<div class="steps">${STEPS.map((s, i) =>
+          `<div class="step ${i <= idx ? "done" : ""} ${i === idx ? "now" : ""}"><i></i>${s[1]}</div>`).join("")}</div>`;
+
+        let info = "";
+        if (annulee) info = `<div class="info cancel">Cette commande a été annulée. Pour toute question, écrivez-nous sur WhatsApp.</div>`;
+        else if (!paye) info = `<div class="info warn"><b>Paiement à finaliser.</b> Payez ${fmt(o.total)} par Wave, puis envoyez-nous la preuve sur WhatsApp avec le numéro ${esc(o.numero)}. Votre commande sera confirmée dès réception.</div>`;
+        else if (o.statut === "livree") info = `<div class="info">Votre commande a été livrée. Merci de votre confiance !</div>`;
+
+        const items = (o.articles || []).map(a => `
+          <div class="it">
+            <img src="${esc(a.imageUrl || "")}" alt="">
+            <div><p class="t">${esc(a.titre)}</p><p class="s">Taille ${esc(a.taille)} · Qté ${esc(a.quantite)}</p></div>
+            <span class="p">${fmt(a.prix * a.quantite)}</span>
+          </div>`).join("");
+
+        let btns = "";
+        if (!annulee && !paye) {
+          const sep = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?";
+          btns += `<a class="btn dark" href="${WAVE_MERCHANT_LINK}${sep}amount=${Number(o.total)}">Payer ${fmt(o.total)} avec Wave</a>`;
+          const t = `Bonjour NUMA, j'ai payé la commande ${o.numero} d'un montant de ${o.total} CFA. Nom : ${o.clientNom}.`;
+          btns += `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">J'ai payé : envoyer la preuve</a>`;
+        } else {
+          const t = `Bonjour NUMA, j'ai une question sur ma commande ${o.numero}.`;
+          btns += `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">Une question ? Écrire à NUMA</a>`;
+        }
+
+        return `
+        <article class="card">
+          <div class="head">
+            <div><p class="num">${esc(o.numero)}</p><p class="date">${date}</p></div>
+            ${pill}
+          </div>
+          ${steps}
+          ${info}
+          <div class="items">${items}</div>
+          <div class="total"><span>Total</span><span>${fmt(o.total)}</span></div>
+          <p class="free">Livraison gratuite</p>
+          <div class="btns">${btns}</div>
+        </article>`;
+      }).join("");
+    }
+  </script>
+</body>
+</html>

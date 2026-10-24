@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Détail Produit - NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* HEADER */
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions button, .actions a { position: relative; width: 30px; height: 30px; display: block; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .nav-desktop { display: none; }
+    .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+
+    /* PAGE LAYOUT */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px; }
+    .breadcrumb { padding: 24px 0; font-size: 12px; color: #777; }
+    .breadcrumb a:hover { text-decoration: underline; color: var(--black); }
+    .breadcrumb span { margin: 0 8px; opacity: .5; }
+
+    /* PRODUIT PRINCIPAL */
+    .product-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 60px; }
+    
+    /* MODIFICATION ICI : Réduction de 20% sur PC (0.7fr au lieu de 0.9fr) */
+    @media (min-width: 900px) { .product-grid { grid-template-columns: 0.7fr 1.3fr; gap: 60px; } }
+
+    /* GALERIE */
+    .gallery { display: flex; flex-direction: column-reverse; gap: 16px; align-items: center; }
+    @media (min-width: 600px) { .gallery { flex-direction: row; align-items: flex-start; } }
+    
+    .thumbnails { display: flex; flex-direction: row; gap: 12px; overflow-x: auto; justify-content: center; width: 100%; }
+    @media (min-width: 600px) { .thumbnails { flex-direction: column; width: 80px; flex-shrink: 0; overflow: visible; justify-content: flex-start; width: auto; } }
+    .thumb { width: 72px; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: border-color .2s; flex-shrink: 0; }
+    .thumb.active { border-color: var(--black); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* MODIFICATION ICI : Réduction de 20% sur mobile (80% de largeur) */
+    .main-img { flex: none; width: 80%; aspect-ratio: 3/4; background: var(--gray); border-radius: 12px; overflow: hidden; position: relative; margin: 0 auto; }
+    @media (min-width: 600px) { .main-img { flex: 1; width: auto; margin: 0; } }
+    @media (min-width: 900px) { .main-img { flex: 1; width: 100%; } }
+
+    .main-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .main-img:hover img { transform: scale(1.08); }
+    
+    .tag-promo { position: absolute; top: 16px; left: 16px; z-index: 2; background: var(--red); color: #fff; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 6px; letter-spacing: .5px; }
+
+    /* INFOS */
+    .info { display: flex; flex-direction: column; }
+    .info .cat { font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .info h1 { font-size: 28px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -.5px; }
+    @media (min-width: 1024px) { .info h1 { font-size: 36px; } }
+    
+    .rating { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666; margin-bottom: 24px; }
+    .stars { color: #f59e0b; font-size: 16px; letter-spacing: 2px; }
+    .rating a { text-decoration: underline; text-underline-offset: 3px; }
+
+    .price-group { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+    .price { font-size: 28px; font-weight: 800; color: var(--red); }
+    .price-old { font-size: 16px; color: #999; text-decoration: line-through; font-weight: 500; }
+
+    /* OPTIONS */
+    .option { margin-bottom: 24px; }
+    .option-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+    .option-head span { color: #888; font-weight: 500; text-transform: none; letter-spacing: 0; }
+    
+    .colors { display: flex; gap: 12px; }
+    .color { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; transition: all .2s; position: relative; }
+    .color.active { border-color: var(--black); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--black); }
+    
+    .sizes { display: flex; gap: 10px; flex-wrap: wrap; }
+    .size { min-width: 50px; height: 44px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 14px; font-weight: 700; transition: .2s; display: grid; place-items: center; }
+    .size:hover:not(:disabled) { border-color: var(--black); }
+    .size.active { background: var(--black); color: #fff; border-color: var(--black); }
+    .size:disabled { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
+
+    .stock-status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+    .stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .stock-status.low { color: #b7791f; }
+    .stock-status.low .stock-dot { background: #b7791f; }
+    .stock-status.out { color: var(--red); }
+    .stock-status.out .stock-dot { background: var(--red); }
+
+    /* ACTIONS */
+    .action-row { display: flex; gap: 16px; margin-bottom: 24px; }
+    .qty { display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .qty button { width: 44px; height: 52px; font-size: 20px; color: #666; }
+    .qty button:hover { background: var(--gray); }
+    .qty span { width: 40px; text-align: center; font-weight: 700; font-size: 16px; }
+    
+    .add-cart { flex: 1; height: 52px; background: var(--black); color: #fff; border-radius: 8px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: .2s; text-transform: uppercase; letter-spacing: .5px; }
+    .add-cart:hover { background: var(--red); transform: translateY(-2px); }
+    .add-cart:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    .add-cart svg { width: 20px; height: 20px; }
+
+    /* ACCORDÉON */
+    .accordion { border-top: 1px solid var(--line); margin-top: 10px; }
+    .acc-item { border-bottom: 1px solid var(--line); }
+    .acc-head { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 18px 0; font-size: 14px; font-weight: 700; text-align: left; }
+    .acc-head .icon { font-size: 20px; font-weight: 400; color: #888; transition: transform .3s; }
+    .acc-item.open .icon { transform: rotate(45deg); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height .3s; }
+    .acc-content { padding-bottom: 20px; font-size: 14px; color: #555; line-height: 1.6; }
+    .acc-content ul { padding-left: 20px; margin-top: 10px; }
+    .acc-content li { margin-bottom: 6px; }
+
+    /* SECTION AVIS */
+    .reviews-section { border-top: 1px solid var(--line); padding: 50px 0; background: #fafafa; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+    @media (min-width: 1024px) { .reviews-section { margin: 0; border-radius: 16px; padding: 50px; margin-bottom: 60px; } }
+    .rev-head h2 { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
+    .rev-top { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
+    @media (min-width: 768px) { .rev-top { grid-template-columns: 200px 1fr; align-items: center; } }
+    .rev-score { text-align: center; }
+    .rev-score .big { font-size: 48px; font-weight: 800; line-height: 1; }
+    .rev-score .stars { font-size: 18px; margin: 8px 0; }
+    .rev-score p { font-size: 13px; color: #666; }
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #666; }
+    .bar-track { flex: 1; height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: #f59e0b; border-radius: 4px; }
+    .bar-row .pct { width: 40px; text-align: right; }
+
+    .rev-list { display: flex; flex-direction: column; gap: 16px; }
+    .rev { background: #fff; border: 1px solid var(--line); padding: 20px; border-radius: 12px; }
+    .rev-top-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .rev-name { font-weight: 700; font-size: 14px; }
+    .rev-date { font-size: 12px; color: #888; }
+    .rev .stars { font-size: 12px; margin-bottom: 8px; }
+    .rev p { font-size: 13.5px; color: #444; line-height: 1.5; }
+    .verified { font-size: 11px; color: var(--green); font-weight: 700; margin-left: 8px; }
+
+    /* ARTICLES SIMILAIRES */
+    .similar-section { padding-bottom: 60px; }
+    .similar-section h2 { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (min-width: 768px) { .grid-4 { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
+    
+    .card .thumb { aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; background: var(--gray); margin-bottom: 10px; border: none; position: relative; }
+    .card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .4s; }
+    .card:hover .thumb img { transform: scale(1.03); }
+    .card .price { font-size: 15px; color: var(--black); font-weight: 800; }
+    .card .name { font-size: 13px; font-weight: 500; margin-top: 4px; color: #444; line-height: 1.3; }
+
+    /* TABBAR & FOOTER */
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
+    .tabbar svg { width: 26px; height: 26px; }
+    .tabbar a.active { font-weight: 700; }
+    .tabbar a.active::before { content: ""; position: absolute; top: -9px; left: 10%; right: 10%; height: 3px; background: var(--black); }
+    .tabbar a.active svg { fill: var(--black); }
+
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar, .nav-mobile { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .nav-desktop a { position: relative; padding: 6px 0; }
+      .nav-desktop a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--black); transition: width .25s; }
+      .nav-desktop a:hover::after { width: 100%; }
+      .wrap { padding: 0 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand"><img src="image/logo.jpeg" alt="" class="brand-icon"><svg class="brand-word" viewBox="0 0 268 72"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/></g></svg></a>
+      
+      <nav class="nav-desktop">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html?sexe=homme">Homme</a>
+        <a href="categories.html?sexe=femme">Femme</a>
+        <a href="promotions.html">Promotions</a>
+      </nav>
+      
+      <div class="actions">
+        <button aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+        <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+        <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+        <a href="compte.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="mainContent">
+    <div style="text-align:center; padding: 100px 0;">
+      <p style="font-size:16px; color:#666; font-weight:600;">Chargement du produit...</p>
+    </div>
+  </main>
+
+  <nav class="tabbar">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+    <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+    <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="compte.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
+      authDomain: "numa-com.firebaseapp.com",
+      projectId: "numa-com",
+      storageBucket: "numa-com.firebasestorage.app",
+      messagingSenderId: "953579157946",
+      appId: "1:953579157946:web:4fff5a890cf82f1ccec583"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const CART_KEY = "numa_cart";
+    const FAV_KEY = "numa_favs";
+    const FIRESTORE_REST_URL = "https://firestore.googleapis.com/v1/projects/numa-com/databases/(default)/documents/produits";
+    const DEFAULT_IMG = "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=800&q=80";
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const readLS = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fb; } catch (e) { return fb; } };
+    const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    if (!productId) {
+      $("mainContent").innerHTML = `<div style="text-align:center; padding: 100px 20px;">
+        <h1 style="font-size: 24px; margin-bottom: 16px;">Produit introuvable</h1>
+        <p style="color:#666; margin-bottom: 24px;">Aucun identifiant de produit n'a été fourni.</p>
+        <a href="index.html" style="display:inline-block; background:#000; color:#fff; padding:12px 24px; border-radius:8px; font-weight:700;">Retour à l'accueil</a>
+      </div>`;
+      throw new Error("No product ID");
+    }
+
+    function normalizeStock(valeur) {
+      let obj = valeur;
+      if (obj && typeof obj === "object" && obj.mapValue) {
+        const fields = obj.mapValue.fields || {}; const map = {};
+        for (const [k, v] of Object.entries(fields)) {
+          map[k] = v.integerValue !== undefined ? parseInt(v.integerValue, 10) : 0;
+        }
+        return map;
+      }
+      return obj || {};
+    }
+
+    async function loadProduct() {
+      try {
+        const res = await fetch(`${FIRESTORE_REST_URL}/${productId}`);
+        if (!res.ok) throw new Error("Produit introuvable dans la base de données.");
+        const doc = await res.json();
+        const f = doc.fields || {};
+        
+        const gv = (field) => {
+          if (!field) return null;
+          if (field.stringValue !== undefined) return field.stringValue;
+          if (field.integerValue !== undefined) return parseInt(field.integerValue, 10);
+          if (field.doubleValue !== undefined) return field.doubleValue;
+          if (field.booleanValue !== undefined) return field.booleanValue;
+          return null;
+        };
+
+        const product = {
+          id: productId,
+          nom: gv(f.titre) || "Produit sans nom",
+          prix: gv(f.prix) || 0,
+          ancienPrix: gv(f.ancienPrix),
+          promo: gv(f.promo) === true,
+          image: gv(f.imageUrl) || DEFAULT_IMG,
+          imageSecondary: gv(f.imageUrlSecondaire) || gv(f.imageUrl) || DEFAULT_IMG,
+          categorie: gv(f.categorie) || "Collection",
+          sexe: gv(f.sexe) || "",
+          description: gv(f.description) || "Un vêtement de qualité supérieure, conçu pour durer. Coupe confortable et matière agréable à porter.",
+          matiere: gv(f.matiere) || "100% Coton biologique certifié. Lavage machine à 30°C.",
+          stock: normalizeStock(f.stock ?? f.tailles ?? f.sizes),
+          couleurs: (() => {
+            if (f.couleurs && f.couleurs.arrayValue) {
+              return (f.couleurs.arrayValue.values || []).map(v => v.stringValue);
+            }
+            return ["Sable", "Noir", "Sauge"];
+          })()
+        };
+
+        renderPage(product);
+        loadSimilarProducts(product.categorie, productId);
+
+      } catch (err) {
+        console.error(err);
+        $("mainContent").innerHTML = `<div style="text-align:center; padding: 100px 20px;">
+          <h1 style="font-size: 24px; margin-bottom: 16px;">Oups !</h1>
+          <p style="color:#666; margin-bottom: 24px;">${esc(err.message)}</p>
+          <a href="index.html" style="display:inline-block; background:#000; color:#fff; padding:12px 24px; border-radius:8px; font-weight:700;">Retour à l'accueil</a>
+        </div>`;
+      }
+    }
+
+    function renderPage(p) {
+      document.title = `${p.nom} - NUMA`;
+      
+      const sizesKeys = Object.keys(p.stock).filter(k => p.stock[k] >= 0);
+      const defaultSize = sizesKeys.find(k => p.stock[k] > 0) || null;
+      const oldPriceHTML = p.ancienPrix && p.ancienPrix > p.prix ? `<span class="price-old">${fmt(p.ancienPrix)}</span>` : "";
+      const promoTag = p.promo || (p.ancienPrix && p.ancienPrix > p.prix) ? `<span class="tag-promo">PROMO</span>` : "";
+
+      const sizesHTML = sizesKeys.map(s => {
+        const isOut = p.stock[s] === 0;
+        return `<button class="size" data-size="${s}" ${isOut ? 'disabled' : ''}>${s}</button>`;
+      }).join("");
+
+      const colorsHTML = p.couleurs.map((c, i) => {
+        const hex = c.toLowerCase() === "noir" ? "#111" : c.toLowerCase() === "sauge" ? "#8a9a7b" : c.toLowerCase() === "sable" ? "#d9c7ab" : c.toLowerCase() === "blanc" ? "#fff" : c.toLowerCase() === "bleu" ? "#3b82f6" : "#d4d4d4";
+        return `<button class="color ${i===0?'active':''}" style="background:${hex}" data-color="${c}" aria-label="${c}"></button>`;
+      }).join("");
+
+      $("mainContent").innerHTML = `
+        <div class="breadcrumb">
+          <a href="index.html">Accueil</a><span>/</span>
+          <a href="categories.html?sexe=${p.sexe}">${p.sexe ? p.sexe.charAt(0).toUpperCase() + p.sexe.slice(1) : 'Collection'}</a><span>/</span>
+          <strong>${esc(p.nom)}</strong>
+        </div>
+
+        <div class="product-grid">
+          <!-- GALERIE -->
+          <div class="gallery">
+            <div class="thumbnails">
+              <div class="thumb active" data-img="${esc(p.image)}"><img src="${esc(p.image)}" alt="Vue 1"></div>
+              ${p.imageSecondary && p.imageSecondary !== p.image ? `<div class="thumb" data-img="${esc(p.imageSecondary)}"><img src="${esc(p.imageSecondary)}" alt="Vue 2"></div>` : ''}
+              <div class="thumb" data-img="${esc(p.image)}"><img src="${esc(p.image)}" alt="Vue 3"></div>
+            </div>
+            <div class="main-img">
+              ${promoTag}
+              <img id="mainImage" src="${esc(p.image)}" alt="${esc(p.nom)}">
+            </div>
+          </div>
+
+          <!-- INFOS -->
+          <div class="info">
+            <p class="cat">${esc(p.categorie)}</p>
+            <h1>${esc(p.nom)}</h1>
+            
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span>4.8 · <a href="#avis">126 avis</a></span>
+            </div>
+
+            <div class="price-group">
+              <span class="price">${fmt(p.prix)}</span>
+              ${oldPriceHTML}
+            </div>
+
+            <div class="option">
+              <div class="option-head">Couleur <span id="colorName">${p.couleurs[0]}</span></div>
+              <div class="colors">${colorsHTML}</div>
+            </div>
+
+            <div class="option">
+              <div class="option-head">Taille <span id="sizeHint">Sélectionnez une taille</span></div>
+              <div class="sizes" id="sizesContainer">${sizesHTML}</div>
+            </div>
+
+            <div class="stock-status" id="stockStatus" style="display:none;">
+              <span class="stock-dot"></span>
+              <span id="stockText">En stock</span>
+            </div>
+
+            <div class="action-row">
+              <div class="qty">
+                <button id="qtyMinus">−</button>
+                <span id="qtyVal">1</span>
+                <button id="qtyPlus">+</button>
+              </div>
+              <button class="add-cart" id="buyBtn" disabled>
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                J'achète
+              </button>
+            </div>
+
+            <div class="accordion">
+              <div class="acc-item open">
+                <button class="acc-head">Description <span class="icon">+</span></button>
+                <div class="acc-body" style="max-height: 500px;"><div class="acc-content"><p>${esc(p.description)}</p></div></div>
+              </div>
+              <div class="acc-item">
+                <button class="acc-head">Matière & Entretien <span class="icon">+</span></button>
+                <div class="acc-body"><div class="acc-content"><p>${esc(p.matiere)}</p></div></div>
+              </div>
+              <div class="acc-item">
+                <button class="acc-head">Livraison & Retours <span class="icon">+</span></button>
+                <div class="acc-body"><div class="acc-content">
+                  <p>Livraison sous 24h à 72h partout au Sénégal. Retours acceptés sous 5 jours après réception (à vos frais via Thiak Thiak).</p>
+                  <p style="margin-top:10px;"><a href="livraison-retours.html" style="color:var(--red); text-decoration:underline;">En savoir plus</a></p>
+                </div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AVIS -->
+        <div class="reviews-section" id="avis">
+          <div class="rev-head"><h2>Avis clients</h2></div>
+          <div class="rev-top">
+            <div class="rev-score">
+              <div class="big">4.8</div>
+              <div class="stars">★★★★★</div>
+              <p>126 avis vérifiés</p>
+            </div>
+            <div class="bars">
+              <div class="bar-row"><span>5 ★</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="pct">82%</span></div>
+              <div class="bar-row"><span>4 ★</span><div class="bar-track"><div class="bar-fill" style="width:13%"></div></div><span class="pct">13%</span></div>
+              <div class="bar-row"><span>3 ★</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div><span class="pct">3%</span></div>
+              <div class="bar-row"><span>2 ★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="pct">1%</span></div>
+              <div class="bar-row"><span>1 ★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="pct">1%</span></div>
+            </div>
+          </div>
+          <div class="rev-list">
+            <div class="rev">
+              <div class="rev-top-row"><div class="rev-name">Fatou D. <span class="verified">✓ Achat vérifié</span></div><div class="rev-date">12 oct. 2024</div></div>
+              <div class="stars">★★★★★</div>
+              <p>La qualité est vraiment au rendez-vous. Le tissu est épais sans être étouffant, et la coupe tombe parfaitement.</p>
+            </div>
+            <div class="rev">
+              <div class="rev-top-row"><div class="rev-name">Moussa N. <span class="verified">✓ Achat vérifié</span></div><div class="rev-date">04 oct. 2024</div></div>
+              <div class="stars">★★★★★</div>
+              <p>Mon nouveau vêtement de tous les jours. Taille bien, aucune déformation au lavage après plusieurs semaines. Je recommande.</p>
+            </div>
+            <div class="rev">
+              <div class="rev-top-row"><div class="rev-name">Awa S. <span class="verified">✓ Achat vérifié</span></div><div class="rev-date">28 sept. 2024</div></div>
+              <div class="stars">★★★★☆</div>
+              <p>Très beau produit, matière agréable. Livraison rapide à Dakar. Je conseille de prendre sa taille habituelle.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ARTICLES SIMILAIRES -->
+        <div class="similar-section">
+          <h2>Vous aimerez aussi</h2>
+          <div class="grid-4" id="similarGrid"></div>
+        </div>
+      `;
+
+      let selectedSize = defaultSize;
+      let selectedColor = p.couleurs[0];
+      let qty = 1;
+
+      document.querySelectorAll('.thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          $("mainImage").src = thumb.dataset.img;
+        });
+      });
+
+      document.querySelectorAll('.color').forEach(colorBtn => {
+        colorBtn.addEventListener('click', () => {
+          document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+          colorBtn.classList.add('active');
+          selectedColor = colorBtn.dataset.color;
+          $("colorName").textContent = selectedColor;
+        });
+      });
+
+      const updateStockUI = () => {
+        const stockStatus = $("stockStatus");
+        const stockText = $("stockText");
+        const buyBtn = $("buyBtn");
+        
+        if (!selectedSize) {
+          stockStatus.style.display = "none";
+          buyBtn.disabled = true;
+          return;
+        }
+
+        stockStatus.style.display = "inline-flex";
+        const q = p.stock[selectedSize] || 0;
+        stockStatus.className = "stock-status";
+
+        if (q === 0) {
+          stockStatus.classList.add("out");
+          stockText.textContent = "Rupture de stock";
+          buyBtn.disabled = true;
+        } else if (q <= 3) {
+          stockStatus.classList.add("low");
+          stockText.textContent = `Plus que ${q} en stock`;
+          buyBtn.disabled = false;
+        } else {
+          stockText.textContent = "En stock";
+          buyBtn.disabled = false;
+        }
+      };
+
+      document.querySelectorAll('.size').forEach(sizeBtn => {
+        if (sizeBtn.disabled) return;
+        
+        if (sizeBtn.dataset.size === defaultSize) {
+          sizeBtn.classList.add('active');
+          $("sizeHint").textContent = `Taille ${defaultSize}`;
+          updateStockUI();
+        }
+
+        sizeBtn.addEventListener('click', () => {
+          document.querySelectorAll('.size').forEach(s => s.classList.remove('active'));
+          sizeBtn.classList.add('active');
+          selectedSize = sizeBtn.dataset.size;
+          $("sizeHint").textContent = `Taille ${selectedSize}`;
+          updateStockUI();
+        });
+      });
+
+      $("qtyMinus").addEventListener('click', () => {
+        if (qty > 1) { qty--; $("qtyVal").textContent = qty; }
+      });
+      $("qtyPlus").addEventListener('click', () => {
+        if (qty < 10) { qty++; $("qtyVal").textContent = qty; }
+      });
+
+      document.querySelectorAll('.acc-head').forEach(head => {
+        head.addEventListener('click', () => {
+          const item = head.parentElement;
+          const body = item.querySelector('.acc-body');
+          const isOpen = item.classList.contains('open');
+          document.querySelectorAll('.acc-item').forEach(i => {
+            i.classList.remove('open');
+            i.querySelector('.acc-body').style.maxHeight = null;
+          });
+          if (!isOpen) {
+            item.classList.add('open');
+            body.style.maxHeight = body.scrollHeight + 'px';
+          }
+        });
+      });
+
+      $("buyBtn").addEventListener('click', () => {
+        if (!selectedSize) return;
+        const cart = readLS(CART_KEY, []);
+        const idx = cart.findIndex(x => x.id === p.id && x.size === selectedSize && x.color === selectedColor);
+        
+        if (idx >= 0) {
+          cart[idx].qty = Math.min(10, (cart[idx].qty || 1) + qty);
+        } else {
+          cart.push({
+            id: p.id, name: p.nom, price: p.prix, img: p.image,
+            qty: qty, size: selectedSize, color: selectedColor
+          });
+        }
+        writeLS(CART_KEY, cart);
+        updateBadges();
+        
+        window.location.href = 'panier.html';
+      });
+    }
+
+    async function loadSimilarProducts(cat, currentId) {
+      try {
+        const res = await fetch(`${FIRESTORE_REST_URL}?pageSize=20`);
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        let similar = (data.documents || [])
+          .map(doc => {
+            const f = doc.fields || {};
+            return {
+              id: doc.name.split('/').pop(),
+              nom: f.titre?.stringValue || "Produit",
+              prix: f.prix?.integerValue ? parseInt(f.prix.integerValue) : f.prix?.doubleValue || 0,
+              image: f.imageUrl?.stringValue || DEFAULT_IMG,
+              categorie: f.categorie?.stringValue || ""
+            };
+          })
+          .filter(p => p.id !== currentId && p.categorie === cat)
+          .slice(0, 4);
+
+        if (similar.length === 0) {
+          document.querySelector(".similar-section").style.display = "none";
+          return;
+        }
+
+        const grid = $("similarGrid");
+        grid.innerHTML = similar.map(p => `
+          <a href="produit.html?id=${p.id}" class="card">
+            <div class="thumb"><img src="${esc(p.image)}" alt="${esc(p.nom)}" loading="lazy"></div>
+            <div class="price">${fmt(p.prix)}</div>
+            <p class="name">${esc(p.nom)}</p>
+          </a>
+        `).join("");
+      } catch (e) {
+        console.error("Erreur similaires:", e);
+      }
+    }
+
+    function getLocalFavs() {
+      try { const raw = localStorage.getItem(FAV_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
+    }
+    function updateBadges() {
+      const cart = readLS(CART_KEY, []);
+      const favs = getLocalFavs();
+      $("cartCount").textContent = cart.reduce((s, x) => s + (x.qty || 1), 0);
+      $("favCount").textContent = favs.length;
+      $("favCount").style.display = favs.length ? "grid" : "none";
+    }
+
+    updateBadges();
+    loadProduct();
+  </script>
+</body>
+</html>

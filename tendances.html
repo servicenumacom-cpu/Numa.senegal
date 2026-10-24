@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tendances - NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --accent: #ff5a1f; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* HEADER */
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions button { position: relative; width: 30px; height: 30px; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .nav-desktop { display: none; }
+    .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+    .nav-desktop a.current, .nav-mobile a.current { font-weight: 800; }
+    .nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
+
+    /* HERO TENDANCES */
+    .tr-hero { background: linear-gradient(120deg, var(--black) 55%, #3a1a0c); color: #fff; padding: 36px 16px 32px; }
+    .tr-hero-inner { max-width: var(--max); margin: 0 auto; }
+    .tr-hero .crumbs { font-size: 13px; color: #aaa; margin-bottom: 12px; }
+    .tr-hero .crumbs a:hover { text-decoration: underline; }
+    .tr-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: .5px; }
+    .tr-hero h1 span { color: var(--accent); }
+    .tr-hero p.sub { margin-top: 8px; font-size: 14px; color: #ddd; }
+    .styles { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .styles span { font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); }
+
+    /* LISTE */
+    .section { max-width: var(--max); margin: 0 auto; padding: 28px 16px 20px; }
+    .toolbar { display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
+    .filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .chip { flex: none; padding: 9px 18px; border: 1.5px solid var(--black); border-radius: 999px; font-size: 14px; font-weight: 600; transition: .2s; }
+    .chip:hover { background: var(--gray); }
+    .chip.active { background: var(--black); color: #fff; }
+    .sort { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .sort select { border: 1.5px solid var(--black); border-radius: 8px; padding: 8px 12px; font: inherit; font-weight: 600; background: #fff; cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
+    .card .thumb { position: relative; aspect-ratio: 3 / 4; background: var(--gray); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .card:hover .thumb img { transform: scale(1.05); }
+    .rank { position: absolute; top: 10px; left: 10px; z-index: 2; min-width: 38px; height: 38px; padding: 0 8px; border-radius: 10px; background: var(--black); color: #fff; font-size: 16px; font-weight: 800; display: grid; place-items: center; }
+    .rank.top { background: var(--accent); }
+    .hot { position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; width: fit-content; max-width: calc(100% - 20px); background: rgba(255,255,255,.92); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 999px; display: flex; align-items: center; gap: 4px; }
+    .hot svg { width: 14px; height: 14px; flex: none; color: var(--accent); fill: var(--accent); stroke: var(--accent); }
+    .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .price { font-size: 17px; font-weight: 800; }
+    .fav { width: 26px; height: 26px; flex: none; }
+    .fav svg { width: 22px; height: 22px; }
+    .fav.on svg { fill: var(--red); stroke: var(--red); }
+    .name { font-size: 14px; margin-bottom: 8px; line-height: 1.25; }
+    .add { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+    .add svg { width: 20px; height: 20px; }
+    .add:hover { text-decoration: underline; }
+    .add.added { color: #16a34a; font-weight: 700; }
+    .more-wrap { display: flex; justify-content: center; margin-top: 28px; }
+    .btn-outline { border: 2px solid var(--black); border-radius: 8px; padding: 14px 70px; font-weight: 700; font-size: 16px; transition: .2s; }
+    .btn-outline:hover { background: var(--black); color: #fff; }
+    .btn-outline[hidden] { display: none; }
+
+    /* BARRE DU BAS (mobile) */
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
+    .tabbar svg { width: 26px; height: 26px; }
+
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(3, 1fr); }
+      .tr-hero h1 { font-size: 42px; }
+    }
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar, .nav-mobile { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .brand-icon { width: 52px; height: 52px; }
+      .brand-word { height: 26px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .nav-desktop a { position: relative; padding: 6px 0; }
+      .nav-desktop a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--black); transition: width .25s; }
+      .nav-desktop a:hover::after, .nav-desktop a.current::after { width: 100%; }
+      .tr-hero { padding: 56px 40px 48px; }
+      .tr-hero h1 { font-size: 58px; }
+      .tr-hero p.sub { font-size: 17px; }
+      .section { padding: 48px 40px 60px; }
+      .toolbar { flex-direction: row; justify-content: space-between; align-items: center; }
+      .sort { gap: 18px; justify-content: flex-end; }
+      .grid { grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand" aria-label="NUMA accueil">
+        <img src="image/logo.jpeg" alt="" class="brand-icon">
+        <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+          <g fill="none" stroke="currentColor" stroke-width="11">
+            <path d="M6 68V4L52 68V4"/>
+            <path d="M76 4V44a22 22 0 0 0 44 0V4"/>
+            <path d="M144 68V4L168 52L192 4V68"/>
+            <path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+          </g>
+        </svg>
+      </a>
+
+      <nav class="nav-desktop" aria-label="Navigation principale">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html">Catégories</a>
+        <a href="promotions.html">Promotions</a>
+        <a href="exclusivites.html">Exclusivités</a>
+        <a href="tendances.html">Tendances</a>
+      </nav>
+
+      <div class="actions">
+        <button aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+        <button aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></button>
+        <button aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">2</span></button>
+        <button aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
+      </div>
+    </div>
+
+    <nav class="nav-mobile" aria-label="Navigation mobile">
+      <a href="nouveautes.html">NOUVEAUTÉS</a><span>|</span>
+      <a href="categories.html">CATÉGORIES</a><span>|</span>
+      <a href="promotions.html">PROMOTIONS</a><span>|</span>
+      <a href="exclusivites.html">EXCLUSIVITÉS</a><span>|</span>
+      <a href="tendances.html">TENDANCES</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="tr-hero">
+      <div class="tr-hero-inner">
+        <p class="crumbs"><a href="index.html">Accueil</a> / Tendances</p>
+        <h1>TENDANCES <span>DU MOMENT</span></h1>
+        <p class="sub">Les articles les plus demandés par nos clientes, classés par popularité.</p>
+        <div class="styles"><span>#Chic</span><span>#Casual</span><span>#Cuir</span><span>#Streetwear</span><span>#Soirée</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="toolbar">
+        <div class="filters" id="filters">
+          <button class="chip active" data-period="week">Cette semaine</button>
+          <button class="chip" data-period="month">Ce mois</button>
+          <button class="chip" data-period="all">Depuis toujours</button>
+        </div>
+        <div class="sort">
+          <span id="count">0 articles</span>
+          <select id="sort" aria-label="Trier">
+            <option value="pop">Les plus populaires</option>
+            <option value="asc">Prix croissant</option>
+            <option value="desc">Prix décroissant</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <div class="more-wrap"><button class="btn-outline" id="moreBtn">VOIR PLUS</button></div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Navigation du bas">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html"><svg viewBox="0 0 24 24"><path d="M3 6h6M3 12h4M3 18h6"/><circle cx="15" cy="11" r="5"/><path d="M19 15l3 3"/></svg>Catégories</a>
+    <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/></svg>Explorer</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Mon Compte</a>
+  </nav>
+
+  <script>
+    // ---------- IMAGES (liens Unsplash, libres de droits) ----------
+    const IMG = {
+      floral:   "photo-1760328249113-31c07547aea8",
+      topSkirt: "photo-1612690207805-a3c172ea6e8c",
+      topTank:  "photo-1602782326707-6feb5cfd10fe",
+      jeans:    "photo-1624378440847-4a64ee1a889d",
+      leatherW: "photo-1626913854987-745042fefc31",
+      pumps:    "photo-1535043934128-cf0b28d52f95",
+      loafers:  "photo-1664095885197-fdff6611560c",
+      boots:    "photo-1549507575-000e4a9e95f1",
+      red:      "photo-1721182420935-29bfb69dd26c",
+      whiteShort:"photo-1726673602754-fdd3a8d2e069",
+      whiteLong:"photo-1753951594319-d574ef2d5ca7",
+      leatherP: "photo-1727515546577-f7d82a47b51d",
+      blazer:   "photo-1628009658182-6df033109021",
+      denimJ:   "photo-1716744446417-9f07cca954a6",
+      jeansW:   "photo-1578798221387-80d19283bd4d",
+      tote:     "photo-1572196223922-d8b7e0ab0b4d",
+      bagW:     "photo-1521316839910-80fb08ee95d6",
+      sun:      "photo-1549739749-afd9a4a6c500"
+    };
+    const u = (k, w = 700) => `https://images.unsplash.com/${IMG[k]}?auto=format&fit=crop&w=${w}&q=75`;
+
+    // ---------- PRODUITS TENDANCE ----------
+    // sold = nombre de ventes (semaine / mois / depuis toujours)
+    const products = [
+      { name: "Robe fleurie fendue",       price: 19500, img: "floral",    sold: { week: 142, month: 530, all: 2100 } },
+      { name: "Jeans bleu",                price: 25800, img: "jeans",     sold: { week: 128, month: 610, all: 3400 } },
+      { name: "Top noir sans manches",     price: 10200, img: "topSkirt",  sold: { week: 117, month: 470, all: 2800 } },
+      { name: "Veste en cuir noire",       price: 45000, img: "leatherW",  sold: { week: 96,  month: 380, all: 1500 } },
+      { name: "Mocassins et ballerines",   price: 21000, img: "loafers",   sold: { week: 88,  month: 340, all: 1900 } },
+      { name: "Débardeur noir",            price: 9500,  img: "topTank",   sold: { week: 75,  month: 410, all: 1700 } },
+      { name: "Bottines noires",           price: 32000, img: "boots",     sold: { week: 64,  month: 290, all: 1600 } },
+      { name: "Blazer rayé",               price: 38000, img: "blazer",    sold: { week: 58,  month: 260, all: 900 } },
+      { name: "Robe rouge élégante",       price: 24500, img: "red",       sold: { week: 51,  month: 300, all: 1200 } },
+      { name: "Escarpins marron",          price: 18500, img: "pumps",     sold: { week: 44,  month: 220, all: 1400 } },
+      { name: "Robe blanche courte",       price: 16500, img: "whiteShort",sold: { week: 39,  month: 190, all: 1000 } },
+      { name: "Veste en jean",             price: 26000, img: "denimJ",    sold: { week: 33,  month: 175, all: 800 } },
+      { name: "Robe blanche longue",       price: 21000, img: "whiteLong", sold: { week: 30,  month: 160, all: 750 } },
+      { name: "Blouson cuir noir",         price: 48000, img: "leatherP",  sold: { week: 27,  month: 150, all: 700 } },
+      { name: "Jeans taille haute",        price: 27500, img: "jeansW",    sold: { week: 24,  month: 140, all: 950 } },
+      { name: "Cabas noir",                price: 12000, img: "tote",      sold: { week: 21,  month: 120, all: 640 } },
+      { name: "Sac cuir blanc et marron",  price: 28000, img: "bagW",      sold: { week: 18,  month: 110, all: 600 } },
+      { name: "Lunettes de soleil",        price: 8500,  img: "sun",       sold: { week: 15,  month: 90,  all: 520 } }
+    ];
+
+    const PERIOD_TEXT = { week: "cette semaine", month: "ce mois", all: "au total" };
+    const PAGE_SIZE = 8;
+    let period = "week", sortMode = "pop", visible = PAGE_SIZE;
+    const grid = document.getElementById("grid");
+    const moreBtn = document.getElementById("moreBtn");
+    const count = document.getElementById("count");
+    const cartCount = document.getElementById("cartCount");
+    const fmt = n => n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
+
+    function getList() {
+      // Le classement (#1, #2...) suit toujours la popularité de la période choisie
+      const ranked = [...products].sort((a, b) => b.sold[period] - a.sold[period]).map((p, i) => ({ ...p, rank: i + 1 }));
+      if (sortMode === "asc")  return [...ranked].sort((a, b) => a.price - b.price);
+      if (sortMode === "desc") return [...ranked].sort((a, b) => b.price - a.price);
+      return ranked;
+    }
+
+    function render() {
+      const list = getList();
+      grid.innerHTML = list.slice(0, visible).map(p => `
+        <article class="card">
+          <div class="thumb">
+            <span class="rank ${p.rank <= 3 ? "top" : ""}">#${p.rank}</span>
+            <img src="${u(p.img)}" alt="${p.name}" loading="lazy">
+            <span class="hot"><svg viewBox="0 0 24 24"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2 1-3 1-3s1 1.5 2 1.5C10 8 12 2 12 2z"/></svg>${p.sold[period].toLocaleString("fr-FR")} vendus ${PERIOD_TEXT[period]}</span>
+          </div>
+          <div class="price-row">
+            <span class="price">${fmt(p.price)}</span>
+            <button class="fav" aria-label="Ajouter aux favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></button>
+          </div>
+          <p class="name">${p.name}</p>
+          <button class="add"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.5 12h11L21 7H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>Ajouter au panier</button>
+        </article>`).join("");
+      count.textContent = `${list.length} articles`;
+      moreBtn.hidden = visible >= list.length;
+    }
+
+    document.getElementById("filters").addEventListener("click", e => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      period = chip.dataset.period;
+      visible = PAGE_SIZE;
+      render();
+    });
+    document.getElementById("sort").addEventListener("change", e => { sortMode = e.target.value; render(); });
+    moreBtn.addEventListener("click", () => { visible += PAGE_SIZE; render(); });
+
+    grid.addEventListener("click", e => {
+      const fav = e.target.closest(".fav");
+      if (fav) fav.classList.toggle("on");
+      const add = e.target.closest(".add");
+      if (add) {
+        cartCount.textContent = Number(cartCount.textContent) + 1;
+        add.classList.add("added");
+        setTimeout(() => add.classList.remove("added"), 600);
+      }
+    });
+    render();
+
+    // ---------- LIEN DE LA PAGE ACTUELLE ----------
+    (function () {
+      const page = location.pathname.split("/").pop() || "index.html";
+      document.querySelectorAll(".nav-desktop a, .nav-mobile a").forEach(a => {
+        if (a.getAttribute("href") === page) a.classList.add("current");
+      });
+    })();
+  </script>
+  <!-- ================= DÉBUT FOOTER NUMA ================= -->
+<style>
+  /* CSS scopé uniquement pour le footer */
+  .numa-footer {
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a0a0a;
+    color: #fff;
+    margin-top: 60px; /* Espace avant le footer */
+    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+  }
+  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  
+  .numa-footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+  
+  /* Grille principale */
+  .numa-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+  }
+
+  /* Colonne Marque */
+  .numa-footer-brand .numa-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .numa-footer-brand p {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+  .numa-footer-contact {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+
+  /* Titres colonnes */
+  .numa-footer-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  /* Liens */
+  .numa-footer-col ul { list-style: none; }
+  .numa-footer-col ul li { margin-bottom: 12px; }
+  .numa-footer-col ul li a {
+    font-size: 13.5px;
+    color: #9ca3af;
+  }
+  .numa-footer-col ul li a:hover { color: #fff; }
+
+  /* Réseaux sociaux */
+  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .numa-socials a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    display: grid; place-items: center;
+    color: #d1d5db;
+  }
+  .numa-socials a:hover { background: #e11d48; color: #fff; }
+  .numa-socials svg { width: 18px; height: 18px; }
+
+  /* Barre du bas */
+  .numa-footer-bottom {
+    border-top: 1px solid #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .numa-footer-bottom-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-bottom-inner { flex-direction: row; }
+    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+  }
+  
+  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .numa-payments span {
+    background: #1f1f1f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+</style>
+
+<footer class="numa-footer">
+  <div class="numa-footer-inner">
+    <div class="numa-footer-grid">
+      
+      <!-- Colonne 1 : Marque & Contact -->
+      <div class="numa-footer-brand">
+        <a href="index.html" class="numa-logo">NUMA.</a>
+        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+        
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Petit Mbao, Dakar, Sénégal
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          +221 76 658 95 98
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          service.numa.com@gmail.com
+        </div>
+
+        <div class="numa-socials">
+          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Colonne 2 : Boutique -->
+      <div class="numa-footer-col">
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="nouveautes.html">Nouveautés</a></li>
+          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
+          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
+          <li><a href="promotions.html">Promotions</a></li>
+          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 3 : Aide -->
+      <div class="numa-footer-col">
+        <h4>Aide & Services</h4>
+        <ul>
+          <li><a href="contact.html">Nous contacter</a></li>
+          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
+          <li><a href="compte.html">Mon compte</a></li>
+          <li><a href="favoris.html">Mes favoris</a></li>
+          <li><a href="a-propos.html">À propos de NUMA</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 4 : Légal -->
+      <div class="numa-footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre inférieure -->
+  <div class="numa-footer-bottom">
+    <div class="numa-footer-bottom-inner">
+      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+      
+      <div class="numa-payments">
+        <span>Wave</span>
+        <span>Orange Money</span>
+        <span>Free Money</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Script ultra-léger pour l'année automatique
+  document.getElementById('numaYear').textContent = new Date().getFullYear();
+</script>
+<!-- ================= FIN FOOTER NUMA ================= -->
+</body>
+</html>

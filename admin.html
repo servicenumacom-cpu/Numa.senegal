@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin commandes – NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --orange: #b7791f; --blue: #2563eb; --wa: #25d366; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fafafa; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    .top { position: sticky; top: 0; z-index: 20; background: var(--black); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .top h1 { font-size: 16px; font-weight: 800; letter-spacing: .08em; }
+    .top small { font-size: 12px; color: #aaa; font-weight: 600; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex-shrink: 0; padding: 10px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .tab.on { background: var(--black); color: #fff; border-color: var(--black); }
+    .tab b { margin-left: 6px; font-weight: 800; }
+    .tab.alert b { color: var(--red); }
+    .tab.on.alert b { color: #fff; }
+
+    .list { display: flex; flex-direction: column; gap: 14px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    .card.todo { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(183,121,31,.12); }
+    .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .num { font-size: 14px; font-weight: 800; }
+    .date { font-size: 12px; color: #888; margin-top: 2px; }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { font-size: 11px; font-weight: 800; padding: 5px 9px; border-radius: 6px; text-transform: uppercase; letter-spacing: .03em; background: var(--gray); color: #555; }
+    .badge.pay-no { background: #fde8ed; color: var(--red); }
+    .badge.pay-ok { background: #e7f6ec; color: var(--green); }
+    .badge.st-prep { background: #fff4de; color: var(--orange); }
+    .badge.st-liv { background: #e5eeff; color: var(--blue); }
+    .badge.st-done { background: #e7f6ec; color: var(--green); }
+    .badge.st-cancel { background: #eee; color: #888; text-decoration: line-through; }
+
+    .client { font-size: 14px; line-height: 1.6; margin-bottom: 12px; }
+    .client b { font-weight: 700; }
+    .client a.lnk { text-decoration: underline; text-underline-offset: 3px; }
+
+    .items { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .it { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+    .it img { width: 44px; aspect-ratio: 3/4; object-fit: cover; border-radius: 6px; background: var(--gray); }
+    .it .t { font-weight: 600; line-height: 1.25; }
+    .it .s { color: #777; font-size: 12px; margin-top: 2px; }
+    .it .p { font-weight: 800; white-space: nowrap; }
+    .total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+    .total span:last-child { color: var(--red); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: 1.5px solid var(--black); background: #fff; }
+    .btn.main { background: var(--black); color: #fff; }
+    .btn.ok { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn.wa { background: var(--wa); border-color: var(--wa); color: #fff; }
+    .btn.danger { border-color: var(--red); color: var(--red); }
+    .btn:disabled { opacity: .5; cursor: wait; }
+    .hint { font-size: 12px; color: #777; margin: 0 0 10px; line-height: 1.5; }
+
+    .empty, .denied { text-align: center; padding: 60px 16px; color: #777; font-size: 14px; font-weight: 600; }
+    .denied h2 { color: var(--red); font-size: 20px; margin-bottom: 8px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--black); color: #fff; padding: 13px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; max-width: calc(100vw - 32px); opacity: 0; pointer-events: none; transition: .25s; z-index: 50; text-align: center; line-height: 1.4; }
+    .toast.bad { background: var(--red); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <h1>NUMA · ADMIN</h1>
+    <small id="who">Connexion...</small>
+  </div>
+
+  <div class="wrap" id="app" style="display:none">
+    <div class="tabs" id="tabs"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="denied" id="denied" style="display:none">
+    <h2>Accès refusé</h2>
+    <p>Ce compte n'est pas autorisé.<br>Connecte-toi avec le compte vendeur.</p>
+    <p style="margin-top:18px"><a href="authentification.html" class="btn main" style="display:inline-block">Se connecter</a></p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2";
+
+    const firebaseConfig = { apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI", authDomain: "numa-com.firebaseapp.com", projectId: "numa-com", storageBucket: "numa-com.firebasestorage.app", messagingSenderId: "953579157946", appId: "1:953579157946:web:4fff5a890cf82f1ccec583" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/ | /g, ".") + " CFA";
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    let orders = [];
+    let filter = "todo";
+    let busy = false;
+
+    // ---------- Toast ----------
+    let tt;
+    function toast(text, bad) {
+      const t = $("toast");
+      t.textContent = text;
+      t.className = "toast show" + (bad ? " bad" : "");
+      clearTimeout(tt);
+      tt = setTimeout(() => t.classList.remove("show"), bad ? 6000 : 2500);
+    }
+
+    // ---------- Connexion / accès ----------
+    onAuthStateChanged(auth, user => {
+      if (!user) { window.location.href = "authentification.html"; return; }
+      if (user.uid !== ADMIN_UID) {
+        $("who").textContent = "Non autorisé";
+        $("denied").style.display = "block";
+        return;
+      }
+      $("who").textContent = user.displayName || user.email || "Vendeur";
+      $("app").style.display = "block";
+      listen();
+    });
+
+    function listen() {
+      const q = query(collection(db, "commandes"), orderBy("createdAt", "desc"));
+      onSnapshot(q, snap => {
+        orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+      }, err => {
+        console.error(err);
+        toast("Lecture impossible : " + err.message, true);
+      });
+    }
+
+    // ---------- Filtres ----------
+    const isTodo = o => o.paiement !== "paye" && o.statut === "en_attente";
+    const isCancel = o => o.statut === "annulee";
+    const isDone = o => o.statut === "livree";
+    const isRunning = o => !isTodo(o) && !isCancel(o) && !isDone(o);
+    const FILTERS = [
+      { k: "todo", label: "À confirmer", f: isTodo, alert: true },
+      { k: "run", label: "En cours", f: isRunning },
+      { k: "done", label: "Livrées", f: isDone },
+      { k: "cancel", label: "Annulées", f: isCancel },
+      { k: "all", label: "Toutes", f: () => true }
+    ];
+
+    // ---------- Affichage ----------
+    const STATUT_LABEL = { en_attente: "En attente", confirmee: "Confirmée", en_preparation: "En préparation", en_livraison: "En livraison", livree: "Livrée", annulee: "Annulée" };
+    const STATUT_CLASS = { en_preparation: "st-prep", confirmee: "st-prep", en_livraison: "st-liv", livree: "st-done", annulee: "st-cancel" };
+    const NEXT = { confirmee: ["en_preparation", "Passer en préparation"], en_preparation: ["en_livraison", "Passer en livraison"], en_livraison: ["livree", "Marquer livrée"] };
+
+    function phoneIntl(tel) {
+      const d = String(tel || "").replace(/\D/g, "");
+      return d.startsWith("221") ? d : "221" + d;
+    }
+    function waMessage(o) {
+      const n = o.numero;
+      const m = {
+        en_attente: `Bonjour ${o.clientNom}, nous avons bien reçu votre commande ${n}. Nous vérifions votre paiement Wave.`,
+        confirmee: `Bonjour ${o.clientNom}, votre paiement est confirmé pour la commande ${n}. Merci !`,
+        en_preparation: `Bonjour ${o.clientNom}, votre commande ${n} est en préparation.`,
+        en_livraison: `Bonjour ${o.clientNom}, votre commande ${n} est en route. Gardez votre téléphone près de vous.`,
+        livree: `Bonjour ${o.clientNom}, votre commande ${n} est livrée. Merci de votre confiance, à bientôt chez NUMA !`,
+        annulee: `Bonjour ${o.clientNom}, votre commande ${n} a été annulée. Contactez-nous si besoin.`
+      };
+      return m[o.statut] || m.en_attente;
+    }
+
+    function render() {
+      $("tabs").innerHTML = FILTERS.map(t => {
+        const c = orders.filter(t.f).length;
+        return `<button class="tab ${filter === t.k ? "on" : ""} ${t.alert && c ? "alert" : ""}" data-tab="${t.k}">${t.label}<b>${c}</b></button>`;
+      }).join("");
+
+      const f = FILTERS.find(t => t.k === filter).f;
+      const list = orders.filter(f);
+      if (!list.length) { $("list").innerHTML = `<div class="empty">Aucune commande ici.</div>`; return; }
+
+      $("list").innerHTML = list.map(o => {
+        const date = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "à l'instant";
+        const payBadge = o.paiement === "paye" ? `<span class="badge pay-ok">Payé</span>` : `<span class="badge pay-no">Non payé</span>`;
+        const stBadge = `<span class="badge ${STATUT_CLASS[o.statut] || ""}">${STATUT_LABEL[o.statut] || esc(o.statut)}</span>`;
+        const maps = o.position && o.position.mapsUrl ? ` · <a class="lnk" href="${esc(o.position.mapsUrl)}" target="_blank" rel="noopener">Voir sur la carte</a>` : "";
+        const items = (o.articles || []).map(a => `
+          <div class="it">
+            <img src="${esc(a.imageUrl || "")}" alt="">
+            <div><p class="t">${esc(a.titre)}</p><p class="s">Taille ${esc(a.taille)} · Qté ${esc(a.quantite)} × ${fmt(a.prix)}</p></div>
+            <span class="p">${fmt(a.prix * a.quantite)}</span>
+          </div>`).join("");
+
+        let actions = "";
+        if (o.statut === "annulee") {
+          // rien
+        } else if (o.paiement !== "paye") {
+          actions += `<p class="hint">Vérifie dans ton application Wave que tu as reçu <b>${fmt(o.total)}</b> (référence ${esc(o.numero)}), puis confirme. Le stock baissera automatiquement.</p>`;
+          actions += `<button class="btn ok" data-act="pay" data-id="${o.id}">Confirmer le paiement</button>`;
+        } else if (NEXT[o.statut]) {
+          actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
+        }
+        actions += `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${phoneIntl(o.telephone)}?text=${encodeURIComponent(waMessage(o))}">Écrire au client</a>`;
+        if (o.statut !== "annulee" && o.statut !== "livree") {
+          actions += `<button class="btn danger" data-act="cancel" data-id="${o.id}">Annuler</button>`;
+        }
+
+        return `
+        <article class="card ${isTodo(o) ? "todo" : ""}">
+          <div class="head">
+            <div><p class="num">${esc(o.numero)}</p><p class="date">${date}</p></div>
+            <div class="badges">${payBadge}${stBadge}</div>
+          </div>
+          <div class="client">
+            <b>${esc(o.clientNom)}</b> · <a class="lnk" href="tel:+${phoneIntl(o.telephone)}">${esc(o.telephone)}</a><br>
+            ${esc(o.adresseTexte || "Adresse non précisée")}${maps}
+          </div>
+          <div class="items">${items}</div>
+          <div class="total"><span>Total (livraison gratuite)</span><span>${fmt(o.total)}</span></div>
+          <div class="actions">${actions}</div>
+        </article>`;
+      }).join("");
+    }
+
+    // ---------- Clics ----------
+    $("tabs").addEventListener("click", e => {
+      const b = e.target.closest("[data-tab]"); if (!b) return;
+      filter = b.dataset.tab; render();
+    });
+
+    $("list").addEventListener("click", async e => {
+      const b = e.target.closest("[data-act]"); if (!b || busy) return;
+      const id = b.dataset.id, act = b.dataset.act;
+      if (act === "cancel" && !confirm("Annuler cette commande ? Le stock sera remis si le paiement avait été confirmé.")) return;
+      busy = true; b.disabled = true;
+      try {
+        if (act === "pay") { await confirmerPaiement(id); toast("Paiement confirmé, stock mis à jour ✓"); }
+        if (act === "next") { await setStatut(id, b.dataset.st); toast("Statut mis à jour ✓"); }
+        if (act === "cancel") { await annuler(id); toast("Commande annulée"); }
+      } catch (err) {
+        console.error(err);
+        toast(err.message || "Erreur", true);
+      } finally { busy = false; render(); }
+    });
+
+    // ---------- Actions Firestore ----------
+    function findKey(stock, taille) {
+      return Object.keys(stock).find(x => x.trim().toUpperCase() === String(taille).toUpperCase());
+    }
+    function besoins(c) {
+      const need = {};
+      for (const a of (c.articles || [])) {
+        need[a.produitId] = need[a.produitId] || {};
+        need[a.produitId][a.taille] = (need[a.produitId][a.taille] || 0) + Number(a.quantite || 0);
+      }
+      return need;
+    }
+
+    // Confirme le paiement ET baisse le stock, en une seule opération (tout ou rien)
+    async function confirmerPaiement(id) {
+      const cref = doc(db, "commandes", id);
+      await runTransaction(db, async tx => {
+        const cs = await tx.get(cref);
+        if (!cs.exists()) throw new Error("Commande introuvable.");
+        const c = cs.data();
+        if (c.paiement === "paye") throw new Error("Cette commande est déjà confirmée.");
+        if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
+
+        const need = besoins(c);
+        const pids = Object.keys(need);
+        const snaps = await Promise.all(pids.map(pid => tx.get(doc(db, "produits", pid))));
+
+        // 1) Vérifie le total avec les vrais prix du catalogue
+        let attendu = 0;
+        for (const a of c.articles) {
+          const ps = snaps[pids.indexOf(a.produitId)];
+          if (!ps.exists()) throw new Error(`Produit introuvable : ${a.titre}`);
+          attendu += (Number(ps.data().prix) || 0) * Number(a.quantite);
+        }
+        if (Math.round(attendu) !== Math.round(Number(c.total))) {
+          throw new Error(`ALERTE : total de la commande ${fmt(c.total)} différent du catalogue ${fmt(attendu)}. Ne confirme pas, contacte le client ou annule.`);
+        }
+
+        // 2) Vérifie et prépare la baisse de stock
+        const updates = [];
+        snaps.forEach((ps, i) => {
+          const st = ps.data().stock || {};
+          const upd = {};
+          for (const [taille, qte] of Object.entries(need[pids[i]])) {
+            const k = findKey(st, taille);
+            if (k === undefined) continue; // taille unique : pas de stock par taille
+            const dispo = Number(st[k]) || 0;
+            if (dispo < qte) throw new Error(`Stock insuffisant : ${ps.data().titre} (${taille}) : ${dispo} restant, ${qte} demandé.`);
+            upd["stock." + k] = dispo - qte;
+          }
+          if (Object.keys(upd).length) updates.push([ps.ref, upd]);
+        });
+
+        // 3) Écritures
+        updates.forEach(([ref, upd]) => tx.update(ref, upd));
+        tx.update(cref, { paiement: "paye", statut: "confirmee", stockDecremente: true, confirmeLe: serverTimestamp(), miseAJourLe: serverTimestamp() });
+      });
+    }
+
+    async function setStatut(id, statut) {
+      await updateDoc(doc(db, "commandes", id), { statut, miseAJourLe: serverTimestamp() });
+    }
+
+    // Annule ; remet le stock si on l'avait déjà baissé
+    async function annuler(id) {
+      const cref = doc(db, "commandes", id);
+      await runTransaction(db, async tx => {
+        const cs = await tx.get(cref);
+        if (!cs.exists()) throw new Error("Commande introuvable.");
+        const c = cs.data();
+        if (c.statut === "annulee") return;
+        const updates = [];
+        if (c.stockDecremente) {
+          const need = besoins(c);
+          const pids = Object.keys(need);
+          const snaps = await Promise.all(pids.map(pid => tx.get(doc(db, "produits", pid))));
+          snaps.forEach((ps, i) => {
+            if (!ps.exists()) return;
+            const st = ps.data().stock || {};
+            const upd = {};
+            for (const [taille, qte] of Object.entries(need[pids[i]])) {
+              const k = findKey(st, taille);
+              if (k === undefined) continue;
+              upd["stock." + k] = (Number(st[k]) || 0) + qte;
+            }
+            if (Object.keys(upd).length) updates.push([ps.ref, upd]);
+          });
+        }
+        updates.forEach(([ref, upd]) => tx.update(ref, upd));
+        tx.update(cref, { statut: "annulee", stockDecremente: false, miseAJourLe: serverTimestamp() });
+      });
+    }
+  </script>
+</body>
+</html>

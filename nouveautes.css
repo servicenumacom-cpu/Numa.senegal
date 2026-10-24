@@ -1,0 +1,47 @@
+/* Lien actif dans le menu */
+.nav-desktop a.current,
+.nav-mobile a.current { font-weight: 800; }
+.nav-desktop a.current::after { width: 100%; }
+.nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
+
+/* En-tête de la page */
+.page-head { background: var(--gray); }
+.page-head-inner { max-width: var(--max); margin: 0 auto; padding: 28px 16px; }
+.crumbs { font-size: 13px; color: #666; margin-bottom: 10px; }
+.crumbs a:hover { text-decoration: underline; }
+.page-head h1 { font-size: 30px; font-weight: 800; letter-spacing: .5px; }
+.sub { margin-top: 6px; font-size: 14px; color: #555; }
+
+/* Filtres + tri */
+.toolbar { display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; padding: 9px 18px; border: 1.5px solid var(--black);
+  border-radius: 999px; font-size: 14px; font-weight: 600; transition: .2s;
+}
+.chip:hover { background: var(--gray); }
+.chip.active { background: var(--black); color: #fff; }
+
+.sort { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.sort select {
+  border: 1.5px solid var(--black); border-radius: 8px; padding: 8px 12px;
+  font: inherit; font-weight: 600; background: #fff; cursor: pointer;
+}
+
+/* Badge "Nouveau" sur les cartes */
+.tag-new {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  background: var(--black); color: #fff; font-size: 11px; font-weight: 700;
+  padding: 5px 10px; border-radius: 4px; letter-spacing: .5px;
+}
+
+.empty { text-align: center; padding: 40px 0; color: #666; }
+.add.added { color: #16a34a; font-weight: 700; }
+
+@media (min-width: 1024px) {
+  .page-head-inner { padding: 44px 40px; }
+  .page-head h1 { font-size: 44px; }
+  .toolbar { flex-direction: row; justify-content: space-between; align-items: center; }
+  .sort { gap: 18px; justify-content: flex-end; }
+}

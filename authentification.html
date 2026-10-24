@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion / Inscription – NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --wa: #25d366; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* HEADER */
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions button, .actions a { position: relative; width: 30px; height: 30px; display: block; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .nav-desktop { display: none; }
+    .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+    .nav-desktop a.current, .nav-mobile a.current { font-weight: 800; }
+    .nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
+
+    /* PAGE AUTH */
+    .page { max-width: var(--max); margin: 0 auto; padding: 24px 16px 40px; }
+    .auth-wrap { display: grid; grid-template-columns: 1fr; gap: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; }
+    .auth-visual { display: none; position: relative; background: linear-gradient(135deg, #0a0a0a 0%, #1e1e1e 55%, #2b2b2b 100%); color: #fff; padding: 48px 40px; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .auth-visual::before { content: ""; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.14), transparent 70%); }
+    .visual-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #cfcfcf; }
+    .visual-tag span { width: 6px; height: 6px; border-radius: 50%; background: var(--wa); }
+    .visual-title { font-size: 34px; font-weight: 800; line-height: 1.15; margin-top: 20px; position: relative; z-index: 1; }
+    .visual-title em { font-style: normal; color: #a8a8a8; }
+    .visual-list { list-style: none; margin-top: 32px; display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
+    .visual-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #e6e6e6; line-height: 1.45; }
+    .visual-list svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--wa); margin-top: 1px; }
+    .visual-foot { font-size: 12px; color: #9a9a9a; position: relative; z-index: 1; }
+
+    .auth-form { padding: 30px 22px 34px; display: flex; flex-direction: column; }
+    .auth-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .auth-sub { font-size: 13.5px; color: #777; line-height: 1.5; margin-bottom: 22px; }
+
+    .social-block { display: flex; flex-direction: column; gap: 10px; }
+    .social-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 11px; padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; font-size: 14.5px; font-weight: 700; transition: .2s; }
+    .social-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .social-btn:hover { border-color: #c9c9c9; background: #fafafa; }
+    .social-note { font-size: 11.5px; color: #8a8a8a; text-align: center; margin-top: 2px; line-height: 1.4; }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 20px; font-size: 11.5px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+    .tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--gray); border-radius: 10px; padding: 4px; margin-bottom: 22px; }
+    .tabs button { position: relative; z-index: 1; padding: 11px 8px; font-size: 13.5px; font-weight: 700; color: #777; border-radius: 7px; transition: color .2s; }
+    .tabs button.active { color: var(--black); }
+    .tabs .slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: #fff; border-radius: 7px; box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: transform .28s cubic-bezier(.4,0,.2,1); }
+    .tabs[data-tab="signup"] .slider { transform: translateX(100%); }
+
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap svg { position: absolute; left: 12px; width: 18px; height: 18px; color: #999; pointer-events: none; }
+    .input-wrap input { width: 100%; padding: 13px 12px 13px 40px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; transition: .15s; }
+    .input-wrap input:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(10,10,10,.06); }
+    .input-wrap input.err { border-color: var(--red); }
+    .input-wrap.has-toggle input { padding-right: 44px; }
+    .input-wrap .toggle { position: absolute; right: 10px; width: 30px; height: 30px; display: grid; place-items: center; color: #777; border-radius: 6px; }
+    .input-wrap .toggle:hover { background: var(--gray); }
+
+    .field-err { display: none; font-size: 11.5px; font-weight: 600; color: var(--red); margin-top: 6px; }
+    .field.has-err .field-err { display: block; }
+
+    .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #555; cursor: pointer; }
+    .check input { width: 16px; height: 16px; accent-color: var(--black); cursor: pointer; flex-shrink: 0; }
+    .link-sm { font-size: 12.5px; font-weight: 600; color: #333; text-decoration: underline; text-underline-offset: 3px; }
+
+    .btn-primary { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 15px; border-radius: 8px; background: var(--black); color: #fff; font-size: 15px; font-weight: 700; transition: .2s; }
+    .btn-primary:hover { opacity: .87; }
+    .btn-primary:disabled { background: #bbb; cursor: not-allowed; }
+    .btn-primary svg { width: 18px; height: 18px; }
+
+    .msg { font-size: 13px; font-weight: 600; min-height: 1.2em; margin: 10px 0 4px; text-align: center; }
+    .msg.bad { color: var(--red); }
+    .msg.ok { color: var(--green); }
+
+    .switch-line { text-align: center; font-size: 13px; color: #666; margin-top: 16px; }
+    .switch-line button { font-weight: 700; color: var(--black); text-decoration: underline; text-underline-offset: 3px; }
+
+    .signup-only { display: none; }
+    .auth-form[data-mode="signup"] .signup-only { display: block; }
+    .auth-form[data-mode="signup"] .login-only { display: none; }
+
+    .success-box { display: none; text-align: center; padding: 20px 4px 8px; }
+    .success-box.show { display: block; }
+    .success-box .circle { width: 64px; height: 64px; border-radius: 50%; background: rgba(22,163,74,.1); display: grid; place-items: center; margin: 0 auto 16px; color: var(--green); }
+    .success-box .circle svg { width: 30px; height: 30px; stroke-width: 2.2; }
+    .success-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .success-box p { font-size: 13.5px; color: #666; line-height: 1.5; margin-bottom: 18px; }
+
+    .toast { position: fixed; left: 50%; bottom: 96px; z-index: 100; transform: translate(-50%, 16px); background: var(--black); color: #fff; padding: 12px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: .25s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
+    .tabbar svg { width: 26px; height: 26px; }
+    .tabbar a.current { font-weight: 800; }
+    .tabbar a.current::before { content: ""; position: absolute; top: -8px; width: 22px; height: 3px; border-radius: 2px; background: var(--black); }
+
+    @media (min-width: 640px) { .auth-form { padding: 40px 40px 44px; } .auth-title { font-size: 26px; } }
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar, .nav-mobile { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .nav-desktop a { position: relative; padding: 6px 0; }
+      .nav-desktop a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--black); transition: width .25s; }
+      .nav-desktop a:hover::after, .nav-desktop a.current::after { width: 100%; }
+      .page { padding: 48px 40px 80px; }
+      .auth-wrap { grid-template-columns: 1.05fr 1fr; max-width: 1040px; margin: 0 auto; box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+      .auth-visual { display: flex; min-height: 660px; }
+      .auth-form { padding: 48px 44px; }
+      .toast { bottom: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand" aria-label="NUMA accueil">
+        <img src="image/logo.jpeg" alt="" class="brand-icon">
+        <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+          <g fill="none" stroke="currentColor" stroke-width="11">
+            <path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+          </g>
+        </svg>
+      </a>
+
+      <nav class="nav-desktop" aria-label="Navigation principale">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html?sexe=homme">Homme</a>
+        <a href="categories.html?sexe=femme">Femme</a>
+        <a href="promotions.html">Promotions</a>
+      </nav>
+
+      <div class="actions">
+        <button aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+        <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+        <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+        <a href="authentification.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      </div>
+    </div>
+
+    <nav class="nav-mobile" aria-label="Navigation mobile">
+      <a href="nouveautes.html">NOUVEAUTÉS</a><span>|</span>
+      <a href="categories.html?sexe=homme">HOMME</a><span>|</span>
+      <a href="categories.html?sexe=femme">FEMME</a><span>|</span>
+      <a href="promotions.html">PROMOTIONS</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <div class="auth-wrap">
+      <aside class="auth-visual">
+        <div>
+          <span class="visual-tag"><span></span> NUMA — Sape & élégance</span>
+          <h2 class="visual-title">Votre style.<br><em>Votre compte.</em></h2>
+          <ul class="visual-list">
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Suivez vos commandes et vos livraisons en un clin d'œil.</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Retrouvez vos favoris sur tous vos appareils.</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Accédez en priorité aux nouveautés et exclusivités.</li>
+          </ul>
+        </div>
+        <p class="visual-foot">© NUMA — Tous droits réservés</p>
+      </aside>
+
+      <section class="auth-form" id="authForm" data-mode="login">
+        
+        <div class="success-box" id="successBox">
+          <div class="circle"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h3 id="successTitle">Bienvenue !</h3>
+          <p id="successMsg">Votre compte est prêt.</p>
+          <a href="index.html" class="btn-primary" style="text-decoration:none">Continuer mes achats</a>
+        </div>
+
+        <div id="mainBox">
+          <h1 class="auth-title" id="formTitle">Bon retour !</h1>
+          <p class="auth-sub" id="formSub">Connectez-vous avec Google ou votre adresse e-mail.</p>
+
+          <div class="social-block">
+            <button type="button" class="social-btn google" id="googleBtn">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.5a4.7 4.7 0 0 1-2 3.1v2.6h3.3c1.9-1.8 3-4.4 3-7.6z" fill="#4285F4" stroke="none"/>
+                <path d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.6c-.9.6-2 1-3.4 1a6 6 0 0 1-5.6-4.1H3v2.6A10 10 0 0 0 12 22z" fill="#34A853" stroke="none"/>
+                <path d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3a10 10 0 0 0 0 9l3.4-2.6z" fill="#FBBC05" stroke="none"/>
+                <path d="M12 5.9c1.5 0 2.8.5 3.9 1.5l2.9-2.9A10 10 0 0 0 3 7.5l3.4 2.6A6 6 0 0 1 12 5.9z" fill="#EA4335" stroke="none"/>
+              </svg>
+              Continuer avec Google
+            </button>
+            <p class="social-note">Connexion rapide et sécurisée.</p>
+          </div>
+
+          <div class="divider">ou par e-mail</div>
+
+          <div class="tabs" id="tabs" data-tab="login" role="tablist">
+            <span class="slider"></span>
+            <button type="button" class="active" data-tab-btn="login" role="tab" aria-selected="true">Connexion</button>
+            <button type="button" data-tab-btn="signup" role="tab" aria-selected="false">Inscription</button>
+          </div>
+
+          <form id="auth" novalidate>
+            
+            <div class="field signup-only" id="fieldName">
+              <label for="name">Nom complet *</label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+                <input id="name" type="text" placeholder="Ex : Awa Diop" autocomplete="name">
+              </div>
+              <p class="field-err">Indiquez votre nom complet.</p>
+            </div>
+
+            <div class="field" id="fieldEmail">
+              <label for="email">Adresse e-mail *</label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                <input id="email" type="email" placeholder="vous@exemple.com" autocomplete="email">
+              </div>
+              <p class="field-err">Entrez une adresse e-mail valide.</p>
+            </div>
+
+            <div class="field" id="fieldPwd">
+              <label for="pwd">Mot de passe *</label>
+              <div class="input-wrap has-toggle">
+                <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                <input id="pwd" type="password" placeholder="••••••••" autocomplete="current-password">
+                <button type="button" class="toggle" id="togglePwd" aria-label="Afficher le mot de passe">
+                  <svg viewBox="0 0 24 24" style="position:static;width:20px;height:20px;color:inherit"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <p class="field-err">Mot de passe trop court (6 caractères min.).</p>
+            </div>
+
+            <div class="field signup-only" id="fieldConfirm">
+              <label for="confirm">Confirmer le mot de passe *</label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><path d="M9 16l2 2 4-4"/></svg>
+                <input id="confirm" type="password" placeholder="••••••••" autocomplete="new-password">
+              </div>
+              <p class="field-err">Les mots de passe ne correspondent pas.</p>
+            </div>
+
+            <div class="row-between login-only">
+              <label class="check">
+                <input type="checkbox" id="remember">
+                Se souvenir de moi
+              </label>
+              <a href="#" class="link-sm" id="forgotLink">Mot de passe oublié ?</a>
+            </div>
+
+            <p class="msg" id="msg"></p>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+              <span id="submitLabel">Se connecter</span>
+              <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </form>
+
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="tabbar" aria-label="Navigation du bas">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+    <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+    <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="authentification.html" class="current"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    // ================================================================
+    // 1. IMPORTS FIREBASE
+    // ================================================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      GoogleAuthProvider, 
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    // ⬇️ NOUVEAU : imports Firestore pour la synchro favoris
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ================================================================
+    // 2. CONFIGURATION FIREBASE
+    // ================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
+      authDomain: "numa-com.firebaseapp.com",
+      projectId: "numa-com",
+      storageBucket: "numa-com.firebasestorage.app",
+      messagingSenderId: "953579157946",
+      appId: "1:953579157946:web:4fff5a890cf82f1ccec583",
+      measurementId: "G-BHR7THHKXG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);          // ⬅️ NOUVEAU
+    const USER_KEY = "numa_user";
+    const FAV_KEY  = "numa_favs";          // ⬅️ NOUVEAU
+    const $ = id => document.getElementById(id);
+
+    // ================================================================
+    // 3. UTILITAIRES
+    // ================================================================
+    let toastTimer;
+    function toast(text, bad) {
+      const t = $("toast");
+      t.textContent = text;
+      t.style.background = bad ? "var(--red)" : "var(--black)";
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    function saveUser(user) {
+      const userData = {
+        name: user.displayName || "Client NUMA",
+        email: user.email || "",
+        phone: user.phoneNumber || "",
+        uid: user.uid
+      };
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      return userData;
+    }
+
+    function showSuccess(title, text) {
+      $("successTitle").textContent = title;
+      $("successMsg").textContent = text;
+      $("mainBox").style.display = "none";
+      $("successBox").classList.add("show");
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".field").forEach(f => f.classList.remove("has-err"));
+      document.querySelectorAll(".input-wrap input").forEach(i => i.classList.remove("err"));
+    }
+
+    function setErr(fieldId) {
+      const f = $(fieldId);
+      if (!f) return;
+      f.classList.add("has-err");
+      const inp = f.querySelector("input");
+      if (inp) inp.classList.add("err");
+    }
+
+    function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+
+    // ================================================================
+    // 4. ⬇️ NOUVEAU : SYNCHRONISATION DES FAVORIS APRÈS CONNEXION
+    // ----------------------------------------------------------------
+    // Fusionne les favoris Firestore + localStorage, écrit le résultat
+    // des deux côtés. Timeout 3s pour ne jamais bloquer la connexion.
+    // ================================================================
+    async function syncFavsOnLogin(user) {
+      if (!user) return;
+      try {
+        const ref = doc(db, "utilisateurs", user.uid);
+        const snap = await getDoc(ref);
+        const firestoreFavs = snap.exists() ? (snap.data().favoris || []) : [];
+
+        // Lecture des favoris locaux (accepte ancien format {id,...} ou nouveau [ids])
+        let localFavs = [];
+        try {
+          const raw = localStorage.getItem(FAV_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(parsed)) {
+            const seen = new Set();
+            for (const item of parsed) {
+              const id = typeof item === "string" ? item : (item && item.id ? String(item.id) : null);
+              if (id && !seen.has(id)) { seen.add(id); localFavs.push(id); if (localFavs.length >= 200) break; }
+            }
+          }
+        } catch (e) {}
+
+        // Union + dédoublonnage + limite 200
+        const merged = [...new Set([...firestoreFavs.map(String), ...localFavs])].slice(0, 200);
+
+        // Écrit en local ET dans Firestore
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(merged)); } catch (e) {}
+        await setDoc(ref, { favoris: merged }, { merge: true });
+      } catch (e) {
+        console.error("Sync favoris échouée (on garde le local):", e);
+      }
+    }
+
+    // Timeout 3s max : ne bloque jamais la redirection
+    async function syncFavsWithTimeout(user) {
+      try {
+        await Promise.race([
+          syncFavsOnLogin(user),
+          new Promise(resolve => setTimeout(resolve, 3000))
+        ]);
+      } catch (e) {
+        console.warn("Timeout sync favoris:", e);
+      }
+    }
+
+    // ================================================================
+    // 5. GESTION DES ONGLETS
+    // ================================================================
+    const formBox = $("authForm");
+    const tabs = $("tabs");
+
+    function setMode(mode) {
+      formBox.dataset.mode = mode;
+      tabs.dataset.tab = mode;
+      tabs.querySelectorAll("button[data-tab-btn]").forEach(b => {
+        const on = b.dataset.tabBtn === mode;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      
+      if (mode === "signup") {
+        $("formTitle").textContent = "Créer un compte";
+        $("formSub").textContent = "Rejoignez NUMA pour suivre vos commandes.";
+        $("submitLabel").textContent = "Créer mon compte";
+        $("pwd").autocomplete = "new-password";
+      } else {
+        $("formTitle").textContent = "Bon retour !";
+        $("formSub").textContent = "Connectez-vous avec Google ou votre adresse e-mail.";
+        $("submitLabel").textContent = "Se connecter";
+        $("pwd").autocomplete = "current-password";
+      }
+      
+      $("msg").textContent = "";
+      $("msg").className = "msg";
+      clearErrors();
+    }
+
+    tabs.addEventListener("click", e => {
+      const b = e.target.closest("button[data-tab-btn]");
+      if (b) setMode(b.dataset.tabBtn);
+    });
+
+    // ================================================================
+    // 6. CONNEXION GOOGLE + SYNC FAVORIS
+    // ================================================================
+    $("googleBtn").addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const userData = saveUser(user);
+
+        // ⬇️ NOUVEAU : sync favoris AVANT la redirection
+        await syncFavsWithTimeout(user);
+
+        toast("Connexion réussie ✓");
+        showSuccess("Bienvenue " + userData.name.split(" ")[0] + " !", "Vous êtes connecté.");
+        setTimeout(() => { window.location.href = "compte.html"; }, 1500);
+      } catch (error) {
+        console.error("Erreur Google:", error);
+        toast("Erreur de connexion Google", true);
+      }
+    });
+
+    // ================================================================
+    // 7. CONNEXION / INSCRIPTION PAR EMAIL + SYNC FAVORIS
+    // ================================================================
+    $("togglePwd").addEventListener("click", () => {
+      const inp = $("pwd");
+      const show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      $("togglePwd").innerHTML = show
+        ? `<svg viewBox="0 0 24 24" style="position:static;width:20px;height:20px;color:inherit"><path d="M17.9 17.9A10 10 0 0 1 12 19c-6.5 0-10-7-10-7a17.9 17.9 0 0 1 5.1-5.9M9.9 4.2A10 10 0 0 1 12 4c6.5 0 10 7 10 7a17.9 17.9 0 0 1-2.2 3.2"/><path d="M3 3l18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>`
+        : `<svg viewBox="0 0 24 24" style="position:static;width:20px;height:20px;color:inherit"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    });
+
+    $("auth").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mode = formBox.dataset.mode;
+      const msg = $("msg");
+      msg.textContent = "";
+      msg.className = "msg";
+      clearErrors();
+
+      const email = $("email").value.trim().toLowerCase();
+      const pwd = $("pwd").value;
+
+      // --- CONNEXION ---
+      if (mode === "login") {
+        if (!isEmail(email)) { setErr("fieldEmail"); msg.textContent = "Entrez un e-mail valide."; msg.classList.add("bad"); return; }
+        if (pwd.length < 6) { setErr("fieldPwd"); msg.textContent = "Mot de passe trop court."; msg.classList.add("bad"); return; }
+
+        $("submitBtn").disabled = true;
+        $("submitLabel").textContent = "Connexion...";
+
+        try {
+          const result = await signInWithEmailAndPassword(auth, email, pwd);
+          const userData = saveUser(result.user);
+
+          // ⬇️ NOUVEAU : sync favoris AVANT la redirection
+          await syncFavsWithTimeout(result.user);
+
+          toast("Connexion réussie ✓");
+          showSuccess("Bon retour !", "Vous êtes connecté.");
+          setTimeout(() => { window.location.href = "compte.html"; }, 1500);
+        } catch (error) {
+          console.error(error);
+          let m = "Erreur de connexion.";
+          if (error.code === 'auth/user-not-found') m = "Aucun compte trouvé avec cet e-mail.";
+          if (error.code === 'auth/wrong-password') m = "Mot de passe incorrect.";
+          if (error.code === 'auth/invalid-credential') m = "E-mail ou mot de passe incorrect.";
+          msg.textContent = m; msg.classList.add("bad");
+          $("submitBtn").disabled = false;
+          $("submitLabel").textContent = "Se connecter";
+        }
+      }
+
+      // --- INSCRIPTION ---
+      if (mode === "signup") {
+        const name = $("name").value.trim();
+        const confirm = $("confirm").value;
+
+        let firstBad = null;
+        if (!name || name.length < 2) { setErr("fieldName"); firstBad = firstBad || "fieldName"; }
+        if (!isEmail(email)) { setErr("fieldEmail"); firstBad = firstBad || "fieldEmail"; }
+        if (pwd.length < 6) { setErr("fieldPwd"); firstBad = firstBad || "fieldPwd"; }
+        if (pwd !== confirm) { setErr("fieldConfirm"); firstBad = firstBad || "fieldConfirm"; }
+
+        if (firstBad) { msg.textContent = "Vérifiez les champs en rouge."; msg.classList.add("bad"); $(firstBad).scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+
+        $("submitBtn").disabled = true;
+        $("submitLabel").textContent = "Création...";
+
+        try {
+          const result = await createUserWithEmailAndPassword(auth, email, pwd);
+          await updateProfile(result.user, { displayName: name });
+          
+          const userData = saveUser({ ...result.user, displayName: name });
+
+          // ⬇️ NOUVEAU : sync favoris AVANT la redirection
+          await syncFavsWithTimeout(result.user);
+
+          toast("Compte créé ✓");
+          showSuccess("Bienvenue " + name.split(" ")[0] + " !", "Votre compte est créé.");
+          setTimeout(() => { window.location.href = "compte.html"; }, 1500);
+        } catch (error) {
+          console.error(error);
+          let m = "Erreur lors de la création.";
+          if (error.code === 'auth/email-already-in-use') m = "Un compte existe déjà avec cet e-mail.";
+          if (error.code === 'auth/weak-password') m = "Mot de passe trop faible.";
+          msg.textContent = m; msg.classList.add("bad");
+          $("submitBtn").disabled = false;
+          $("submitLabel").textContent = "Créer mon compte";
+        }
+      }
+    });
+
+  $("forgotLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  window.location.href = "mot-de-passe-oublie.html";
+});
+  </script>
+  <!-- ================= DÉBUT FOOTER NUMA ================= -->
+<style>
+  /* CSS scopé uniquement pour le footer */
+  .numa-footer {
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a0a0a;
+    color: #fff;
+    margin-top: 60px; /* Espace avant le footer */
+    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+  }
+  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  
+  .numa-footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+  
+  /* Grille principale */
+  .numa-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+  }
+
+  /* Colonne Marque */
+  .numa-footer-brand .numa-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .numa-footer-brand p {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+  .numa-footer-contact {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+
+  /* Titres colonnes */
+  .numa-footer-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  /* Liens */
+  .numa-footer-col ul { list-style: none; }
+  .numa-footer-col ul li { margin-bottom: 12px; }
+  .numa-footer-col ul li a {
+    font-size: 13.5px;
+    color: #9ca3af;
+  }
+  .numa-footer-col ul li a:hover { color: #fff; }
+
+  /* Réseaux sociaux */
+  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .numa-socials a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    display: grid; place-items: center;
+    color: #d1d5db;
+  }
+  .numa-socials a:hover { background: #e11d48; color: #fff; }
+  .numa-socials svg { width: 18px; height: 18px; }
+
+  /* Barre du bas */
+  .numa-footer-bottom {
+    border-top: 1px solid #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .numa-footer-bottom-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-bottom-inner { flex-direction: row; }
+    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+  }
+  
+  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .numa-payments span {
+    background: #1f1f1f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+</style>
+
+<footer class="numa-footer">
+  <div class="numa-footer-inner">
+    <div class="numa-footer-grid">
+      
+      <!-- Colonne 1 : Marque & Contact -->
+      <div class="numa-footer-brand">
+        <a href="index.html" class="numa-logo">NUMA.</a>
+        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+        
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Petit Mbao, Dakar, Sénégal
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          +221 76 658 95 98
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          service.numa.com@gmail.com
+        </div>
+
+        <div class="numa-socials">
+          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Colonne 2 : Boutique -->
+      <div class="numa-footer-col">
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="nouveautes.html">Nouveautés</a></li>
+          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
+          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
+          <li><a href="promotions.html">Promotions</a></li>
+          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 3 : Aide -->
+      <div class="numa-footer-col">
+        <h4>Aide & Services</h4>
+        <ul>
+          <li><a href="contact.html">Nous contacter</a></li>
+          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
+          <li><a href="compte.html">Mon compte</a></li>
+          <li><a href="favoris.html">Mes favoris</a></li>
+          <li><a href="a-propos.html">À propos de NUMA</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 4 : Légal -->
+      <div class="numa-footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre inférieure -->
+  <div class="numa-footer-bottom">
+    <div class="numa-footer-bottom-inner">
+      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+      
+      <div class="numa-payments">
+        <span>Wave</span>
+        <span>Orange Money</span>
+        <span>Free Money</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Script ultra-léger pour l'année automatique
+  document.getElementById('numaYear').textContent = new Date().getFullYear();
+</script>
+<!-- ================= FIN FOOTER NUMA ================= -->
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon panier – NUMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --wave: #1dc3f1; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* HEADER */
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .actions { display: flex; gap: 18px; }
+    .actions button, .actions a { position: relative; width: 30px; height: 30px; display: block; }
+    .actions svg { width: 28px; height: 28px; }
+    .badge { position: absolute; top: -6px; right: -8px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--black); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .nav-desktop { display: none; }
+    .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+    .nav-desktop a.current, .nav-mobile a.current { font-weight: 800; }
+    .nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
+
+    /* PAGE PANIER */
+    .page { max-width: var(--max); margin: 0 auto; padding: 24px 16px 30px; }
+    .page-title { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+    .page-title h1 { font-size: 22px; font-weight: 800; }
+    .page-title span { font-size: 14px; font-weight: 500; color: #777; }
+    .layout { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+
+    /* BANDES PRODUITS */
+    .bands { display: flex; flex-direction: column; gap: 12px; }
+    .band { position: relative; display: grid; grid-template-columns: 84px 1fr auto 38px; gap: 14px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .band.need { border-color: var(--red); }
+    .band-img { width: 84px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: var(--gray); }
+    .band-info { min-width: 0; }
+    .band-name { font-size: 14px; font-weight: 600; line-height: 1.25; margin-bottom: 4px; }
+    .band-price { font-size: 15px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
+    .sizes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .sizes-label { font-size: 12px; font-weight: 600; color: #666; margin-right: 2px; }
+    .chip { min-width: 38px; height: 32px; padding: 0 10px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 13px; font-weight: 600; }
+    .chip.sel { background: var(--black); color: #fff; border-color: var(--black); }
+    .one-size { font-size: 12px; font-weight: 600; color: #666; background: var(--gray); padding: 6px 10px; border-radius: 6px; }
+    .size-err { display: none; width: 100%; font-size: 12px; font-weight: 600; color: var(--red); margin-top: 2px; }
+    .band.need .size-err { display: block; }
+    
+    .band-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
+    .qty button { width: 32px; height: 32px; font-size: 18px; font-weight: 600; }
+    .qty span { min-width: 22px; text-align: center; font-weight: 700; font-size: 14px; }
+    .line-total { font-size: 15px; font-weight: 800; white-space: nowrap; color: var(--red); }
+
+    .trash { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: var(--red); opacity: 0; transition: .2s; }
+    .band:hover .trash { opacity: 1; }
+    .trash:hover { background: #fde8ed; }
+    
+    .empty { text-align: center; padding: 60px 16px; border: 1px dashed var(--line); border-radius: 12px; }
+    .empty svg { width: 54px; height: 54px; margin: 0 auto 14px; color: #aaa; }
+    .btn-dark { display: inline-block; background: var(--black); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 26px; border-radius: 6px; }
+
+    /* RÉCAPITULATIF */
+    .summary { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: #fff; }
+    .summary h2 { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
+    .row { display: flex; justify-content: space-between; gap: 10px; margin: 9px 0; font-size: 14px; }
+    .row.total { font-size: 18px; font-weight: 800; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; }
+    .row.total #total { color: var(--red); }
+
+    .field label { display: block; font-size: 12px; font-weight: 700; margin: 16px 0 6px; }
+    .field input { width: 100%; padding: 12px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; }
+    .field input.err { border-color: var(--red); }
+    .field input:focus { outline: none; border-color: var(--black); }
+
+    .pos-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid var(--black); border-radius: 8px; font-weight: 700; font-size: 14px; }
+    .pos-btn.ok { border-color: var(--green); color: var(--green); }
+    .pos-btn.err { border-color: var(--red); }
+    .pos-status { font-size: 12px; margin-top: 8px; color: #666; }
+    .pos-status.ok { color: var(--green); }
+    #manualWrap { display: none; margin-top: 10px; }
+
+    /* CHOIX DU PAIEMENT */
+    .payment-methods { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 10px; }
+    .payment-option { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1.5px solid var(--line); border-radius: 8px; cursor: pointer; transition: .2s; }
+    .payment-option.selected { border-color: var(--black); background: #fafafa; }
+    .payment-option input[type="radio"] { accent-color: var(--black); width: 18px; height: 18px; cursor: pointer; }
+    .payment-option span { font-size: 14px; font-weight: 600; }
+
+    .msg { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 1em; }
+    
+    .validate { margin-top: 10px; width: 100%; padding: 16px; border-radius: 8px; background: var(--black); color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .validate:disabled { background: #bbb; cursor: not-allowed; }
+    
+    .note { font-size: 12px; color: #777; margin-top: 12px; text-align: center; }
+
+    /* ÉCRAN DE CONFIRMATION */
+    #successScreen { display: none; max-width: 600px; margin: 40px auto; padding: 30px; border: 1px solid var(--line); border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    #successScreen.show { display: block; }
+    .success-icon { width: 70px; height: 70px; background: #e7f6ec; color: var(--green); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 20px; }
+    .success-icon svg { width: 36px; height: 36px; stroke-width: 2.5; }
+    #successScreen h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+    #successScreen p { font-size: 14px; color: #666; margin-bottom: 24px; line-height: 1.5; }
+    .order-number { font-size: 18px; font-weight: 800; background: var(--gray); padding: 12px; border-radius: 8px; margin-bottom: 24px; }
+    .success-actions { display: flex; flex-direction: column; gap: 12px; }
+    .btn-wave { background: var(--black); color: #fff; padding: 16px; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; text-decoration: none; }
+    .btn-orders { background: #fff; border: 1.5px solid var(--black); color: var(--black); padding: 16px; border-radius: 8px; font-weight: 700; text-decoration: none; display: block; }
+    .wave-instructions { background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 16px; border-radius: 8px; font-size: 14px; color: #166534; text-align: left; line-height: 1.6; margin-bottom: 10px; }
+    .btn-whatsapp { background: #25d366; color: #fff; padding: 16px; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; text-decoration: none; }
+
+    /* BARRE DU BAS */
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
+    .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
+    .tabbar svg { width: 26px; height: 26px; }
+    .tabbar a.current { font-weight: 800; }
+    .tabbar a.current::before { content: ""; position: absolute; top: -8px; width: 22px; height: 3px; border-radius: 2px; background: var(--black); }
+
+    @media (max-width: 520px) {
+      .band { grid-template-columns: 70px 1fr 34px; gap: 10px; }
+      .band-img { width: 70px; }
+      .band-side { grid-column: 2 / 3; flex-direction: row; justify-content: space-between; align-items: center; }
+      .trash { grid-column: 3; grid-row: 1; align-self: start; }
+    }
+    @media (min-width: 1024px) {
+      body { padding-bottom: 0; }
+      .tabbar, .nav-mobile { display: none; }
+      .header-inner { padding: 18px 40px; }
+      .brand-icon { width: 52px; height: 52px; }
+      .brand-word { height: 26px; }
+      .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
+      .page { padding: 40px 40px 60px; }
+      .page-title h1 { font-size: 28px; }
+      .layout { grid-template-columns: 1fr 380px; gap: 36px; }
+      .summary { position: sticky; top: 110px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <img src="image/logo.jpeg" alt="" class="brand-icon">
+        <svg class="brand-word" viewBox="0 0 268 72"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M6 68V4L52 68V4"/><path d="M76 4V44a22 22 0 0 0 44 0V4"/><path d="M144 68V4L168 52L192 4V68"/><path d="M216 68V28a22 22 0 0 1 44 0V68"/></g></svg>
+      </a>
+      <nav class="nav-desktop">
+        <a href="nouveautes.html">Nouveautés</a>
+        <a href="categories.html?sexe=homme">Homme</a>
+        <a href="categories.html?sexe=femme">Femme</a>
+        <a href="promotions.html">Promotions</a>
+      </nav>
+      <div class="actions">
+        <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
+        <a href="panier.html" aria-label="Panier" class="current"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
+        <a href="compte.html" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page" id="mainPage">
+    <div class="page-title">
+      <h1>MON PANIER</h1>
+      <span id="count"></span>
+    </div>
+
+    <div class="layout">
+      <section class="bands" id="bands"></section>
+
+      <aside class="summary" id="summary">
+        <h2>RÉCAPITULATIF</h2>
+        <div class="row"><span>Articles</span><span id="nbArticles">0</span></div>
+        <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
+        <div class="row total"><span>Total</span><span id="total">0 CFA</span></div>
+
+        <div class="field">
+          <label for="nom">Votre nom *</label>
+          <input id="nom" placeholder="Ex : Awa Diop">
+          <label for="tel">Votre numéro WhatsApp *</label>
+          <input id="tel" type="tel" placeholder="Ex : 77 000 00 00">
+          <label for="manual">Quartier / adresse de livraison *</label>
+          <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée">
+          <label>Position GPS (facultatif, aide le livreur)</label>
+          <button class="pos-btn" id="posBtn" type="button">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            <span id="posLabel">Ma position</span>
+          </button>
+          <p class="pos-status" id="posStatus">Appuyez pour partager votre position.</p>
+        </div>
+
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:20px 0 6px;cursor:pointer">
+          <input type="checkbox" id="acceptCgv" style="margin-top:3px;width:16px;height:16px;accent-color:#0a0a0a">
+          <span>
+            J'ai lu et j'accepte les
+            <a href="cgv.html" target="_blank" style="text-decoration:underline">Conditions Générales de Vente</a>
+            et la
+            <a href="confidentialite.html" target="_blank" style="text-decoration:underline">Politique de confidentialité</a>.
+          </span>
+        </label>
+
+        <div class="payment-methods">
+          <label class="payment-option selected" id="optWave">
+            <input type="radio" name="payment" value="wave" checked>
+            <span>Payer avec Wave</span>
+          </label>
+       
+
+        </div>
+
+        <div class="msg" id="msg"></div>
+        
+        <button class="validate" id="validate" type="button">
+          <span id="validateText">Valider et payer avec Wave</span>
+          <svg id="validateSpinner" style="display:none; width:20px; height:20px; animation: spin 1s linear infinite;" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="white" stroke-width="2"/></svg>
+        </button>
+        <p class="note">Votre commande sera enregistrée avant la redirection.</p>
+      </aside>
+    </div>
+  </main>
+
+  <div id="successScreen">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h2>Commande enregistrée !</h2>
+    <p id="successMessage">Votre commande a bien été prise en compte.</p>
+    <div class="order-number" id="orderNumberDisplay">-</div>
+    <div id="paymentActions" class="success-actions"></div>
+  </div>
+
+  <nav class="tabbar">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>Accueil</a>
+    <a href="categories.html?sexe=homme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Homme</a>
+    <a href="categories.html?sexe=femme"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Femme</a>
+    <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
+    <a href="compte.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/"; 
+    const WAVE_NUMERO = "À_REMPLIR"; 
+    const WHATSAPP_VENDEUR = "221766589598"; 
+    
+    const CART_KEY = "numa_cart";
+    const FAV_KEY = "numa_favs";
+    const POS_KEY  = "numa_position";
+    
+    const firebaseConfig = { apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI", authDomain: "numa-com.firebaseapp.com", projectId: "numa-com", storageBucket: "numa-com.firebasestorage.app", messagingSenderId: "953579157946", appId: "1:953579157946:web:4fff5a890cf82f1ccec583" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    let cart = [];
+    try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch (e) {}
+    const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {} };
+
+    let currentUser = null;
+    let position = null;
+    try { position = JSON.parse(localStorage.getItem(POS_KEY)); } catch (e) {}
+
+    /* ================================================================
+       FONCTION RÉUTILISABLE : normalise les tailles disponibles
+       ----------------------------------------------------------------
+       Le champ Firestore "stock" est une map du type :
+         { S: 0, M: 0, L: 4, XL: 0 }
+       On ne garde QUE les tailles avec un stock > 0.
+       ================================================================ */
+    function normalizeSizes(valeur) {
+      let obj = valeur;
+
+      if (obj && typeof obj === "object" && obj.mapValue) {
+        const fields = obj.mapValue.fields || {};
+        const map = {};
+        for (const [k, v] of Object.entries(fields)) {
+          const n = v.integerValue !== undefined ? parseInt(v.integerValue, 10)
+                  : v.doubleValue !== undefined ? parseFloat(v.doubleValue)
+                  : v.stringValue !== undefined ? (parseInt(v.stringValue, 10) || 0)
+                  : 0;
+          map[k] = n;
+        }
+        obj = map;
+      }
+
+      if (obj && typeof obj === "object" && !Array.isArray(obj) && !obj.arrayValue && !obj.stringValue) {
+        const entries = Object.entries(obj);
+        const looksLikeStock = entries.length > 0 && entries.every(([k, v]) =>
+          /^[A-Za-z0-9]+$/.test(k) && (typeof v === "number" || typeof v === "string")
+        );
+        if (looksLikeStock) {
+          const ORDER = ["XS","S","M","L","XL","XXL","XXXL","3XL","4XL","5XL"];
+          const dispo = entries
+            .filter(([_, v]) => Number(v) > 0)
+            .map(([k]) => k.trim().toUpperCase());
+          dispo.sort((a, b) => {
+            const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
+            if (ia === -1 && ib === -1) return a.localeCompare(b);
+            if (ia === -1) return 1;
+            if (ib === -1) return -1;
+            return ia - ib;
+          });
+          return dispo.slice(0, 12);
+        }
+      }
+
+      let brut = obj;
+      if (brut && typeof brut === "object" && brut.arrayValue) {
+        brut = (brut.arrayValue.values || []).map(v => v.stringValue ?? "");
+      } else if (brut && typeof brut === "object" && brut.stringValue !== undefined) {
+        brut = brut.stringValue;
+      }
+      let arr = [];
+      if (Array.isArray(brut)) arr = brut;
+      else if (typeof brut === "string") arr = brut.split(/[,;\/|\n]+/);
+      else if (brut != null) arr = [brut];
+
+      const seen = new Set(); const cleaned = [];
+      for (const item of arr) {
+        const s = String(item ?? "").trim().toUpperCase();
+        if (!s || seen.has(s)) continue;
+        seen.add(s); cleaned.push(s);
+        if (cleaned.length >= 12) break;
+      }
+      return cleaned;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) { window.location.href = "authentification.html"; } 
+      else { currentUser = user; if (user.displayName && !$("nom").value) { $("nom").value = user.displayName; } }
+    });
+
+    const paymentMode = "wave";
+
+    // Bouton de validation actif seulement si panier non vide ET CGV cochées
+    function updateValidate() {
+      $("validate").disabled = cart.length === 0 || !$("acceptCgv").checked;
+    }
+    $("acceptCgv").addEventListener("change", updateValidate);
+
+    // Stock réel de chaque produit (tailles et quantités disponibles)
+    const stockMaps = {};
+    async function loadStocks() {
+      await Promise.all(cart.map(async it => {
+        if (!it.id || stockMaps[it.id]) return;
+        try {
+          const snap = await getDoc(doc(db, "produits", it.id));
+          if (snap.exists()) {
+            const d = snap.data();
+            stockMaps[it.id] = d.stock || d.tailles || d.sizes || null;
+          }
+        } catch (e) { console.warn("Stock non lu pour", it.id, e); }
+      }));
+    }
+
+    // Affichage du panier
+    function render() {
+      const box = $("bands");
+      if (cart.length === 0) {
+        box.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/></svg><p>Votre panier est vide.</p><a href="index.html" class="btn-dark">Voir les nouveautés</a></div>`;
+        $("validate").disabled = true;
+      } else {
+        box.innerHTML = cart.map((it, i) => {
+          // Normalise les tailles à l'affichage (au cas où elles auraient changé)
+          const sizesArr = normalizeSizes(stockMaps[it.id] || null);
+          const sizes = sizesArr.length
+            ? `<span class="sizes-label">Taille :</span>` + sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("")
+            : `<span class="one-size">Taille unique</span>`;
+          return `
+          <article class="band" id="band-${i}">
+            <img class="band-img" src="${esc(it.img || "")}" alt="${esc(it.name)}">
+            <div class="band-info">
+              <p class="band-name">${esc(it.name)}</p>
+              <p class="band-price">${fmt(it.price)}</p>
+              <div class="sizes">${sizes}<span class="size-err">Choisissez une taille</span></div>
+            </div>
+            <div class="band-side">
+              <div class="qty">
+                <button data-act="minus" data-i="${i}">−</button>
+                <span>${it.qty}</span>
+                <button data-act="plus" data-i="${i}">+</button>
+              </div>
+              <span class="line-total">${fmt(it.price * it.qty)}</span>
+            </div>
+            <button class="trash" data-act="del" data-i="${i}">${'<svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>'}</button>
+          </article>`;
+        }).join("");
+        $("validate").disabled = false;
+      }
+      
+      const nb = cart.reduce((s, x) => s + x.qty, 0);
+      const total = cart.reduce((s, x) => s + x.qty * x.price, 0);
+      $("nbArticles").textContent = nb;
+      $("total").textContent = fmt(total);
+      $("count").textContent = nb ? `(${nb} article${nb > 1 ? "s" : ""})` : "";
+      $("cartCount").textContent = nb;
+      updateValidate();
+
+      let favs = []; try { favs = JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) {}
+      $("favCount").textContent = favs.length;
+      $("favCount").style.display = favs.length ? "grid" : "none";
+    }
+
+    $("bands").addEventListener("click", e => {
+      const b = e.target.closest("[data-act]"); if (!b) return;
+      const i = +b.dataset.i, act = b.dataset.act;
+      if (act === "plus") {
+        const st = stockMaps[cart[i].id] || {};
+        const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(cart[i].size || "").toUpperCase());
+        const max = k !== undefined ? Number(st[k]) || 1 : 10;
+        cart[i].qty = Math.min(10, max, cart[i].qty + 1);
+      }
+      if (act === "minus") cart[i].qty = Math.max(1, cart[i].qty - 1);
+      if (act === "del") cart.splice(i, 1);
+      if (act === "size") cart[i].size = b.dataset.size;
+      saveCart(); render();
+    });
+
+    // Position GPS
+    function showPosition() {
+      if (!position) return;
+      $("posBtn").classList.add("ok");
+      $("posLabel").textContent = "Position partagée ✓";
+      $("posStatus").className = "pos-status ok";
+      $("posStatus").innerHTML = `Lat: ${position.lat}, Lng: ${position.lng}`;
+    }
+    showPosition();
+
+    $("posBtn").addEventListener("click", () => {
+      if (!navigator.geolocation) { $("posStatus").textContent = "Non supporté."; return; }
+      $("posLabel").textContent = "Recherche...";
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          position = { lat: +pos.coords.latitude.toFixed(6), lng: +pos.coords.longitude.toFixed(6), acc: pos.coords.accuracy };
+          try { localStorage.setItem(POS_KEY, JSON.stringify(position)); } catch (e) {}
+          showPosition();
+        },
+        err => {
+          $("posStatus").className = "pos-status bad";
+          $("posStatus").textContent = "Position indisponible : écrivez votre quartier ci-dessus.";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+
+    // ============================================================
+    // VALIDATION : VÉRIFICATION DES PRIX **ET** DES TAILLES
+    // ============================================================
+    $("validate").addEventListener("click", async () => {
+      const msg = $("msg");
+      msg.textContent = "";
+      $("nom").classList.remove("err");
+      $("tel").classList.remove("err");
+      $("manual").classList.remove("err");
+      document.querySelectorAll(".band.need").forEach(b => b.classList.remove("need"));
+
+      if (cart.length === 0) return;
+
+      // 1) Validations de base (nom, tel, position) — faites d'abord
+      const nom = $("nom").value.trim();
+      const tel = $("tel").value.trim();
+      const manual = $("manual").value.trim();
+
+      if (!nom) { $("nom").classList.add("err"); msg.textContent = "Votre nom est requis."; return; }
+      if (!/^(70|75|76|77|78)\d{7}$/.test(tel.replace(/\D/g, ""))) {
+        $("tel").classList.add("err"); msg.textContent = "Numéro sénégalais invalide."; return;
+      }
+      if (manual.length < 3) { $("manual").classList.add("err"); msg.textContent = "Indiquez votre quartier ou un repère."; return; }
+      if (!$("acceptCgv").checked) { msg.textContent = "Acceptez les CGV pour continuer."; return; }
+
+      // 2) Désactiver le bouton
+      $("validate").disabled = true;
+      $("validateText").textContent = "Vérification des prix et tailles...";
+      $("validateSpinner").style.display = "inline";
+
+      try {
+        // 3) Lecture des documents produits en parallèle
+        const snaps = await Promise.all(cart.map(it => {
+          if (!it.id) {
+            return Promise.resolve({ __missingId: true, name: it.name, __id: null });
+          }
+          return getDoc(doc(db, "produits", it.id))
+            .then(snap => ({ snap, name: it.name, __id: it.id }))
+            .catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
+        }));
+
+        // 4) Vérification prix + tailles
+        let priceChanged = false;
+        let sizesChanged = false;
+        const freshArticles = [];
+        const errors = [];
+        let firstBadBand = null;
+
+        for (let i = 0; i < cart.length; i++) {
+          const it = cart[i];
+          const result = snaps[i];
+
+          // Cas : pas d'id
+          if (!it.id || (result && result.__missingId)) {
+            errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`);
+            continue;
+          }
+
+          const snap = result.snap;
+          if (!snap.exists()) {
+            errors.push(`Un article n'est plus disponible : "${it.name}". Retirez-le du panier.`);
+            continue;
+          }
+
+          const data = snap.data();
+          const prixServeur = Number(data.prix) || 0;
+          const titreServeur = String(data.titre || it.name || "Article");
+          const imageServeur = String(data.imageUrl || it.img || "");
+
+          // ⬇️ LECTURE DES TAILLES SERVEUR
+          const sizesServeur = normalizeSizes(data.stock ?? data.tailles ?? data.sizes ?? data.taille ?? null);
+
+          if (!Number.isFinite(prixServeur) || prixServeur < 0) {
+            errors.push(`Le prix de "${titreServeur}" est invalide. Contactez-nous.`);
+            continue;
+          }
+
+          // Détection du changement de prix
+          if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) {
+            priceChanged = true;
+          }
+
+          // ⬇️ VALIDATION DES TAILLES
+          let tailleFinale = "Taille unique";
+
+          if (sizesServeur.length > 0) {
+            // Synchronise les tailles du panier avec celles du serveur
+            if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) {
+              it.sizes = sizesServeur;
+              sizesChanged = true;
+            }
+
+            // Le client doit avoir choisi une taille valide
+            if (!it.size) {
+              errors.push(`Choisissez la taille de "${titreServeur}".`);
+              $("band-" + i).classList.add("need");
+              firstBadBand = firstBadBand || $("band-" + i);
+              continue;
+            }
+            if (!sizesServeur.includes(String(it.size).toUpperCase())) {
+              errors.push(`Taille "${it.size}" indisponible pour "${titreServeur}". Choisissez une autre taille.`);
+              it.size = null;
+              $("band-" + i).classList.add("need");
+              firstBadBand = firstBadBand || $("band-" + i);
+              sizesChanged = true;
+              continue;
+            }
+            tailleFinale = it.size;
+          } else {
+            // Pas de taille dispo : on force "Taille unique"
+            if (it.sizes && it.sizes.length) {
+              it.sizes = [];
+              it.size = null;
+              sizesChanged = true;
+            }
+          }
+
+          let dispo = Infinity;
+          if (sizesServeur.length > 0) {
+            const st = data.stock || data.tailles || data.sizes || {};
+            const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(tailleFinale).toUpperCase());
+            dispo = k !== undefined ? (Number(st[k]) || 0) : 0;
+          }
+          if ((Number(it.qty) || 1) > dispo) {
+            errors.push(`Il ne reste que ${dispo} pièce(s) en taille ${tailleFinale} pour "${titreServeur}".`);
+            it.qty = Math.max(1, dispo);
+            sizesChanged = true;
+            $("band-" + i).classList.add("need");
+            firstBadBand = firstBadBand || $("band-" + i);
+            continue;
+          }
+
+          const quantite = Math.max(1, Math.min(10, Number(it.qty) || 1));
+
+          freshArticles.push({
+            produitId: it.id,
+            titre: titreServeur,
+            prix: prixServeur,
+            prixCatalogue: prixServeur,
+            quantite,
+            taille: tailleFinale,
+            imageUrl: imageServeur
+          });
+        }
+
+        // 5) Si erreurs bloquantes (prix manquants, tailles invalides, etc.)
+        if (errors.length > 0) {
+          if (sizesChanged) { saveCart(); render(); }
+          msg.textContent = errors[0];
+          $("validate").disabled = false;
+          $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+          $("validateSpinner").style.display = "none";
+          if (firstBadBand) firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        // 6) Prix ou tailles ont changé : on met à jour le panier et on redemande
+        if (priceChanged || sizesChanged) {
+          freshArticles.forEach(fa => {
+            const idx = cart.findIndex(c => c.id === fa.produitId);
+            if (idx >= 0) {
+              cart[idx].price = fa.prix;
+              cart[idx].name = fa.titre;
+              cart[idx].img = fa.imageUrl;
+            }
+          });
+          saveCart();
+          render();
+
+          if (priceChanged && sizesChanged) {
+            msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
+          } else if (priceChanged) {
+            msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
+          } else {
+            msg.textContent = "Les tailles disponibles ont changé, vérifiez votre panier puis revalidez.";
+          }
+
+          $("validate").disabled = false;
+          $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+          $("validateSpinner").style.display = "none";
+          return;
+        }
+
+        // 7) Construction de la commande avec les prix/tailles validés serveur
+        const total = freshArticles.reduce((s, a) => s + a.prix * a.quantite, 0);
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+        const randStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const numero = `NUMA-${dateStr}-${randStr}`;
+
+        const orderData = {
+          uid: currentUser.uid,
+          clientNom: nom,
+          clientEmail: currentUser.email || "",
+          telephone: tel,
+          articles: freshArticles,
+          total: total,
+          fraisLivraison: 0,
+          position: position ? {
+            lat: Number(position.lat),
+            lng: Number(position.lng),
+            mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`
+          } : null,
+          adresseTexte: manual,
+          statut: "en_attente",
+          paiement: "non_paye",
+          modePaiement: paymentMode,
+          numero: numero,
+          createdAt: serverTimestamp()
+        };
+
+        $("validateText").textContent = "Enregistrement...";
+
+        await addDoc(collection(db, "commandes"), orderData);
+
+        // 8) Succès : vider le panier, afficher écran
+        localStorage.removeItem(CART_KEY);
+        $("mainPage").style.display = "none";
+        $("successScreen").classList.add("show");
+        $("orderNumberDisplay").textContent = numero;
+        window.scrollTo(0, 0);
+
+        const actionsDiv = $("paymentActions");
+        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" 
+          ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}`
+          : null;
+
+        if (paymentMode === "livraison") {
+          $("successMessage").textContent = "Vous paierez à la réception de votre commande.";
+          actionsDiv.innerHTML = `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
+        } else if (paymentMode === "wave") {
+          $("successMessage").textContent = "Votre commande est enregistrée. Finalisez le paiement pour la confirmer.";
+          let html = "";
+          if (WAVE_MERCHANT_LINK.startsWith("https://pay.wave.com/")) {
+            const separator = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?";
+            const payUrl = `${WAVE_MERCHANT_LINK}${separator}amount=${total}`;
+            html += `<a href="${payUrl}" class="btn-wave">
+              <img src="image/logowave.jpeg" style="width:24px;height:24px;background:#fff;border-radius:4px;" alt="">
+              Payer avec Wave
+            </a>`;
+          } else if (WAVE_NUMERO !== "À_REMPLIR") {
+            html += `<div class="wave-instructions">
+              Envoyez <b>${fmt(total)}</b> par Wave au <b>${WAVE_NUMERO}</b>,<br>
+              puis envoyez la capture d'écran sur WhatsApp avec votre numéro de commande.
+            </div>`;
+          }
+          if (waLink) {
+            html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">
+              J'ai payé : envoyer la preuve sur WhatsApp
+            </a>`;
+          }
+          html += `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
+          actionsDiv.innerHTML = html;
+        }
+
+      } catch (error) {
+        console.error("Erreur validation panier:", error);
+        msg.textContent = "Erreur : " + (error.message || "Vérifiez votre connexion et réessayez.");
+        $("validate").disabled = false;
+        $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+        $("validateSpinner").style.display = "none";
+      }
+    });
+
+    render();
+    loadStocks().then(render);
+  </script>
+  <!-- ================= DÉBUT FOOTER NUMA ================= -->
+<style>
+  /* CSS scopé uniquement pour le footer */
+  .numa-footer {
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a0a0a;
+    color: #fff;
+    margin-top: 60px; /* Espace avant le footer */
+    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+  }
+  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  
+  .numa-footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+  
+  /* Grille principale */
+  .numa-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
+  }
+
+  /* Colonne Marque */
+  .numa-footer-brand .numa-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .numa-footer-brand p {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+  .numa-footer-contact {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+
+  /* Titres colonnes */
+  .numa-footer-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  /* Liens */
+  .numa-footer-col ul { list-style: none; }
+  .numa-footer-col ul li { margin-bottom: 12px; }
+  .numa-footer-col ul li a {
+    font-size: 13.5px;
+    color: #9ca3af;
+  }
+  .numa-footer-col ul li a:hover { color: #fff; }
+
+  /* Réseaux sociaux */
+  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .numa-socials a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1f1f1f;
+    display: grid; place-items: center;
+    color: #d1d5db;
+  }
+  .numa-socials a:hover { background: #e11d48; color: #fff; }
+  .numa-socials svg { width: 18px; height: 18px; }
+
+  /* Barre du bas */
+  .numa-footer-bottom {
+    border-top: 1px solid #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .numa-footer-bottom-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (min-width: 768px) {
+    .numa-footer-bottom-inner { flex-direction: row; }
+    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+  }
+  
+  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .numa-payments span {
+    background: #1f1f1f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+</style>
+
+<footer class="numa-footer">
+  <div class="numa-footer-inner">
+    <div class="numa-footer-grid">
+      
+      <!-- Colonne 1 : Marque & Contact -->
+      <div class="numa-footer-brand">
+        <a href="index.html" class="numa-logo">NUMA.</a>
+        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+        
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Petit Mbao, Dakar, Sénégal
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+          +221 76 658 95 98
+        </div>
+        <div class="numa-footer-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          service.numa.com@gmail.com
+        </div>
+
+        <div class="numa-socials">
+          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Colonne 2 : Boutique -->
+      <div class="numa-footer-col">
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="nouveautes.html">Nouveautés</a></li>
+          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
+          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
+          <li><a href="promotions.html">Promotions</a></li>
+          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 3 : Aide -->
+      <div class="numa-footer-col">
+        <h4>Aide & Services</h4>
+        <ul>
+          <li><a href="contact.html">Nous contacter</a></li>
+          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
+          <li><a href="compte.html">Mon compte</a></li>
+          <li><a href="favoris.html">Mes favoris</a></li>
+          <li><a href="a-propos.html">À propos de NUMA</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne 4 : Légal -->
+      <div class="numa-footer-col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre inférieure -->
+  <div class="numa-footer-bottom">
+    <div class="numa-footer-bottom-inner">
+      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+      
+      <div class="numa-payments">
+        <span>Wave</span>
+        <span>Orange Money</span>
+        <span>Free Money</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Script ultra-léger pour l'année automatique
+  document.getElementById('numaYear').textContent = new Date().getFullYear();
+</script>
+<!-- ================= FIN FOOTER NUMA ================= -->
+</body>
+</html>
