@@ -1,0 +1,12 @@
+{
+  "name": "numa-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fonctions serverless NUMA (notifications commandes)",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
