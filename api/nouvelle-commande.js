@@ -65,7 +65,7 @@ function buildEmailHtml(order, orderId, siteUrl) {
     : "";
 
   const adminLink = siteUrl
-    ? `<p style="margin-top:20px"><a href="${escapeHtml(siteUrl)}/admin-commandes.html" style="background:#0a0a0a;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:700">Ouvrir l'admin</a></p>`
+    ? `<p style="margin-top:20px"><a href="${escapeHtml(siteUrl)}/admin.html" style="background:#0a0a0a;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:700">Ouvrir l'admin</a></p>`
     : "";
 
   return `
