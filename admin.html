@@ -212,7 +212,11 @@
         } else if (NEXT[o.statut]) {
           actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
         }
-        actions += `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${phoneIntl(o.telephone)}?text=${encodeURIComponent(waMessage(o))}">Écrire au client</a>`;
+        if (o.paiement === "paye" && o.statut !== "annulee") {
+          actions += o.smsConfirmationEnvoyeLe
+            ? `<span class="badge pay-ok">SMS envoyé</span>`
+            : `<button class="btn" data-act="sms" data-id="${o.id}">Renvoyer le SMS</button>`;
+        }rel="noopener" href="https://wa.me/${phoneIntl(o.telephone)}?text=${encodeURIComponent(waMessage(o))}">Écrire au client</a>`;
         if (o.statut !== "annulee" && o.statut !== "livree") {
           actions += `<button class="btn danger" data-act="cancel" data-id="${o.id}">Annuler</button>`;
         }
@@ -246,7 +250,8 @@
       if (act === "cancel" && !confirm("Annuler cette commande ? Le stock sera remis si le paiement avait été confirmé.")) return;
       busy = true; b.disabled = true;
       try {
-        if (act === "pay") { await confirmerPaiement(id); toast("Paiement confirmé, stock mis à jour ✓"); }
+        if (act === "pay") { await confirmerPaiement(id); toast("Paiement confirmé, stock mis à jour ✓"); await envoyerSmsConfirmation(id); }
+        if (act === "sms") { await envoyerSmsConfirmation(id); }
         if (act === "next") { await setStatut(id, b.dataset.st); toast("Statut mis à jour ✓"); }
         if (act === "cancel") { await annuler(id); toast("Commande annulée"); }
       } catch (err) {
@@ -254,7 +259,23 @@
         toast(err.message || "Erreur", true);
       } finally { busy = false; render(); }
     });
-
+    // ---------- SMS de confirmation au client ----------
+    async function envoyerSmsConfirmation(id) {
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch("/api/sms-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ orderId: id })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (data.ok) toast(data.alreadySent ? "SMS déjà envoyé à ce client" : "SMS envoyé au client ✓");
+        else toast("SMS non envoyé : " + (data.message || "erreur"), true);
+      } catch (e) {
+        toast("SMS non envoyé : " + e.message, true);
+      }
+    }
+    
     // ---------- Actions Firestore ----------
     function findKey(stock, taille) {
       return Object.keys(stock).find(x => x.trim().toUpperCase() === String(taille).toUpperCase());
