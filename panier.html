@@ -669,8 +669,19 @@
 
         $("validateText").textContent = "Enregistrement...";
 
-        await addDoc(collection(db, "commandes"), orderData);
+     const orderRef = await addDoc(collection(db, "commandes"), orderData);
 
+// Alerte email pour l'admin (silencieuse, ne bloque jamais la commande)
+if (currentUser) {
+  currentUser.getIdToken()
+    .then(token => fetch("/api/nouvelle-commande", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+      body: JSON.stringify({ orderId: orderRef.id }),
+      keepalive: true
+    }))
+    .catch(() => {});
+}
         // 8) Succès : vider le panier, afficher écran
         localStorage.removeItem(CART_KEY);
         $("mainPage").style.display = "none";
