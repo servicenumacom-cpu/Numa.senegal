@@ -221,7 +221,11 @@ module.exports = async function handler(req, res) {
       "Numéro de téléphone client invalide (attendu : 70/75/76/77/78 + 7 chiffres)"
     );
   }
-
+  // Orange interdit l'envoi entre 22h et 6h (Dakar = UTC+0)
+  const heure = new Date().getUTCHours();
+  if (heure >= 22 || heure < 6) {
+    return jsonError(res, 409, "Envoi interdit entre 22h et 6h : utilise « Renvoyer le SMS » après 6h");
+  }
   // 9. Construction du message
   const message = buildMessage(order, orderId);
 
