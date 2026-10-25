@@ -117,6 +117,12 @@
       .grid { grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
       .skeleton { grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
     }
+    /* iPhone : empêche le zoom automatique quand on touche un champ */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea { font-size: 16px !important; }
+}
+/* Évite aussi le zoom au double-tap sur les boutons et liens */
+html { touch-action: manipulation; }
   </style>
 </head>
 <body>
