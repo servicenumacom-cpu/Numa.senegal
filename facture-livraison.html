@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Facture — NUMA Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- QR code : version figée (stable, > 2 semaines d'ancienneté) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #0a0a0a;
+      --gray: #f1f1f1;
+      --line: #e5e5e5;
+      --red: #e11d48;
+      --green: #16a34a;
+      --max: 900px;
+    }
+    body {
+      font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+      color: var(--black);
+      background: #f3f4f6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    /* ===== Écrans d'état ===== */
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .center-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    .state-card {
+      max-width: 480px; background: #fff; padding: 36px 28px;
+      border-radius: 14px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,.06);
+    }
+    .state-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .state-card p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 20px; }
+    .state-card .btn {
+      display: inline-block; padding: 12px 24px; background: var(--black); color: #fff;
+      border-radius: 8px; font-weight: 700; font-size: 14px;
+    }
+
+    /* ===== Toolbar ===== */
+    .toolbar {
+      position: sticky; top: 0; z-index: 10;
+      background: #fff; border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .toolbar .back-link {
+      font-size: 13px; font-weight: 600; color: #666;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .toolbar .back-link:hover { color: var(--black); }
+    .toolbar .btn-print {
+      background: var(--black); color: #fff;
+      padding: 10px 20px; border-radius: 8px;
+      font-weight: 700; font-size: 13.5px;
+      display: flex; align-items: center; gap: 8px;
+      transition: .2s;
+    }
+    .toolbar .btn-print:hover { opacity: .9; }
+    .toolbar .btn-print svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ===== Container des factures ===== */
+    .invoices-container {
+      display: none;
+      max-width: var(--max);
+      margin: 24px auto;
+      padding: 0 16px 40px;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .invoices-container.show { display: flex; }
+
+    /* ===== Facture ===== */
+    .invoice {
+      background: #fff; border-radius: 8px;
+      padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,.05);
+      border: 1px solid var(--line);
+    }
+    .invoice-inner { font-size: 13.5px; line-height: 1.5; }
+
+    /* En-tête */
+    .inv-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 20px; padding-bottom: 20px;
+      border-bottom: 2px solid var(--black); margin-bottom: 20px;
+    }
+    .inv-brand { display: flex; align-items: center; gap: 14px; }
+    .inv-logo { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
+    .inv-name { font-size: 26px; font-weight: 800; letter-spacing: 2px; line-height: 1; }
+    .inv-sub { font-size: 11px; color: #666; font-weight: 500; margin-top: 4px; }
+    .inv-meta { text-align: right; }
+    .inv-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .inv-num {
+      font-size: 16px; font-weight: 800; color: var(--red); margin-top: 4px;
+      font-family: "Courier New", monospace;
+    }
+    .inv-dates {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: #666; margin-bottom: 24px;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .inv-dates .label { font-weight: 700; color: #444; }
+
+    /* Blocs */
+    .block { margin-bottom: 22px; }
+    .block h2 {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: #888;
+      margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* Client */
+    .client-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .client-phone { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
+    .client-email { font-size: 13px; color: #666; margin-top: 4px; }
+
+    /* Zone de livraison */
+    .zone-libelle { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .zone-note { font-size: 11px; font-weight: 500; color: #888; font-style: italic; }
+    .adresse-client { font-size: 13px; color: #444; margin-bottom: 10px; }
+    .maps-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 10px; flex-wrap: wrap;
+    }
+    .maps-link { font-size: 12px; color: var(--red); font-weight: 700; text-decoration: underline; }
+    .maps-text {
+      font-size: 11px; color: #666; word-break: break-all;
+      font-family: monospace;
+    }
+    .qr-container {
+      background: #fff; padding: 4px;
+      border: 1px solid var(--line); display: inline-block;
+    }
+    .print-only { display: none; }
+
+    /* Table articles */
+    .inv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .inv-table th {
+      text-align: left; font-size: 10.5px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: #666; padding: 8px 6px;
+      border-bottom: 1.5px solid var(--black);
+      background: #fafafa;
+    }
+    .inv-table td {
+      padding: 8px 6px; border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .inv-table .center { text-align: center; }
+    .inv-table .right { text-align: right; }
+    .inv-table tfoot td { border-bottom: none; padding: 6px; }
+    .inv-table tfoot tr:first-child td {
+      padding-top: 14px; border-top: 1px solid var(--line);
+    }
+    .inv-table .total-row td {
+      padding-top: 10px; font-size: 15px;
+      border-top: 1.5px solid var(--black);
+    }
+
+    /* Bloc paiement */
+    .payment-box {
+      padding: 14px 18px; border-radius: 8px;
+      font-size: 15px; font-weight: 700;
+    }
+    .payment-box.paid {
+      background: rgba(22,163,74,.08); color: var(--green);
+      border: 1.5px solid rgba(22,163,74,.3);
+    }
+    .payment-box.cod {
+      background: rgba(10,10,10,.04); color: var(--black);
+      border: 2px solid var(--black);
+      font-size: 16px; text-align: center;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .payment-box.danger {
+      background: rgba(225,29,72,.08); color: var(--red);
+      border: 1.5px solid rgba(225,29,72,.3);
+      text-align: center; text-transform: uppercase;
+    }
+
+    /* Livreur */
+    .deliverer-fields { display: flex; flex-direction: column; gap: 8px; }
+    .deliverer-fields label {
+      font-size: 12px; font-weight: 700; color: #666;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .deliverer-input {
+      flex: 1; border: 1px solid var(--line); border-radius: 6px;
+      padding: 8px 10px; font: inherit; font-size: 14px; font-weight: 600;
+      background: #fafafa; min-height: 38px;
+    }
+    .deliverer-input:focus { outline: none; border-color: var(--black); background: #fff; }
+
+    /* Signatures */
+    .signature-block { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .sig-col { display: flex; flex-direction: column; gap: 6px; }
+    .sig-label { font-size: 11.5px; font-weight: 700; color: #666; }
+    .sig-line { border-bottom: 1.5px dashed #999; height: 50px; }
+
+    /* Footer */
+    .inv-footer {
+      margin-top: 24px; padding-top: 16px;
+      border-top: 1px solid var(--line);
+      text-align: center; font-size: 12px; color: #666;
+    }
+    .inv-footer .thanks { font-weight: 700; color: var(--black); margin-top: 4px; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 640px) {
+      .invoice { padding: 20px; }
+      .inv-header { flex-direction: column; align-items: flex-start; }
+      .inv-meta { text-align: left; }
+      .signature-block { grid-template-columns: 1fr; }
+      .inv-name { font-size: 20px; }
+      .inv-table { font-size: 12px; }
+      .inv-table th, .inv-table td { padding: 6px 4px; }
+      .client-phone { font-size: 17px; }
+      .zone-libelle { font-size: 14px; }
+      .payment-box { font-size: 13px; padding: 12px; }
+    }
+
+    /* ===== Impression ===== */
+    @page { size: A4; margin: 12mm; }
+    @media print {
+      body { background: #fff !important; }
+      .toolbar, .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .invoices-container {
+        display: block !important;
+        max-width: none; margin: 0; padding: 0; gap: 0;
+      }
+      .invoice {
+        background: #fff !important;
+        border: none !important; border-radius: 0 !important;
+        box-shadow: none !important; padding: 0 !important; margin: 0 !important;
+        page-break-after: always; break-after: page;
+      }
+      .invoice:last-child { page-break-after: auto; break-after: auto; }
+      .deliverer-input {
+        border: none !important;
+        border-bottom: 1px dotted #999 !important;
+        background: transparent !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        font-size: 14px !important;
+      }
+      .deliverer-input::placeholder { color: transparent; }
+      .maps-link { display: none !important; }
+      .inv-table tr { page-break-inside: avoid; }
+      .block { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Écran : Chargement -->
+  <div class="screen active" id="screenLoading">
+    <div class="center-wrap">
+      <div class="state-card">
+        <h1>Chargement…</h1>
+        <p>Préparation de la facture.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Écran : Accès refusé -->
+  <div class="screen" id="screenDenied">
+    <div class="center-wrap">
+      <div class="state-card">
+        <h1>Accès refusé</h1>
+        <p>Ce compte n'est pas autorisé à accéder aux factures.</p>
+        <button onclick="logoutAndRedirect()" class="btn">Changer de compte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Écran : Erreur -->
+  <div class="screen" id="screenError">
+    <div class="center-wrap">
+      <div class="state-card">
+        <h1>Erreur</h1>
+        <p id="errorMsg">Une erreur est survenue.</p>
+        <a href="admin-dashboard.html" class="btn">Retour à l'admin</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar (cachée à l'impression) -->
+  <div class="toolbar" id="toolbar" style="display:none">
+    <a href="admin-dashboard.html" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      Retour à l'admin
+    </a>
+    <button class="btn-print" onclick="window.print()">
+      <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimer / Enregistrer en PDF
+    </button>
+  </div>
+
+  <!-- Container des factures -->
+  <div class="invoices-container" id="invoicesContainer"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
+      authDomain: "numa-com.firebaseapp.com",
+      projectId: "numa-com",
+      storageBucket: "numa-com.firebasestorage.app",
+      messagingSenderId: "953579157946",
+      appId: "1:953579157946:web:4fff5a890cf82f1ccec583"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    /* ============================================================
+       Vérification admin : UID (règles Firestore) + email (pages admin)
+       ============================================================ */
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2";
+    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
+
+    function isAdminUser(user) {
+      if (!user) return false;
+      if (user.uid === ADMIN_UID) return true;
+      if (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) return true;
+      return false;
+    }
+
+    /* ============================================================
+       Helpers
+       ============================================================ */
+    const $ = (id) => document.getElementById(id);
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[c]));
+    }
+
+    function fmt(n) {
+      return Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
+    }
+
+    // 785702916 → 78 570 29 16
+    function formatPhone(raw) {
+      const digits = String(raw || "").replace(/\D/g, "");
+      let local = digits;
+      if (local.startsWith("221")) local = local.substring(3);
+      if (local.startsWith("0")) local = local.substring(1);
+      if (local.length === 9) {
+        return `${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5, 7)} ${local.slice(7, 9)}`;
+      }
+      return raw || "—";
+    }
+
+    // Timestamp Firestore (ou Date) → "12/10/2026"
+    function fmtDate(ts) {
+      if (!ts) return "—";
+      let d;
+      try {
+        if (typeof ts.toDate === "function") d = ts.toDate();
+        else if (ts.seconds) d = new Date(ts.seconds * 1000);
+        else d = new Date(ts);
+      } catch (e) { return "—"; }
+      if (isNaN(d.getTime())) return "—";
+      return d.toLocaleDateString("fr-FR", {
+        day: "2-digit", month: "2-digit", year: "numeric"
+      });
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+      $("invoicesContainer").classList.remove("show");
+      $("toolbar").style.display = "none";
+      if (name === "Invoices") {
+        $("toolbar").style.display = "flex";
+        $("invoicesContainer").classList.add("show");
+        return;
+      }
+      const el = $("screen" + name);
+      if (el) el.classList.add("active");
+    }
+
+    function showError(msg) {
+      $("errorMsg").textContent = msg;
+      showScreen("Error");
+    }
+
+    /* ============================================================
+       Construction HTML d'une facture
+       ============================================================ */
+    function buildInvoiceHTML(order, orderId) {
+      const numero = esc(order.numero || orderId);
+      const clientNom = esc(order.clientNom || "—");
+      const telephone = formatPhone(order.telephone);
+      const emailHTML = order.clientEmail
+        ? `<div class="client-email">${esc(order.clientEmail)}</div>`
+        : "";
+      const dateCommande = fmtDate(order.createdAt);
+      const dateImpression = new Date().toLocaleDateString("fr-FR", {
+        day: "2-digit", month: "2-digit", year: "numeric"
+      });
+
+      // Détection de coordonnées GPS valides
+      const pos = order.position || null;
+      const hasPosition =
+        !!pos &&
+        pos.lat != null && pos.lat !== "" &&
+        pos.lng != null && pos.lng !== "" &&
+        Number.isFinite(Number(pos.lat)) &&
+        Number.isFinite(Number(pos.lng));
+
+      // Bloc zone de livraison
+      const zoneObj = order.zoneLivraison;
+      let zoneHTML;
+      if (zoneObj && zoneObj.libelle) {
+        zoneHTML = `${esc(zoneObj.libelle)} <span class="zone-note">(zone estimée à partir de la position GPS)</span>`;
+      } else {
+        zoneHTML = "Zone non déterminée";
+      }
+
+      const adresseClient =
+        order.adresseTexte && String(order.adresseTexte).trim()
+          ? esc(order.adresseTexte)
+          : "non précisée";
+
+      const mapsUrl = pos && pos.mapsUrl ? String(pos.mapsUrl) : null;
+      const mapsHTML = mapsUrl
+        ? `<div class="maps-row">
+             <a href="${esc(mapsUrl)}" target="_blank" rel="noopener" class="maps-link no-print">Itinéraire Google Maps</a>
+             <span class="maps-text print-only">${esc(mapsUrl)}</span>
+             <div class="qr-container" data-qr></div>
+           </div>`
+        : "";
+
+      // Articles
+      const articles = Array.isArray(order.articles) ? order.articles : [];
+      const articlesRows = articles
+        .map((a) => {
+          const prix = Number(a.prix) || 0;
+          const qte = Number(a.quantite) || 1;
+          const totalLigne = prix * qte;
+          return `<tr>
+            <td>${esc(a.titre || "Article")}</td>
+            <td class="center">${esc(a.taille || "—")}</td>
+            <td class="center">${qte}</td>
+            <td class="right">${fmt(prix)}</td>
+            <td class="right"><strong>${fmt(totalLigne)}</strong></td>
+          </tr>`;
+        })
+        .join("");
+
+      const sousTotal = articles.reduce(
+        (s, a) => s + (Number(a.prix) || 0) * (Number(a.quantite) || 1),
+        0
+      );
+      const total = Number(order.total) || sousTotal;
+
+      // Bloc paiement
+      let paiementHTML = "";
+      if (order.paiement === "paye") {
+        paiementHTML = `<div class="payment-box paid">PAYÉ — rien à encaisser</div>`;
+      } else if (order.modePaiement === "livraison") {
+        paiementHTML = `<div class="payment-box cod">À ENCAISSER À LA LIVRAISON : <strong>${fmt(total)}</strong></div>`;
+      } else {
+        paiementHTML = `<div class="payment-box danger">PAIEMENT NON CONFIRMÉ — NE PAS LIVRER</div>`;
+      }
+
+      return `
+        <div class="invoice-inner">
+          <header class="inv-header">
+            <div class="inv-brand">
+              <img src="image/logo.jpeg" alt="NUMA" class="inv-logo" onerror="this.style.display='none'">
+              <div>
+                <div class="inv-name">NUMA</div>
+                <div class="inv-sub">Sape &amp; élégance à la sénégalaise</div>
+              </div>
+            </div>
+            <div class="inv-meta">
+              <div class="inv-title">Facture — Bon de livraison</div>
+              <div class="inv-num">${numero}</div>
+            </div>
+          </header>
+
+          <div class="inv-dates">
+            <div><span class="label">Date de commande :</span> ${dateCommande}</div>
+            <div><span class="label">Date d'impression :</span> ${dateImpression}</div>
+          </div>
+
+          <section class="block">
+            <h2>Client</h2>
+            <div class="client-name">${clientNom}</div>
+            <div class="client-phone">${telephone}</div>
+            ${emailHTML}
+          </section>
+
+          <section class="block">
+            <h2>Adresse de livraison</h2>
+            <div class="zone-libelle" data-zone>${zoneHTML}</div>
+            <div class="adresse-client">Adresse indiquée par le client : ${adresseClient}</div>
+            ${mapsHTML}
+          </section>
+
+          <section class="block">
+            <h2>Articles</h2>
+            <table class="inv-table">
+              <thead>
+                <tr>
+                  <th>Désignation</th>
+                  <th class="center">Taille</th>
+                  <th class="center">Qté</th>
+                  <th class="right">Prix unitaire</th>
+                  <th class="right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${articlesRows || '<tr><td colspan="5" class="center">Aucun article</td></tr>'}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="right">Sous-total</td>
+                  <td class="right">${fmt(sousTotal)}</td>
+                </tr>
+                <tr>
+                  <td colspan="4" class="right">Livraison</td>
+                  <td class="right">Gratuite</td>
+                </tr>
+                <tr class="total-row">
+                  <td colspan="4" class="right"><strong>TOTAL</strong></td>
+                  <td class="right"><strong>${fmt(total)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <section class="block">
+            <h2>Paiement / Encaissement</h2>
+            ${paiementHTML}
+          </section>
+
+          <section class="block">
+            <h2>Livreur</h2>
+            <div class="deliverer-fields">
+              <label>Nom du livreur : <input type="text" class="deliverer-input" placeholder="—"></label>
+              <label>Téléphone : <input type="text" class="deliverer-input" placeholder="—"></label>
+            </div>
+          </section>
+
+          <section class="block signature-block">
+            <div class="sig-col">
+              <div class="sig-label">Reçu par le client (nom et signature)</div>
+              <div class="sig-line"></div>
+            </div>
+            <div class="sig-col">
+              <div class="sig-label">Date et heure de livraison</div>
+              <div class="sig-line"></div>
+            </div>
+          </section>
+
+          <footer class="inv-footer">
+            <div>Contact vendeur WhatsApp : <strong>+221 76 658 95 98</strong></div>
+            <div class="thanks">Merci de votre confiance — NUMA</div>
+          </footer>
+        </div>
+      `;
+    }
+
+    /* ============================================================
+       Chargement + rendu d'une facture
+       ============================================================ */
+    async function renderInvoice(container, orderId) {
+      const article = document.createElement("article");
+      article.className = "invoice";
+      article.dataset.orderId = orderId;
+
+      try {
+        const snap = await getDoc(doc(db, "commandes", orderId));
+        if (!snap.exists()) {
+          article.innerHTML = `<div class="invoice-inner" style="text-align:center;padding:40px;">
+            <h2 style="color:var(--red);margin-bottom:8px;">Commande introuvable</h2>
+            <p style="color:#666;">ID : ${esc(orderId)}</p>
+          </div>`;
+          container.appendChild(article);
+          return;
+        }
+
+        const order = snap.data();
+        article.innerHTML = buildInvoiceHTML(order, orderId);
+        container.appendChild(article);
+
+        // ── Géocodage si nécessaire ──
+        const pos = order.position || null;
+        const hasPosition =
+          !!pos && pos.lat != null && pos.lng != null &&
+          Number.isFinite(Number(pos.lat)) &&
+          Number.isFinite(Number(pos.lng));
+        const hasZone = !!(order.zoneLivraison && order.zoneLivraison.libelle);
+
+        if (hasPosition && !hasZone) {
+          const zoneEl = article.querySelector("[data-zone]");
+          if (zoneEl) zoneEl.textContent = "Zone en cours de calcul…";
+
+          try {
+            const token = await auth.currentUser.getIdToken();
+            const res = await fetch("/api/geocode-commande", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token
+              },
+              body: JSON.stringify({ orderId })
+            });
+            const data = await res.json().catch(() => ({}));
+
+            if (zoneEl) {
+              if (data && data.ok && data.zone && data.zone.libelle) {
+                zoneEl.innerHTML = `${esc(data.zone.libelle)} <span class="zone-note">(zone estimée à partir de la position GPS)</span>`;
+              } else {
+                zoneEl.textContent = "Zone non déterminée";
+              }
+            }
+          } catch (e) {
+            if (zoneEl) zoneEl.textContent = "Zone non déterminée";
+            console.warn("Géocodage indisponible :", e.message);
+          }
+        }
+
+        // ── QR code du lien Maps ──
+        const mapsUrl = pos && pos.mapsUrl;
+        if (mapsUrl && typeof QRCode !== "undefined") {
+          const qrEl = article.querySelector("[data-qr]");
+          if (qrEl) {
+            try {
+              new QRCode(qrEl, {
+                text: String(mapsUrl),
+                width: 80,
+                height: 80,
+                correctLevel: QRCode.CorrectLevel.L
+              });
+            } catch (e) {
+              console.warn("QR code non généré :", e.message);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Erreur chargement commande:", err);
+        article.innerHTML = `<div class="invoice-inner" style="text-align:center;padding:40px;">
+          <h2 style="color:var(--red);margin-bottom:8px;">Erreur</h2>
+          <p style="color:#666;">Impossible de charger la commande ${esc(orderId)}</p>
+        </div>`;
+        container.appendChild(article);
+      }
+    }
+
+    /* ============================================================
+       Chargement global (1 ou plusieurs factures)
+       ============================================================ */
+    async function loadInvoices() {
+      const params = new URLSearchParams(location.search);
+      const singleId = params.get("id");
+      const multiIds = params.get("ids");
+
+      let orderIds = [];
+      if (singleId) {
+        orderIds = [singleId.trim()];
+      } else if (multiIds) {
+        orderIds = multiIds
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .slice(0, 20);
+      }
+
+      if (orderIds.length === 0) {
+        showError("Aucune commande spécifiée. Utilisez ?id=… ou ?ids=id1,id2,id3");
+        return;
+      }
+
+      const container = $("invoicesContainer");
+      container.innerHTML = "";
+
+      showScreen("Invoices");
+
+      for (let i = 0; i < orderIds.length; i++) {
+        await renderInvoice(container, orderIds[i]);
+      }
+    }
+
+    /* ============================================================
+       Déconnexion + redirection
+       ============================================================ */
+    window.logoutAndRedirect = async () => {
+      try { await signOut(auth); } catch (e) {}
+      location.href = "authentification.html";
+    };
+
+    /* ============================================================
+       Auth
+       ============================================================ */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "authentification.html";
+        return;
+      }
+
+      if (!isAdminUser(user)) {
+        showScreen("Denied");
+        return;
+      }
+
+      try {
+        await loadInvoices();
+      } catch (err) {
+        console.error(err);
+        showError(err.message || "Erreur de chargement");
+      }
+    });
+  </script>
+</body>
+</html>
