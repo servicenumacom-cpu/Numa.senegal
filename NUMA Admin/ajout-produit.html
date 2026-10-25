@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajouter un produit – NUMA Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --gold: #b9935a; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fafafa; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ÉCRANS */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* LOGIN */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+    .login-card { width: 100%; max-width: 400px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 36px 32px; box-shadow: 0 20px 50px rgba(0,0,0,.06); }
+    .login-card h1 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: #777; margin-bottom: 24px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .field input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; outline: none; }
+    .field input:focus { border-color: var(--black); }
+    .btn-primary { width: 100%; padding: 14px; background: var(--black); color: #fff; border-radius: 8px; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-top: 8px; transition: .2s; }
+    .btn-primary:hover { background: var(--red); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+    .login-error { background: rgba(225,29,72,.08); color: var(--red); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 16px; display: none; }
+    .login-error.show { display: block; }
+
+    /* HEADER */
+    .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
+    .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: var(--black); }
+    .brand-word { height: 22px; width: auto; color: var(--black); }
+    .admin-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); padding: 6px 12px; border: 1.5px solid var(--gold); border-radius: 999px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #666; }
+    .back-link:hover { color: var(--black); }
+    .back-link svg { width: 16px; height: 16px; }
+
+    /* PAGE */
+    .page { max-width: var(--max); margin: 0 auto; padding: 24px 16px 60px; }
+    .page-title { margin-bottom: 22px; }
+    .page-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .page-title p { font-size: 13.5px; color: #777; line-height: 1.5; }
+
+    .config-warning { display: none; background: #fef3e2; border: 1.5px solid #f59e0b; color: #92400e; padding: 14px 16px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; line-height: 1.5; }
+    .config-warning.show { display: block; }
+    .config-warning strong { font-weight: 800; }
+    .config-warning code { background: rgba(0,0,0,.08); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+    .admin-wrap { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; }
+    .product-form { display: flex; flex-direction: column; gap: 16px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .card-title { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .card-title .num { width: 28px; height: 28px; border-radius: 50%; background: var(--black); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+    .card-title h2 { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .field label .req { color: var(--red); margin-left: 2px; }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap > svg { position: absolute; left: 12px; width: 18px; height: 18px; color: #999; pointer-events: none; }
+    .input-wrap input, .input-wrap select, .input-wrap textarea { width: 100%; padding: 13px 12px 13px 40px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; transition: .15s; }
+    .input-wrap textarea { resize: vertical; min-height: 90px; padding-top: 12px; }
+    .input-wrap select { appearance: none; cursor: pointer; padding-right: 36px; }
+    .input-wrap select + .caret { position: absolute; right: 12px; width: 16px; height: 16px; color: #999; pointer-events: none; }
+    .input-wrap input:focus, .input-wrap select:focus, .input-wrap textarea:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(10,10,10,.06); }
+    .input-wrap input.err, .input-wrap select.err, .input-wrap textarea.err { border-color: var(--red); box-shadow: 0 0 0 3px rgba(225,29,72,.08); }
+    .input-wrap select:disabled { background: #fafafa; color: #999; cursor: not-allowed; }
+
+    .field-hint { font-size: 11.5px; color: #888; margin-top: 6px; line-height: 1.4; }
+    .field-err { display: none; font-size: 11.5px; font-weight: 600; color: var(--red); margin-top: 6px; }
+    .field.has-err .field-err { display: block; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+
+    .sizes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .size-box { background: #fafafa; border: 1.5px solid var(--line); border-radius: 8px; padding: 10px; text-align: center; }
+    .size-box:focus-within { border-color: var(--black); }
+    .size-box label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; }
+    .size-box input { width: 100%; padding: 8px; border: 1.5px solid var(--line); border-radius: 6px; font: inherit; font-size: 14px; font-weight: 700; text-align: center; background: #fff; }
+    .size-box input:focus { outline: none; border-color: var(--black); }
+
+    .stock-total { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--gray); border-radius: 8px; margin-top: 12px; font-size: 13px; }
+    .stock-total strong { font-weight: 800; font-size: 15px; }
+
+    .images-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .image-block { display: flex; flex-direction: column; }
+    .image-block-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .image-block-head label { font-size: 12px; font-weight: 700; margin: 0; }
+    .image-block-head label .req { color: var(--red); margin-left: 2px; }
+    .badge-type { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+    .badge-type.main { background: var(--black); color: #fff; }
+    .badge-type.secondary { background: var(--gold); color: #fff; }
+
+    .upload-zone { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 28px 16px; border: 2px dashed var(--line); border-radius: 12px; background: #fafafa; text-align: center; cursor: pointer; transition: .2s; min-height: 200px; }
+    .upload-zone:hover { border-color: var(--black); background: #f5f5f5; }
+    .upload-zone.has-file { padding: 8px; border-style: solid; border-color: var(--black); background: #fff; cursor: default; }
+    .upload-zone svg.upload-icon { width: 34px; height: 34px; color: #aaa; }
+    .upload-zone .upload-text { font-size: 13px; font-weight: 600; }
+    .upload-zone .upload-sub { font-size: 11px; color: #999; }
+    .upload-zone.has-file .upload-icon, .upload-zone.has-file .upload-text, .upload-zone.has-file .upload-sub { display: none; }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-zone.has-file input[type="file"] { display: none; }
+    .upload-preview { width: 100%; height: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; }
+
+    .file-info { display: none; align-items: center; gap: 10px; padding: 8px 10px; margin-top: 8px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; }
+    .file-info.show { display: flex; }
+    .file-info .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+    .file-info .size { color: #888; font-size: 11px; }
+    .file-info .rm { padding: 5px 10px; font-size: 11px; font-weight: 700; color: var(--red); border-radius: 6px; }
+    .file-info .rm:hover { background: #fde8ed; }
+
+    .submit-bar { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .btn-primary { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; border-radius: 10px; background: var(--black); color: #fff; font-size: 15px; font-weight: 700; transition: .2s; }
+    .btn-primary:hover { opacity: .9; }
+    .btn-primary:disabled { background: #bbb; cursor: not-allowed; }
+    .btn-primary svg { width: 18px; height: 18px; }
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .msg { font-size: 13px; font-weight: 600; padding: 12px 14px; border-radius: 8px; display: none; line-height: 1.4; }
+    .msg.show { display: block; }
+    .msg.ok { background: #e7f6ec; color: var(--green); }
+    .msg.bad { background: #fde8ed; color: var(--red); }
+    .msg.info { background: #e7eefe; color: #1d4ed8; }
+
+    .preview-col { display: none; }
+    .preview-card { position: sticky; top: 100px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .preview-card h3 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #666; margin-bottom: 14px; }
+    .pv-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .pv-img-wrap { position: relative; aspect-ratio: 3 / 4; background: var(--gray); display: grid; place-items: center; overflow: hidden; }
+    .pv-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .pv-placeholder { color: #bbb; text-align: center; padding: 20px; }
+    .pv-placeholder svg { width: 44px; height: 44px; margin: 0 auto 8px; }
+    .pv-placeholder p { font-size: 11.5px; font-weight: 600; }
+    .pv-thumbs { display: flex; gap: 8px; padding: 10px; background: #fafafa; border-top: 1px solid var(--line); overflow-x: auto; min-height: 70px; align-items: center; }
+    .pv-thumbs .empty-thumb { font-size: 11px; color: #999; font-weight: 500; }
+    .pv-thumb { width: 50px; height: 60px; border-radius: 6px; overflow: hidden; border: 2px solid transparent; background: var(--gray); flex-shrink: 0; padding: 0; cursor: pointer; }
+    .pv-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .pv-thumb.active { border-color: var(--black); }
+    .pv-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .pv-cat { font-size: 10.5px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; min-height: 14px; }
+    .pv-name { font-size: 14px; font-weight: 700; line-height: 1.3; min-height: 1.3em; }
+    .pv-desc { font-size: 12px; color: #777; line-height: 1.45; min-height: 1.45em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pv-price { font-size: 16px; font-weight: 800; }
+    .pv-sizes { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+    .pv-chip { min-width: 30px; height: 26px; padding: 0 8px; border: 1.5px solid var(--line); border-radius: 5px; font-size: 11.5px; font-weight: 700; display: grid; place-items: center; color: #999; }
+    .pv-chip.on { background: var(--black); color: #fff; border-color: var(--black); }
+
+    @media (min-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .images-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+    }
+    @media (min-width: 1024px) {
+      .header-inner { padding: 18px 40px; }
+      .brand-icon { width: 52px; height: 52px; }
+      .brand-word { height: 26px; }
+      .page { padding: 40px 40px 80px; }
+      .page-title h1 { font-size: 28px; }
+      .admin-wrap { grid-template-columns: 1fr 340px; gap: 32px; }
+      .preview-col { display: block; }
+      .card { padding: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÉCRAN : LOGIN -->
+  <section class="screen" id="screenLogin">
+    <div class="login-wrap">
+      <div class="login-card">
+        <h1>Espace administrateur</h1>
+        <p>Connectez-vous pour ajouter un produit.</p>
+        <div class="login-error" id="loginError"></div>
+        <form id="loginForm">
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" id="loginEmail" required>
+          </div>
+          <div class="field">
+            <label>Mot de passe</label>
+            <input type="password" id="loginPassword" required>
+          </div>
+          <button type="submit" class="btn-primary" id="loginBtn">Se connecter</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÉCRAN : ADMIN -->
+  <section class="screen" id="screenAdmin">
+    <header class="header">
+      <div class="header-inner">
+        <a href="admin-dashboard.html" class="brand" aria-label="NUMA accueil">
+          <img src="../image/logo.jpeg" alt="" class="brand-icon">
+          <svg class="brand-word" viewBox="0 0 268 72" role="img" aria-label="NUMA">
+            <g fill="none" stroke="currentColor" stroke-width="11">
+              <path d="M6 68V4L52 68V4"/>
+              <path d="M76 4V44a22 22 0 0 0 44 0V4"/>
+              <path d="M144 68V4L168 52L192 4V68"/>
+              <path d="M216 68V28a22 22 0 0 1 44 0V68"/>
+            </g>
+          </svg>
+        </a>
+        <span class="admin-tag">Admin — Nouveau produit</span>
+        <a href="admin-dashboard.html" class="back-link">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+          Retour au dashboard
+        </a>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="page-title">
+        <h1>AJOUTER UN PRODUIT</h1>
+        <p>Renseignez les informations, ajoutez les photos (principale + secondaire), puis publiez. Les images sont hébergées sur Cloudinary, les données dans Firestore.</p>
+      </div>
+
+      <div class="config-warning" id="configWarning">
+        ⚠️ <strong>Configuration Cloudinary manquante.</strong> Ouvre le fichier et remplis les constantes
+        <code>CLOUDINARY_CLOUD_NAME</code> et <code>CLOUDINARY_UPLOAD_PRESET</code> en haut du script.
+      </div>
+
+      <div class="admin-wrap">
+
+        <form class="product-form" id="product-form" novalidate>
+
+          <div class="card">
+            <div class="card-title"><span class="num">1</span><h2>Informations produit</h2></div>
+
+            <div class="field" id="f-title">
+              <label for="title">Titre du produit <span class="req">*</span></label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                <input id="title" type="text" placeholder="Ex : Chemise en soie Slim Fit" maxlength="120">
+              </div>
+              <p class="field-err">Indiquez un titre (2 caractères min.).</p>
+            </div>
+
+            <div class="field" id="f-desc">
+              <label for="description">Description <span class="req">*</span></label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24" style="top:14px;align-self:flex-start"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                <textarea id="description" placeholder="Décrivez la matière, la coupe, les finitions, l'occasion…" maxlength="800"></textarea>
+              </div>
+              <p class="field-hint"><span id="descCount">0</span> / 800 caractères</p>
+              <p class="field-err">Ajoutez une description (10 caractères min.).</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="num">2</span><h2>Catégorisation</h2></div>
+
+            <div class="grid-2">
+              <div class="field" id="f-gender">
+                <label for="gender">Sexe <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+                  <select id="gender">
+                    <option value="">— Sélectionner —</option>
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                    <option value="Unisexe">Unisexe</option>
+                    <option value="Enfant">Enfant</option>
+                  </select>
+                  <svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <p class="field-err">Choisissez le sexe.</p>
+              </div>
+
+              <div class="field" id="f-zone">
+                <label for="zone">Zone du corps <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                  <select id="zone">
+                    <option value="">— Sélectionner —</option>
+                    <option value="Le haut du corps">Le haut du corps</option>
+                    <option value="Le bas du corps">Le bas du corps</option>
+                    <option value="Sous-vêtements">Sous-vêtements</option>
+                  </select>
+                  <svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <p class="field-err">Choisissez la zone du corps.</p>
+              </div>
+            </div>
+
+            <div class="field" id="f-category">
+              <label for="category">Catégorie <span class="req">*</span></label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><path d="M3 6h6M3 12h4M3 18h6"/><circle cx="15" cy="11" r="5"/><path d="M19 15l3 3"/></svg>
+                <select id="category" disabled>
+                  <option value="">— Choisissez d'abord une zone —</option>
+                </select>
+                <svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <p class="field-err">Choisissez une catégorie.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="num">3</span><h2>Prix & Stock</h2></div>
+
+            <div class="field" id="f-price">
+              <label for="price">Prix (FCFA) <span class="req">*</span></label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <input id="price" type="number" min="0" step="100" placeholder="Ex : 25000">
+              </div>
+              <p class="field-err">Indiquez un prix valide (supérieur à 0).</p>
+            </div>
+
+            <div class="field" id="f-sizes">
+              <label>Quantité en stock par taille</label>
+              <div class="sizes-grid">
+                <div class="size-box"><label for="stock-s">S</label><input id="stock-s" type="number" min="0" value="0"></div>
+                <div class="size-box"><label for="stock-m">M</label><input id="stock-m" type="number" min="0" value="0"></div>
+                <div class="size-box"><label for="stock-l">L</label><input id="stock-l" type="number" min="0" value="0"></div>
+                <div class="size-box"><label for="stock-xl">XL</label><input id="stock-xl" type="number" min="0" value="0"></div>
+              </div>
+              <div class="stock-total"><span>Stock total</span><strong id="stockTotal">0</strong></div>
+              <p class="field-err">Indiquez au moins une taille avec du stock.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="num">4</span><h2>Images du produit</h2></div>
+
+            <div class="field" id="f-images">
+              <div class="images-grid">
+                <div class="image-block">
+                  <div class="image-block-head">
+                    <label>Image principale <span class="req">*</span></label>
+                    <span class="badge-type main">Principale</span>
+                  </div>
+                  <label class="upload-zone" id="zoneMain">
+                    <svg class="upload-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+                    <span class="upload-text">Choisir l'image principale</span>
+                    <span class="upload-sub">JPG, PNG, WEBP — 5 Mo max</span>
+                    <input type="file" accept="image/*">
+                  </label>
+                  <div class="file-info" id="infoMain">
+                    <span class="name" id="nameMain">—</span>
+                    <span class="size" id="sizeMain">—</span>
+                    <button type="button" class="rm" id="rmMain">Retirer</button>
+                  </div>
+                </div>
+
+                <div class="image-block">
+                  <div class="image-block-head">
+                    <label>Image secondaire <span class="req">*</span></label>
+                    <span class="badge-type secondary">Secondaire</span>
+                  </div>
+                  <label class="upload-zone" id="zoneSecond">
+                    <svg class="upload-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+                    <span class="upload-text">Choisir l'image secondaire</span>
+                    <span class="upload-sub">JPG, PNG, WEBP — 5 Mo max</span>
+                    <input type="file" accept="image/*">
+                  </label>
+                  <div class="file-info" id="infoSecond">
+                    <span class="name" id="nameSecond">—</span>
+                    <span class="size" id="sizeSecond">—</span>
+                    <button type="button" class="rm" id="rmSecond">Retirer</button>
+                  </div>
+                </div>
+              </div>
+              <p class="field-err">Ajoutez les deux images (principale et secondaire).</p>
+            </div>
+          </div>
+
+          <div class="submit-bar">
+            <div class="msg" id="msg" role="status" aria-live="polite"></div>
+            <button type="submit" class="btn-primary" id="submitBtn">
+              <span id="submitLabel">Publier le produit</span>
+              <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <aside class="preview-col">
+          <div class="preview-card">
+            <h3>Aperçu du produit</h3>
+            <div class="pv-card">
+              <div class="pv-img-wrap">
+                <div class="pv-placeholder" id="pvPlaceholder">
+                  <svg viewBox="0 0 24 24"><path d="M12 4.5a1.8 1.8 0 1 1 1.8 1.8c-.9 0-1.8.7-1.8 1.7v.5"/><path d="M12 8.5L3.5 15.2c-.7.5-.4 1.4.5 1.4h16c.9 0 1.2-.9.5-1.4L12 8.5z"/></svg>
+                  <p>Aucune image</p>
+                </div>
+                <img id="pvImg" alt="" style="display:none">
+              </div>
+              <div class="pv-thumbs" id="pvThumbs">
+                <span class="empty-thumb">La galerie apparaîtra ici</span>
+              </div>
+              <div class="pv-body">
+                <span class="pv-cat" id="pvCat">—</span>
+                <p class="pv-name" id="pvName">Titre du produit</p>
+                <p class="pv-desc" id="pvDesc">Description…</p>
+                <p class="pv-price" id="pvPrice">— CFA</p>
+                <div class="pv-sizes" id="pvSizes"></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </main>
+  </section>
+
+  <script type="module">
+    /* ================================================================
+       1. CONFIG FIREBASE
+       ================================================================ */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
+      authDomain: "numa-com.firebaseapp.com",
+      projectId: "numa-com",
+      storageBucket: "numa-com.firebasestorage.app",
+      messagingSenderId: "953579157946",
+      appId: "1:953579157946:web:4fff5a890cf82f1ccec583",
+      measurementId: "G-BHR7THHKXG"
+    };
+
+    /* ================================================================
+       2. CONFIG CLOUDINARY (tes vraies valeurs)
+       ================================================================ */
+    const CLOUDINARY_CLOUD_NAME    = "mqqel0dl";
+    const CLOUDINARY_UPLOAD_PRESET = "numa_unsigned";
+
+    const PRODUCTS_COLLECTION = "produits";
+
+    /* ================================================================
+       3. IMPORTS FIREBASE
+       ================================================================ */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
+
+    /* ================================================================
+       4. CATÉGORIES
+       ================================================================ */
+    const CATEGORIES = {
+      "Le haut du corps": ["T-shirts & Débardeurs","Chemises & Chemisiers","Pulls & Sweatshirts","Vestes & Manteaux","Costumes & Blazers"],
+      "Le bas du corps": ["Pantalons & Chinos","Jeans","Shorts & Bermudas","Jupes & Robes","Survêtements & Leggings"],
+      "Sous-vêtements": ["Gilets de corps & Maillots","Boxers & Caleçons","Slips & Culottes","Soutiens-gorge","Chaussettes"]
+    };
+
+    /* ================================================================
+       5. DOM
+       ================================================================ */
+    const $ = id => document.getElementById(id);
+    const fmt = n => n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
+
+    const form = $("product-form");
+    const titleEl = $("title"), descEl = $("description"), descCount = $("descCount");
+    const genderEl = $("gender"), zoneEl = $("zone"), categoryEl = $("category"), priceEl = $("price");
+    const submitBtn = $("submitBtn"), submitLabel = $("submitLabel"), msg = $("msg");
+    const stockTotalEl = $("stockTotal");
+
+    // Avertissement config Cloudinary
+    if (!CLOUDINARY_CLOUD_NAME || CLOUDINARY_CLOUD_NAME === "ton_cloud_name_ici") {
+      $("configWarning").classList.add("show");
+    }
+
+    /* ================================================================
+       6. AUTHENTIFICATION (nouveau)
+       ================================================================ */
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      $("screen" + name).classList.add("active");
+    }
+
+    $("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = $("loginEmail").value.trim().toLowerCase();
+      const password = $("loginPassword").value;
+
+      $("loginError").classList.remove("show");
+      $("loginBtn").disabled = true;
+      $("loginBtn").textContent = "Connexion...";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged prend le relais
+      } catch (err) {
+        console.error(err);
+        $("loginError").textContent = "E-mail ou mot de passe incorrect.";
+        $("loginError").classList.add("show");
+        $("loginBtn").disabled = false;
+        $("loginBtn").textContent = "Se connecter";
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        showScreen("Login");
+        return;
+      }
+
+      if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        $("loginError").textContent = `Le compte ${user.email} n'est pas autorisé.`;
+        $("loginError").classList.add("show");
+        signOut(auth);
+        showScreen("Login");
+        return;
+      }
+
+      showScreen("Admin");
+      // Initialisation du formulaire une fois connecté
+      updateStockTotal(); updatePreview(); updatePreviewGallery();
+    });
+
+    /* ================================================================
+       7. HELPERS
+       ================================================================ */
+    function fieldErr(id, on) {
+      const el = $(id); if (!el) return;
+      el.classList.toggle("has-err", on);
+      const inp = el.querySelector("input, select, textarea");
+      if (inp) inp.classList.toggle("err", on);
+    }
+    function showMsg(text, kind = "info") { msg.textContent = text; msg.className = "msg show " + kind; }
+    function hideMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    /* ================================================================
+       8. UPLOADERS (CORRIGÉ : plus de redéclaration de variables)
+       ================================================================ */
+    const ZONE_HTML = (labelText) => `
+      <svg class="upload-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+      <span class="upload-text">${labelText}</span>
+      <span class="upload-sub">JPG, PNG, WEBP — 5 Mo max</span>
+      <input type="file" accept="image/*">
+    `;
+
+    function createUploader(opts) {
+      const zoneEl = $(opts.zone);
+      const infoEl = $(opts.info);
+      const nameEl = $(opts.name);
+      const sizeEl = $(opts.size);
+      const removeEl = $(opts.remove);
+      let file = null;
+
+      function bindInput() {
+        const input = zoneEl.querySelector("input[type=file]");
+        if (!input) return;
+        input.addEventListener("change", () => {
+          const f = input.files[0];
+          if (!f) return;
+          if (f.size > 5 * 1024 * 1024) { showMsg("Image trop lourde (5 Mo max).", "bad"); input.value = ""; return; }
+          file = f;
+          zoneEl.classList.add("has-file");
+          nameEl.textContent = f.name;
+          sizeEl.textContent = (f.size / 1024 / 1024).toFixed(2) + " Mo";
+          infoEl.classList.add("show");
+          // ✅ plus de redéclaration ici
+          const reader = new FileReader();
+          reader.onload = ev => { zoneEl.innerHTML = `<img class="upload-preview" src="${ev.target.result}" alt="">`; opts.onChange && opts.onChange(); };
+          reader.readAsDataURL(f);
+        });
+      }
+
+      function clear() {
+        file = null;
+        zoneEl.classList.remove("has-file");
+        zoneEl.innerHTML = ZONE_HTML(opts.placeholder || "Choisir une image");
+        infoEl.classList.remove("show");
+        bindInput();
+        opts.onChange && opts.onChange();
+      }
+
+      bindInput();
+      removeEl.addEventListener("click", clear);
+
+      return {
+        getFile: () => file,
+        getPreview: () => { const img = zoneEl.querySelector(".upload-preview"); return img ? img.src : null; },
+        clear
+      };
+    }
+
+    const mainUploader = createUploader({ zone: "zoneMain", info: "infoMain", name: "nameMain", size: "sizeMain", remove: "rmMain", placeholder: "Choisir l'image principale", onChange: onImageChange });
+    const secondUploader = createUploader({ zone: "zoneSecond", info: "infoSecond", name: "nameSecond", size: "sizeSecond", remove: "rmSecond", placeholder: "Choisir l'image secondaire", onChange: onImageChange });
+
+    function onImageChange() { updatePreviewGallery(); fieldErr("f-images", false); }
+
+    /* ================================================================
+       9. CATÉGORIES DYNAMIQUES
+       ================================================================ */
+    zoneEl.addEventListener("change", () => {
+      const zone = zoneEl.value;
+      categoryEl.innerHTML = "";
+      if (!zone) {
+        categoryEl.disabled = true;
+        categoryEl.innerHTML = '<option value="">— Choisissez d\'abord une zone —</option>';
+        return;
+      }
+      categoryEl.disabled = false;
+      const opts = ['<option value="">— Sélectionner —</option>'];
+      CATEGORIES[zone].forEach(c => opts.push(`<option value="${c}">${c}</option>`));
+      categoryEl.innerHTML = opts.join("");
+      fieldErr("f-zone", false);
+      updatePreview();
+    });
+
+    /* ================================================================
+       10. COMPTEURS
+       ================================================================ */
+    descEl.addEventListener("input", () => { descCount.textContent = descEl.value.length; updatePreview(); });
+
+    ["stock-s","stock-m","stock-l","stock-xl"].forEach(id => $(id).addEventListener("input", updateStockTotal));
+    function updateStockTotal() {
+      const total = ["stock-s","stock-m","stock-l","stock-xl"].reduce((s, id) => s + (parseInt($(id).value) || 0), 0);
+      stockTotalEl.textContent = total;
+      return total;
+    }
+
+    /* ================================================================
+       11. APERÇU
+       ================================================================ */
+    let currentPreviewSrc = null;
+    function updatePreviewGallery() {
+      const main = mainUploader.getPreview();
+      const second = secondUploader.getPreview();
+      const thumbs = $("pvThumbs");
+      const pvImg = $("pvImg");
+      const pvPh = $("pvPlaceholder");
+      const defaultSrc = main || second;
+      if (defaultSrc) {
+        pvImg.src = defaultSrc; pvImg.style.display = "block"; pvPh.style.display = "none"; currentPreviewSrc = defaultSrc;
+      } else {
+        pvImg.style.display = "none"; pvPh.style.display = "block"; currentPreviewSrc = null;
+      }
+      const list = [];
+      if (main) list.push({ src: main, label: "Principale" });
+      if (second) list.push({ src: second, label: "Secondaire" });
+      if (!list.length) { thumbs.innerHTML = '<span class="empty-thumb">La galerie apparaîtra ici</span>'; return; }
+      thumbs.innerHTML = list.map(it => `<button type="button" class="pv-thumb ${currentPreviewSrc === it.src ? "active" : ""}" data-src="${it.src}" title="${it.label}"><img src="${it.src}" alt="${it.label}"></button>`).join("");
+      thumbs.querySelectorAll(".pv-thumb").forEach(btn => {
+        btn.addEventListener("click", () => {
+          pvImg.src = btn.dataset.src; pvImg.style.display = "block"; pvPh.style.display = "none"; currentPreviewSrc = btn.dataset.src;
+          thumbs.querySelectorAll(".pv-thumb").forEach(b => b.classList.toggle("active", b === btn));
+        });
+      });
+    }
+
+    function updatePreview() {
+      $("pvName").textContent = titleEl.value.trim() || "Titre du produit";
+      $("pvDesc").textContent = descEl.value.trim() || "Description…";
+      const bits = [genderEl.value, zoneEl.value, categoryEl.value].filter(Boolean);
+      $("pvCat").textContent = bits.length ? bits.join(" · ") : "—";
+      $("pvPrice").textContent = priceEl.value ? fmt(parseInt(priceEl.value)) : "— CFA";
+      const sizes = { S: +$("stock-s").value || 0, M: +$("stock-m").value || 0, L: +$("stock-l").value || 0, XL: +$("stock-xl").value || 0 };
+      $("pvSizes").innerHTML = Object.entries(sizes).map(([s, q]) => `<span class="pv-chip ${q > 0 ? "on" : ""}">${s}</span>`).join("");
+    }
+
+    titleEl.addEventListener("input", updatePreview);
+    genderEl.addEventListener("change", updatePreview);
+    categoryEl.addEventListener("change", updatePreview);
+    priceEl.addEventListener("input", updatePreview);
+
+    /* ================================================================
+       12. VALIDATION
+       ================================================================ */
+    function validate() {
+      let ok = true;
+      hideMsg();
+      ["f-title","f-desc","f-gender","f-zone","f-category","f-price","f-sizes","f-images"].forEach(id => fieldErr(id, false));
+
+      if (titleEl.value.trim().length < 2) { fieldErr("f-title", true); ok = false; }
+      if (descEl.value.trim().length < 10) { fieldErr("f-desc", true); ok = false; }
+      if (!genderEl.value) { fieldErr("f-gender", true); ok = false; }
+      if (!zoneEl.value) { fieldErr("f-zone", true); ok = false; }
+      if (!categoryEl.value) { fieldErr("f-category", true); ok = false; }
+      const price = parseFloat(priceEl.value);
+      if (!price || price <= 0) { fieldErr("f-price", true); ok = false; }
+      if (updateStockTotal() === 0) { fieldErr("f-sizes", true); ok = false; }
+      if (!mainUploader.getFile() || !secondUploader.getFile()) { fieldErr("f-images", true); ok = false; }
+
+      if (!ok) showMsg("Vérifiez les champs en rouge.", "bad");
+      return ok;
+    }
+
+    /* ================================================================
+       13. CLOUDINARY
+       ================================================================ */
+    async function uploadToCloudinary(file) {
+      if (!CLOUDINARY_CLOUD_NAME || CLOUDINARY_CLOUD_NAME === "ton_cloud_name_ici") {
+        throw new Error("Configuration Cloudinary manquante.");
+      }
+      const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const res = await fetch(url, { method: "POST", body: fd });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error("Cloudinary : " + (txt || res.statusText));
+      }
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    /* ================================================================
+       14. SUBMIT
+       ================================================================ */
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      submitBtn.disabled = true;
+
+      try {
+        submitLabel.innerHTML = `<span class="spinner"></span> Envoi image principale…`;
+        showMsg("Téléversement de l'image principale…", "info");
+        const imageUrlMain = await uploadToCloudinary(mainUploader.getFile());
+
+        submitLabel.innerHTML = `<span class="spinner"></span> Envoi image secondaire…`;
+        showMsg("Image principale ✓ — téléversement de l'image secondaire…", "info");
+        const imageUrlSecond = await uploadToCloudinary(secondUploader.getFile());
+
+        submitLabel.innerHTML = `<span class="spinner"></span> Enregistrement…`;
+        showMsg("Images envoyées ✓ — enregistrement dans Firestore…", "info");
+
+        const stock = {
+          S: +$("stock-s").value || 0, M: +$("stock-m").value || 0,
+          L: +$("stock-l").value || 0, XL: +$("stock-xl").value || 0
+        };
+
+        const product = {
+          titre: titleEl.value.trim(),
+          description: descEl.value.trim(),
+          sexe: genderEl.value,
+          zoneDuCorps: zoneEl.value,
+          categorie: categoryEl.value,
+          prix: parseFloat(priceEl.value),
+          stock,
+          stockTotal: stock.S + stock.M + stock.L + stock.XL,
+          imageUrl: imageUrlMain,
+          imageUrlSecondaire: imageUrlSecond,
+          images: [imageUrlMain, imageUrlSecond],
+          statut: "visible",
+          actif: true,
+          createdAt: serverTimestamp(),
+          createdAtLocal: Date.now()
+        };
+
+        await addDoc(collection(db, PRODUCTS_COLLECTION), product);
+
+        showMsg(`✅ Produit « ${product.titre} » publié avec succès !`, "ok");
+        resetForm();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+      } catch (err) {
+        console.error(err);
+        let m = err.message || "Erreur inconnue";
+        if (m.toLowerCase().includes("permission")) m = "Firestore a refusé l'écriture. Vérifie les règles (elles doivent utiliser ton email, pas ton UID).";
+        if (m.toLowerCase().includes("upload preset")) m = "Upload preset introuvable ou non unsigned. Vérifie Cloudinary → Settings → Upload presets.";
+        showMsg("❌ " + m, "bad");
+      } finally {
+        submitBtn.disabled = false;
+        submitLabel.textContent = "Publier le produit";
+      }
+    });
+
+    /* ================================================================
+       15. RESET
+       ================================================================ */
+    function resetForm() {
+      form.reset();
+      descCount.textContent = "0";
+      mainUploader.clear(); secondUploader.clear();
+      categoryEl.disabled = true;
+      categoryEl.innerHTML = '<option value="">— Choisissez d\'abord une zone —</option>';
+      updateStockTotal(); updatePreview(); updatePreviewGallery();
+    }
+  </script>
+</body>
+</html>
