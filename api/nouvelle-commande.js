@@ -192,7 +192,8 @@ module.exports = async function handler(req, res) {
   const siteUrl = (process.env.SITE_URL || "").replace(/\/+$/, "");
   const emailHtml = buildEmailHtml(orderData, orderId, siteUrl);
   const subject = `Nouvelle commande ${orderData.numero || orderId}`;
-
+     const k = process.env.RESEND_API_KEY || "";
+     console.log("Cle Resend : longueur=" + k.length + " debut=" + k.slice(0, 3) + " espaces=" + (k !== k.trim()));
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
