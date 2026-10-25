@@ -37,126 +37,159 @@
     .view.active { display: block; animation: fadeIn .3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* HEADERS DE VUE */
     .page-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
     .page-title h1 { font-size: 22px; font-weight: 800; }
     .page-title span { font-size: 14px; font-weight: 500; color: #777; margin-left: 8px; }
     .clear-cart { font-size: 12px; color: #999; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
 
     /* BANDEAU RÉASSURANCE */
-    .reassurance {
-      display: flex; justify-content: space-between; align-items: center;
-      background: #fff1f2; border-radius: 10px; padding: 12px 16px;
-      margin-bottom: 20px; gap: 12px;
-    }
+    .reassurance { display: flex; justify-content: space-between; align-items: center; background: #fff1f2; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; gap: 12px; }
     .reassurance-item { display: flex; align-items: center; gap: 10px; }
     .reassurance-item svg { width: 20px; height: 20px; color: var(--black); flex-shrink: 0; }
     .reassurance-item .text { display: flex; flex-direction: column; line-height: 1.2; }
     .reassurance-item .text strong { font-size: 12px; font-weight: 700; }
     .reassurance-item .text span { font-size: 11px; color: #777; }
 
-    /* CARTES PRODUITS (Compactes) */
+    /* CARTES PRODUITS */
     .bands { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-    .band {
-      display: grid; grid-template-columns: 64px 1fr; gap: 12px;
-      padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff;
-      align-items: center;
-    }
+    .band { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; align-items: center; }
     .band.need { border-color: var(--red); }
     .band-img { width: 64px; aspect-ratio: 3/4; object-fit: cover; border-radius: 8px; background: var(--gray); }
     .band-info { min-width: 0; display: flex; flex-direction: column; }
     .band-name { font-size: 13.5px; font-weight: 600; line-height: 1.25; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .band-price { font-size: 14px; font-weight: 800; color: var(--red); margin-bottom: 6px; }
-    
     .band-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
     .sizes-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .chip { min-width: 32px; height: 28px; padding: 0 8px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 12px; font-weight: 600; display: grid; place-items: center; }
     .chip.sel { background: var(--black); color: #fff; border-color: var(--black); }
     .one-size { font-size: 11px; font-weight: 600; color: #666; background: var(--gray); padding: 4px 8px; border-radius: 4px; }
-    
     .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; }
     .qty button { width: 28px; height: 28px; font-size: 16px; font-weight: 600; color: #666; }
     .qty span { width: 24px; text-align: center; font-weight: 700; font-size: 13px; }
-    
     .band-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
     .line-total { font-size: 14px; font-weight: 800; color: var(--red); }
     .trash { color: #999; padding: 4px; border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
     .trash:hover { color: var(--red); }
     .trash svg { width: 16px; height: 16px; }
-    
     .size-err { display: none; width: 100%; font-size: 11px; font-weight: 600; color: var(--red); margin-top: 4px; }
     .band.need .size-err { display: block; }
 
-    /* RÉCAPITULATIF (Compact) */
+    /* RÉCAP */
     .summary-box { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: #fff; margin-bottom: 20px; }
     .summary-box h2 { font-size: 16px; font-weight: 800; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
     .row { display: flex; justify-content: space-between; gap: 10px; margin: 8px 0; font-size: 13.5px; color: #555; }
     .row.total { font-size: 17px; font-weight: 800; color: var(--black); border-top: 1.5px solid var(--line); padding-top: 12px; margin-top: 12px; }
     .row.total span:last-child { color: var(--red); }
 
-    /* BARRE FIXE PANIER */
-    .sticky-bar {
-      position: fixed; left: 0; right: 0; bottom: 76px;
-      background: #fff; border-top: 1px solid var(--line);
-      padding: 12px 16px; z-index: 55;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      box-shadow: 0 -4px 15px rgba(0,0,0,.05);
+    /* FIX PC : bouton VALIDER dans le récap */
+    .btn-go-checkout-desktop {
+      display: none;
+      width: 100%; margin-top: 16px; padding: 14px;
+      background: var(--black); color: #fff; border-radius: 8px;
+      font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+      cursor: pointer;
     }
+    .btn-go-checkout-desktop:hover { background: var(--red); }
+
+    /* BARRE FIXE PANIER (mobile) */
+    .sticky-bar { position: fixed; left: 0; right: 0; bottom: 76px; background: #fff; border-top: 1px solid var(--line); padding: 12px 16px; z-index: 55; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 -4px 15px rgba(0,0,0,.05); }
     .sticky-bar .total-info { display: flex; flex-direction: column; }
     .sticky-bar .total-info span { font-size: 11px; color: #777; font-weight: 600; }
     .sticky-bar .total-info strong { font-size: 20px; font-weight: 800; color: var(--red); line-height: 1; }
-    .sticky-bar .btn-validate {
-      background: var(--black); color: #fff; padding: 0 32px; height: 48px;
-      border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .sticky-bar .btn-validate { background: var(--black); color: #fff; padding: 0 32px; height: 48px; border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; justify-content: center; }
+    .sticky-bar .btn-validate:hover { background: var(--red); }
 
-    /* CHECKOUT (Vue 2) */
+    /* CHECKOUT */
     .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 16px; }
     .back-link:hover { color: var(--black); }
     .back-link svg { width: 16px; height: 16px; }
-    
     .stepper { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #888; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; }
     .stepper .step { display: flex; align-items: center; gap: 4px; }
     .stepper .step.done { color: var(--green); }
     .stepper .step.current { color: var(--black); font-weight: 700; }
     .stepper .sep { color: #ccc; }
-    
     .checkout-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
     .checkout-title p { font-size: 13px; color: #666; margin-bottom: 20px; }
-
     .recap-box { background: #f9fafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 24px; }
     .recap-box .row { margin: 4px 0; font-size: 13px; }
     .recap-box .row.total { border-top: 1px solid #e5e5e5; margin-top: 8px; padding-top: 8px; font-size: 15px; }
 
+    /* FORM */
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #333; }
-    .form-group input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
+    .form-group input[type="text"], .form-group input[type="tel"] { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
     .form-group input.err { border-color: var(--red); }
     .form-group input:focus { outline: none; border-color: var(--black); }
-    
-    .pos-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 13px; background: #fff; }
-    .pos-btn.ok { border-color: var(--green); color: var(--green); background: #f0fdf4; }
-    .pos-status { font-size: 11.5px; margin-top: 6px; color: #888; text-align: center; }
-    
+
+    /* ADRESSE avec bouton Parcourir */
+    .input-with-action { display: flex; gap: 8px; }
+    .input-with-action input { flex: 1; }
+    .input-action-btn { padding: 0 14px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer; transition: .15s; }
+    .input-action-btn:hover { border-color: var(--black); background: #fafafa; }
+    .input-action-btn svg { width: 16px; height: 16px; }
+    @media (max-width: 380px) {
+      .input-with-action { flex-direction: column; }
+      .input-action-btn { padding: 11px; justify-content: center; }
+    }
+
+    /* GPS CARD */
+    .gps-card { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; transition: .25s; }
+    .gps-card.loading { border-color: var(--black); }
+    .gps-card.active { border-color: var(--green); background: #f0fdf4; }
+    .gps-card.error { border-color: var(--red); background: #fff1f2; }
+    .gps-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--gray); display: grid; place-items: center; flex-shrink: 0; color: var(--black); transition: .2s; }
+    .gps-card.loading .gps-icon { background: var(--black); color: #fff; animation: gpsPulse 1.2s infinite; }
+    .gps-card.active .gps-icon { background: var(--green); color: #fff; }
+    .gps-card.error .gps-icon { background: var(--red); color: #fff; }
+    @keyframes gpsPulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    .gps-content { flex: 1; min-width: 0; }
+    .gps-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .gps-desc { font-size: 11.5px; color: #777; line-height: 1.35; }
+    .gps-card.active .gps-desc { color: var(--green); font-weight: 600; }
+    .gps-card.error .gps-desc { color: var(--red); }
+    .gps-action { flex-shrink: 0; padding: 8px 16px; border-radius: 8px; background: var(--black); color: #fff; font-size: 12.5px; font-weight: 700; transition: .15s; }
+    .gps-action:hover:not(:disabled) { background: var(--red); }
+    .gps-action:disabled { opacity: .6; cursor: wait; }
+    .gps-card.active .gps-action { background: var(--green); }
+    .gps-card.error .gps-action { background: var(--red); }
+    .gps-coords { margin-top: 10px; padding: 8px 10px; background: var(--gray); border-radius: 6px; font-size: 11px; color: #666; font-family: monospace; word-break: break-all; display: none; }
+    .gps-card.active ~ .gps-coords { display: block; }
+
     .cgv-label { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: #555; margin: 24px 0; cursor: pointer; }
     .cgv-label input { margin-top: 2px; accent-color: var(--black); width: 16px; height: 16px; flex-shrink: 0; }
     .cgv-label a { text-decoration: underline; color: var(--black); font-weight: 600; }
-
-    .btn-confirm {
-      width: 100%; background: var(--black); color: #fff; padding: 16px;
-      border-radius: 8px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
-      display: flex; justify-content: center; align-items: center; gap: 10px; transition: .2s;
-    }
+    .btn-confirm { width: 100%; background: var(--black); color: #fff; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: .2s; }
     .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
-    
     .msg { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 1em; text-align: center; }
-    .note { font-size: 11.5px; color: #888; margin-top: 12px; text-align: center; }
 
-    /* EMPTY */
-    .empty { text-align: center; padding: 60px 16px; border: 1px dashed var(--line); border-radius: 12px; }
-    .empty svg { width: 54px; height: 54px; margin: 0 auto 14px; color: #aaa; }
-    .btn-dark { display: inline-block; background: var(--black); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 26px; border-radius: 6px; }
+    /* MODALES */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+    .modal-overlay.show { display: flex; }
+    .modal-card { background: #fff; border-radius: 16px; max-width: 460px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.3); animation: modalIn .25s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 16px; font-weight: 800; }
+    .modal-close { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; color: #888; }
+    .modal-close:hover { background: var(--gray); }
+    .modal-body { padding: 16px 20px 20px; overflow-y: auto; flex: 1; }
+    .dept-group { margin-bottom: 20px; }
+    .dept-group h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 10px; }
+    .commune-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .commune-btn { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 12.5px; font-weight: 500; text-align: left; transition: .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .commune-btn:hover { border-color: var(--black); background: #fafafa; }
+    .commune-btn.region-btn { background: #f9fafb; font-weight: 600; }
+    @media (min-width: 600px) { .commune-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    /* Modal permission GPS */
+    .permission-modal { max-width: 380px; }
+    .permission-modal .modal-body { text-align: center; padding: 32px 24px; }
+    .permission-icon { width: 64px; height: 64px; background: #fff1f2; color: var(--red); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; font-size: 32px; }
+    .permission-modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+    .permission-modal p { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 20px; }
+    .permission-actions { display: flex; gap: 8px; }
+    .permission-actions button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .permission-actions .btn-close { border: 1.5px solid var(--line); background: #fff; }
+    .permission-actions .btn-retry { background: var(--black); color: #fff; border: none; }
 
     /* SUCCÈS */
     #successScreen { display: none; max-width: 600px; margin: 40px auto; padding: 30px; border: 1px solid var(--line); border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
@@ -172,6 +205,11 @@
     .wave-instructions { background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 16px; border-radius: 8px; font-size: 14px; color: #166534; text-align: left; line-height: 1.6; margin-bottom: 10px; }
     .btn-whatsapp { background: #25d366; color: #fff; padding: 16px; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; text-decoration: none; }
 
+    /* EMPTY */
+    .empty { text-align: center; padding: 60px 16px; border: 1px dashed var(--line); border-radius: 12px; }
+    .empty svg { width: 54px; height: 54px; margin: 0 auto 14px; color: #aaa; }
+    .btn-dark { display: inline-block; background: var(--black); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 26px; border-radius: 6px; }
+
     /* TABBAR */
     .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
     .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
@@ -181,28 +219,25 @@
 
     @media (min-width: 1024px) {
       body { padding-bottom: 0; }
-      .tabbar, .nav-mobile, .sticky-bar { display: none !important; }
+      .tabbar, .nav-mobile { display: none !important; }
+      .sticky-bar { display: none !important; }
       .header-inner { padding: 18px 40px; }
       .brand-icon { width: 52px; height: 52px; }
       .brand-word { height: 26px; }
       .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
       .page { padding: 40px 40px 60px; }
       .page-title h1 { font-size: 28px; }
-      
       .layout { display: grid; grid-template-columns: 1fr 380px; gap: 36px; align-items: start; }
       .summary-box { position: sticky; top: 110px; }
-      
+      .btn-go-checkout-desktop { display: block; }
       .band { grid-template-columns: 80px 1fr; gap: 16px; padding: 16px; }
       .band-img { width: 80px; }
       .band-name { font-size: 15px; }
       .band-price { font-size: 16px; }
-      
       .btn-confirm { max-width: 400px; margin: 0 auto; }
     }
-    
-    @supports (-webkit-touch-callout: none) {
-      input, select, textarea { font-size: 16px !important; }
-    }
+
+    @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } }
     html { touch-action: manipulation; }
   </style>
 </head>
@@ -229,7 +264,7 @@
   </header>
 
   <main class="page" id="mainPage">
-    
+
     <!-- VUE 1 : PANIER -->
     <div class="view active" id="viewCart">
       <div class="page-title">
@@ -263,6 +298,8 @@
           <div class="row"><span>Articles</span><span id="nbArticlesCart">0</span></div>
           <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
           <div class="row total"><span>Total</span><span id="totalCart">0 CFA</span></div>
+          <!-- Bouton VALIDER visible sur PC -->
+          <button class="btn-go-checkout-desktop" id="btnGoCheckoutDesktop">VALIDER</button>
         </aside>
       </div>
     </div>
@@ -302,18 +339,35 @@
           <label for="tel">Votre numéro WhatsApp *</label>
           <input id="tel" type="tel" placeholder="Ex : 77 000 00 00" required>
         </div>
+
+        <!-- ADRESSE avec bouton Parcourir -->
         <div class="form-group">
           <label for="manual">Quartier / adresse de livraison *</label>
-          <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée" required>
+          <div class="input-with-action">
+            <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée" required>
+            <button class="input-action-btn" id="browseBtn" type="button">
+              <svg viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
+              Parcourir
+            </button>
+          </div>
         </div>
 
+        <!-- POSITION GPS (redesignée) -->
         <div class="form-group">
-          <label>Position GPS (facultatif, aide le livreur)</label>
-          <button class="pos-btn" id="posBtn" type="button">
-            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-            <span id="posLabel">Ma position</span>
-          </button>
-          <p class="pos-status" id="posStatus">Appuyez pour partager votre position.</p>
+          <label>Position GPS</label>
+          <div class="gps-card" id="gpsCard">
+            <div class="gps-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            </div>
+            <div class="gps-content">
+              <div class="gps-title" id="gpsTitle">Localiser ma position</div>
+              <div class="gps-desc" id="gpsDesc">Aide le livreur à vous trouver rapidement.</div>
+            </div>
+            <button class="gps-action" id="gpsBtn" type="button">
+              <span id="gpsBtnLabel">Activer</span>
+            </button>
+          </div>
+          <div class="gps-coords" id="gpsCoords"></div>
         </div>
 
         <label class="cgv-label">
@@ -333,13 +387,39 @@
     </div>
   </main>
 
-  <!-- BARRE FIXE PANIER -->
+  <!-- BARRE FIXE PANIER (mobile uniquement) -->
   <div class="sticky-bar" id="stickyBar">
     <div class="total-info">
       <span>Total</span>
       <strong id="totalSticky">0 CFA</strong>
     </div>
     <button class="btn-validate" id="btnGoCheckout">VALIDER</button>
+  </div>
+
+  <!-- MODALE : Choix commune -->
+  <div class="modal-overlay" id="communesModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Choisir votre commune</h3>
+        <button class="modal-close" onclick="closeCommunesModal()">×</button>
+      </div>
+      <div class="modal-body" id="communesBody"></div>
+    </div>
+  </div>
+
+  <!-- MODALE : Permission GPS refusée -->
+  <div class="modal-overlay" id="permissionModal">
+    <div class="modal-card permission-modal">
+      <div class="modal-body">
+        <div class="permission-icon">📍</div>
+        <h3>Localisation bloquée</h3>
+        <p>Votre navigateur bloque l'accès à votre position. Pour nous aider à vous livrer, autorisez la localisation dans les paramètres, ou saisissez votre commune manuellement.</p>
+        <div class="permission-actions">
+          <button class="btn-close" onclick="closePermissionModal()">Fermer</button>
+          <button class="btn-retry" onclick="closePermissionModal(); locateUser();">Réessayer</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="successScreen">
@@ -366,14 +446,14 @@
     // ==========================================
     // CONFIGURATION
     // ==========================================
-    const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/"; 
-    const WAVE_NUMERO = "À_REMPLIR"; 
-    const WHATSAPP_VENDEUR = "221766589598"; 
-    
+    const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/";
+    const WAVE_NUMERO = "À_REMPLIR";
+    const WHATSAPP_VENDEUR = "221766589598";
+
     const CART_KEY = "numa_cart";
     const FAV_KEY = "numa_favs";
     const POS_KEY  = "numa_position";
-    
+
     const firebaseConfig = { apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI", authDomain: "numa-com.firebaseapp.com", projectId: "numa-com", storageBucket: "numa-com.firebasestorage.app", messagingSenderId: "953579157946", appId: "1:953579157946:web:4fff5a890cf82f1ccec583" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -391,6 +471,50 @@
     let position = null;
     try { position = JSON.parse(localStorage.getItem(POS_KEY)); } catch (e) {}
 
+    // ==========================================
+    // COMMUNES DU SÉNÉGAL (groupées par département)
+    // ==========================================
+    const COMMUNES = {
+      "Dakar": [
+        "Biscuiterie", "Cambérène", "Dakar-Plateau", "Dieuppeul-Derklé",
+        "Fann-Point E-Amitié", "Gorée", "Grand Dakar", "Grand Yoff",
+        "Gueule Tapée-Fass-Colobane", "Hann Bel-Air", "HLM", "Médina",
+        "Mermoz-Sacré-Cœur", "Ngor", "Ouakam", "Parcelles Assainies",
+        "Patte d'Oie", "Sicap-Liberté", "Yoff"
+      ],
+      "Pikine": [
+        "Dalifort", "Diamaguène Sicap Mbao", "Djiddah Thiaroye Kao",
+        "Guinaaw Rail Nord", "Guinaaw Rail Sud", "Mbao", "Pikine Est",
+        "Pikine Nord", "Pikine Ouest", "Thiaroye Gare", "Thiaroye sur Mer",
+        "Tivaouane Diacksao"
+      ],
+      "Guédiawaye": [
+        "Golf Sud", "Médina Gounass", "Ndiarème Limamoulaye",
+        "Sam Notaire", "Wakhinane Nimzatt"
+      ],
+      "Keur Massar": [
+        "Jaxaay-Parcelles-Niakoul Rap", "Keur Massar Nord",
+        "Keur Massar Sud", "Malika", "Yeumbeul Nord", "Yeumbeul Sud"
+      ],
+      "Rufisque": [
+        "Bargny", "Bambilor", "Diamniadio", "Jandar",
+        "Rufisque Est", "Rufisque Nord", "Rufisque Ouest",
+        "Sangalkam", "Sebikotane", "Sendou", "Tivaouane Peulh-Niaga",
+        "Yène", "Déni Biram Ndao", "Cherif Lo"
+      ]
+    };
+
+    // Régions hors Dakar (sans détail des communes)
+    const REGIONS = [
+      "Thiès", "Mbour", "Saint-Louis", "Touba", "Kaolack",
+      "Ziguinchor", "Diourbel", "Louga", "Fatick", "Kolda",
+      "Tambacounda", "Matam", "Kaffrine", "Kédougou", "Sédhiou",
+      "Autre région"
+    ];
+
+    /* ================================================================
+       NORMALISATION DES TAILLES
+       ================================================================ */
     function normalizeSizes(valeur) {
       let obj = valeur;
       if (obj && typeof obj === "object" && obj.mapValue) {
@@ -405,7 +529,6 @@
         }
         obj = map;
       }
-
       if (obj && typeof obj === "object" && !Array.isArray(obj) && !obj.arrayValue && !obj.stringValue) {
         const entries = Object.entries(obj);
         const looksLikeStock = entries.length > 0 && entries.every(([k, v]) =>
@@ -413,9 +536,7 @@
         );
         if (looksLikeStock) {
           const ORDER = ["XS","S","M","L","XL","XXL","XXXL","3XL","4XL","5XL"];
-          const dispo = entries
-            .filter(([_, v]) => Number(v) > 0)
-            .map(([k]) => k.trim().toUpperCase());
+          const dispo = entries.filter(([_, v]) => Number(v) > 0).map(([k]) => k.trim().toUpperCase());
           dispo.sort((a, b) => {
             const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
             if (ia === -1 && ib === -1) return a.localeCompare(b);
@@ -426,7 +547,6 @@
           return dispo.slice(0, 12);
         }
       }
-
       let brut = obj;
       if (brut && typeof brut === "object" && brut.arrayValue) {
         brut = (brut.arrayValue.values || []).map(v => v.stringValue ?? "");
@@ -437,7 +557,6 @@
       if (Array.isArray(brut)) arr = brut;
       else if (typeof brut === "string") arr = brut.split(/[,;\/|\n]+/);
       else if (brut != null) arr = [brut];
-
       const seen = new Set(); const cleaned = [];
       for (const item of arr) {
         const s = String(item ?? "").trim().toUpperCase();
@@ -449,38 +568,263 @@
     }
 
     onAuthStateChanged(auth, (user) => {
-      if (!user) { window.location.href = "authentification.html"; } 
+      if (!user) { window.location.href = "authentification.html"; }
       else { currentUser = user; if (user.displayName && !$("nom").value) { $("nom").value = user.displayName; } }
     });
 
     const paymentMode = "wave";
 
-    // Navigation entre les vues
-    $("btnGoCheckout").addEventListener("click", () => {
+    // Navigation entre vues
+    function goToCheckout() {
       if (cart.length === 0) return;
       $("viewCart").classList.remove("active");
       $("viewCheckout").classList.add("active");
       window.scrollTo(0, 0);
-    });
-
-    $("btnBackToCart").addEventListener("click", () => {
+    }
+    function goToCart() {
       $("viewCheckout").classList.remove("active");
       $("viewCart").classList.add("active");
       window.scrollTo(0, 0);
-    });
+    }
 
+    $("btnGoCheckout").addEventListener("click", goToCheckout);
+    $("btnGoCheckoutDesktop").addEventListener("click", goToCheckout);
+    $("btnBackToCart").addEventListener("click", goToCart);
     $("btnClearCart").addEventListener("click", () => {
       if (!confirm("Voulez-vous vraiment vider votre panier ?")) return;
-      cart = [];
-      saveCart(); render();
+      cart = []; saveCart(); render();
     });
 
-    // Bouton de validation actif seulement si panier non vide ET CGV cochées
     function updateValidate() {
       $("validate").disabled = cart.length === 0 || !$("acceptCgv").checked;
     }
     $("acceptCgv").addEventListener("change", updateValidate);
 
+    /* ================================================================
+       MODALE : Choix commune
+       ================================================================ */
+    function buildCommunesModal() {
+      const body = $("communesBody");
+      let html = "";
+
+      // Départements de Dakar
+      for (const [dept, communes] of Object.entries(COMMUNES)) {
+        html += `<div class="dept-group">
+          <h4>${esc(dept)}</h4>
+          <div class="commune-grid">
+            ${communes.map(c => `<button type="button" class="commune-btn" data-commune="${esc(c)}">${esc(c)}</button>`).join("")}
+          </div>
+        </div>`;
+      }
+
+      // Autres régions
+      html += `<div class="dept-group">
+        <h4>Autres régions</h4>
+        <div class="commune-grid">
+          ${REGIONS.map(r => `<button type="button" class="commune-btn region-btn" data-region="${esc(r)}">${esc(r)}</button>`).join("")}
+        </div>
+      </div>`;
+
+      body.innerHTML = html;
+    }
+    buildCommunesModal();
+
+    function openCommunesModal() {
+      $("communesModal").classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+    function closeCommunesModal() {
+      $("communesModal").classList.remove("show");
+      document.body.style.overflow = "";
+    }
+    window.closeCommunesModal = closeCommunesModal;
+
+    $("browseBtn").addEventListener("click", openCommunesModal);
+
+    $("communesBody").addEventListener("click", (e) => {
+      const btn = e.target.closest(".commune-btn");
+      if (!btn) return;
+      const commune = btn.dataset.commune || btn.dataset.region;
+      const input = $("manual");
+      const currentVal = input.value.trim();
+      // Si l'input est vide ou contient juste un ancien nom, on remplace
+      if (!currentVal) {
+        input.value = commune;
+      } else {
+        // Sinon on propose d'ajouter après une virgule
+        input.value = commune + ", " + currentVal;
+      }
+      closeCommunesModal();
+      input.focus();
+      // Placer le curseur à la fin
+      input.setSelectionRange(input.value.length, input.value.length);
+    });
+
+    $("communesModal").addEventListener("click", (e) => {
+      if (e.target === $("communesModal")) closeCommunesModal();
+    });
+
+    /* ================================================================
+       MODALE : Permission GPS refusée
+       ================================================================ */
+    function openPermissionModal() {
+      $("permissionModal").classList.add("show");
+    }
+    function closePermissionModal() {
+      $("permissionModal").classList.remove("show");
+    }
+    window.closePermissionModal = closePermissionModal;
+    $("permissionModal").addEventListener("click", (e) => {
+      if (e.target === $("permissionModal")) closePermissionModal();
+    });
+
+    /* ================================================================
+       GÉOLOCALISATION RENFORCÉE (3 tentatives en cascade)
+       ================================================================ */
+    function geolocPromise(options) {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject({ code: 2, message: "Géolocalisation non supportée" });
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+
+    // Fallback : géolocalisation par IP (3 fournisseurs en secours)
+    async function ipGeoloc() {
+      const providers = [
+        async () => {
+          const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
+          const d = await res.json();
+          if (d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city };
+          throw new Error("no coords");
+        },
+        async () => {
+          const res = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(4000) });
+          const d = await res.json();
+          if (d.success && d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city };
+          throw new Error("no coords");
+        },
+        async () => {
+          const res = await fetch("https://ipinfo.io/json", { signal: AbortSignal.timeout(4000) });
+          const d = await res.json();
+          if (d.loc) {
+            const [lat, lng] = d.loc.split(",").map(Number);
+            if (lat && lng) return { lat, lng, city: d.city };
+          }
+          throw new Error("no coords");
+        }
+      ];
+      for (const p of providers) {
+        try { return await p(); } catch (e) { continue; }
+      }
+      throw new Error("Tous les fournisseurs IP ont échoué");
+    }
+
+    function applyPosition(lat, lng, source) {
+      position = { lat: +Number(lat).toFixed(6), lng: +Number(lng).toFixed(6), source };
+      try { localStorage.setItem(POS_KEY, JSON.stringify(position)); } catch (e) {}
+
+      const gpsCard = $("gpsCard");
+      const gpsBtn = $("gpsBtn");
+      const gpsBtnLabel = $("gpsBtnLabel");
+      const gpsTitle = $("gpsTitle");
+      const gpsDesc = $("gpsDesc");
+      const gpsCoords = $("gpsCoords");
+
+      gpsCard.classList.remove("loading", "error");
+      gpsCard.classList.add("active");
+      gpsBtn.disabled = false;
+      gpsBtnLabel.textContent = "Actualiser";
+      gpsTitle.textContent = "Position enregistrée ✓";
+      gpsDesc.textContent = `Source : ${source}`;
+      gpsCoords.style.display = "block";
+      gpsCoords.textContent = `Lat ${position.lat.toFixed(4)}, Lng ${position.lng.toFixed(4)}`;
+    }
+
+    function markGpsError(message) {
+      const gpsCard = $("gpsCard");
+      const gpsBtn = $("gpsBtn");
+      const gpsBtnLabel = $("gpsBtnLabel");
+      const gpsTitle = $("gpsTitle");
+      const gpsDesc = $("gpsDesc");
+
+      gpsCard.classList.remove("loading", "active");
+      gpsCard.classList.add("error");
+      gpsBtn.disabled = false;
+      gpsBtnLabel.textContent = "Réessayer";
+      gpsTitle.textContent = "Position non disponible";
+      gpsDesc.textContent = message;
+    }
+
+    async function locateUser() {
+      const gpsCard = $("gpsCard");
+      const gpsBtn = $("gpsBtn");
+      const gpsBtnLabel = $("gpsBtnLabel");
+      const gpsTitle = $("gpsTitle");
+      const gpsDesc = $("gpsDesc");
+      const gpsCoords = $("gpsCoords");
+
+      // État : loading
+      gpsCard.classList.remove("active", "error");
+      gpsCard.classList.add("loading");
+      gpsBtn.disabled = true;
+      gpsBtnLabel.textContent = "...";
+      gpsTitle.textContent = "Localisation en cours";
+      gpsDesc.textContent = "Recherche de votre position (GPS)...";
+      gpsCoords.style.display = "none";
+
+      // ---- Tentative 1 : GPS haute précision ----
+      try {
+        const pos = await geolocPromise({ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+        applyPosition(pos.coords.latitude, pos.coords.longitude, "GPS haute précision");
+        return;
+      } catch (e1) {
+        console.log("Tentative 1 (GPS) échouée :", e1.code || e1.message);
+
+        if (e1.code === 1) {
+          // PERMISSION_DENIED : on ne peut pas retenter le GPS
+          gpsDesc.textContent = "Permission refusée. Essai par réseau...";
+        } else {
+          gpsDesc.textContent = "GPS indisponible. Essai par réseau...";
+        }
+      }
+
+      // ---- Tentative 2 : réseau/WiFi (moins précise) ----
+      try {
+        const pos = await geolocPromise({ enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 });
+        applyPosition(pos.coords.latitude, pos.coords.longitude, "Réseau / WiFi");
+        return;
+      } catch (e2) {
+        console.log("Tentative 2 (réseau) échouée :", e2.code || e2.message);
+        gpsDesc.textContent = "Essai par adresse IP (approximatif)...";
+      }
+
+      // ---- Tentative 3 : IP (fallback ultime) ----
+      try {
+        const pos = await ipGeoloc();
+        applyPosition(pos.lat, pos.lng, `IP approximatif${pos.city ? " (" + pos.city + ")" : ""}`);
+        return;
+      } catch (e3) {
+        console.log("Tentative 3 (IP) échouée :", e3.message);
+      }
+
+      // ---- Échec total ----
+      markGpsError("Saisissez votre commune ci-dessus, ou autorisez la localisation dans votre navigateur.");
+      openPermissionModal();
+    }
+
+    $("gpsBtn").addEventListener("click", locateUser);
+
+    // Restaurer une position déjà enregistrée au chargement
+    if (position && position.lat && position.lng) {
+      applyPosition(position.lat, position.lng, position.source || "Enregistrée");
+    }
+
+    /* ================================================================
+       CHARGEMENT DES STOCKS
+       ================================================================ */
     const stockMaps = {};
     async function loadStocks() {
       await Promise.all(cart.map(async it => {
@@ -495,13 +839,18 @@
       }));
     }
 
+    /* ================================================================
+       RENDU PANIER
+       ================================================================ */
     function render() {
       const box = $("bands");
       if (cart.length === 0) {
         box.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/></svg><p>Votre panier est vide.</p><a href="index.html" class="btn-dark">Voir les nouveautés</a></div>`;
         $("stickyBar").style.display = "none";
+        $("btnGoCheckoutDesktop").style.display = "none";
       } else {
         $("stickyBar").style.display = "flex";
+        $("btnGoCheckoutDesktop").style.display = "";
         box.innerHTML = cart.map((it, i) => {
           const sizesArr = normalizeSizes(stockMaps[it.id] || null);
           const sizes = sizesArr.length
@@ -529,16 +878,15 @@
           </article>`;
         }).join("");
       }
-      
+
       const nb = cart.reduce((s, x) => s + x.qty, 0);
       const total = cart.reduce((s, x) => s + x.qty * x.price, 0);
-      
+
       $("nbArticlesCart").textContent = nb;
       $("totalCart").textContent = fmt(total);
       $("nbArticlesCheckout").textContent = nb;
       $("totalCheckout").textContent = fmt(total);
       $("totalSticky").textContent = fmt(total);
-      
       $("count").textContent = nb ? `(${nb} article${nb > 1 ? "s" : ""})` : "";
       $("cartCount").textContent = nb;
       updateValidate();
@@ -563,32 +911,9 @@
       saveCart(); render();
     });
 
-    function showPosition() {
-      if (!position) return;
-      $("posBtn").classList.add("ok");
-      $("posLabel").textContent = "Position partagée ✓";
-      $("posStatus").className = "pos-status ok";
-      $("posStatus").innerHTML = `Lat: ${position.lat}, Lng: ${position.lng}`;
-    }
-    showPosition();
-
-    $("posBtn").addEventListener("click", () => {
-      if (!navigator.geolocation) { $("posStatus").textContent = "Non supporté."; return; }
-      $("posLabel").textContent = "Recherche...";
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          position = { lat: +pos.coords.latitude.toFixed(6), lng: +pos.coords.longitude.toFixed(6), acc: pos.coords.accuracy };
-          try { localStorage.setItem(POS_KEY, JSON.stringify(position)); } catch (e) {}
-          showPosition();
-        },
-        err => {
-          $("posStatus").className = "pos-status bad";
-          $("posStatus").textContent = "Position indisponible : écrivez votre quartier ci-dessus.";
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-
+    /* ================================================================
+       VALIDATION FINALE (logique métier intacte)
+       ================================================================ */
     $("validate").addEventListener("click", async () => {
       const msg = $("msg");
       msg.textContent = "";
@@ -616,9 +941,7 @@
 
       try {
         const snaps = await Promise.all(cart.map(it => {
-          if (!it.id) {
-            return Promise.resolve({ __missingId: true, name: it.name, __id: null });
-          }
+          if (!it.id) return Promise.resolve({ __missingId: true, name: it.name, __id: null });
           return getDoc(doc(db, "produits", it.id))
             .then(snap => ({ snap, name: it.name, __id: it.id }))
             .catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
@@ -638,13 +961,11 @@
             errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`);
             continue;
           }
-
           const snap = result.snap;
           if (!snap.exists()) {
             errors.push(`Un article n'est plus disponible : "${it.name}". Retirez-le du panier.`);
             continue;
           }
-
           const data = snap.data();
           const prixServeur = Number(data.prix) || 0;
           const titreServeur = String(data.titre || it.name || "Article");
@@ -655,19 +976,13 @@
             errors.push(`Le prix de "${titreServeur}" est invalide. Contactez-nous.`);
             continue;
           }
-
-          if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) {
-            priceChanged = true;
-          }
+          if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) priceChanged = true;
 
           let tailleFinale = "Taille unique";
-
           if (sizesServeur.length > 0) {
             if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) {
-              it.sizes = sizesServeur;
-              sizesChanged = true;
+              it.sizes = sizesServeur; sizesChanged = true;
             }
-
             if (!it.size) {
               errors.push(`Choisissez la taille de "${titreServeur}".`);
               $("band-" + i).classList.add("need");
@@ -683,12 +998,8 @@
               continue;
             }
             tailleFinale = it.size;
-          } else {
-            if (it.sizes && it.sizes.length) {
-              it.sizes = [];
-              it.size = null;
-              sizesChanged = true;
-            }
+          } else if (it.sizes && it.sizes.length) {
+            it.sizes = []; it.size = null; sizesChanged = true;
           }
 
           let dispo = Infinity;
@@ -699,23 +1010,16 @@
           }
           if ((Number(it.qty) || 1) > dispo) {
             errors.push(`Il ne reste que ${dispo} pièce(s) en taille ${tailleFinale} pour "${titreServeur}".`);
-            it.qty = Math.max(1, dispo);
-            sizesChanged = true;
+            it.qty = Math.max(1, dispo); sizesChanged = true;
             $("band-" + i).classList.add("need");
             firstBadBand = firstBadBand || $("band-" + i);
             continue;
           }
 
           const quantite = Math.max(1, Math.min(10, Number(it.qty) || 1));
-
           freshArticles.push({
-            produitId: it.id,
-            titre: titreServeur,
-            prix: prixServeur,
-            prixCatalogue: prixServeur,
-            quantite,
-            taille: tailleFinale,
-            imageUrl: imageServeur
+            produitId: it.id, titre: titreServeur, prix: prixServeur,
+            prixCatalogue: prixServeur, quantite, taille: tailleFinale, imageUrl: imageServeur
           });
         }
 
@@ -726,8 +1030,7 @@
           $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
           if (firstBadBand) {
-            $("viewCheckout").classList.remove("active");
-            $("viewCart").classList.add("active");
+            goToCart();
             setTimeout(() => firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
           }
           return;
@@ -742,23 +1045,16 @@
               cart[idx].img = fa.imageUrl;
             }
           });
-          saveCart();
-          render();
+          saveCart(); render();
 
-          if (priceChanged && sizesChanged) {
-            msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
-          } else if (priceChanged) {
-            msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
-          } else {
-            msg.textContent = "Les tailles disponibles ont changé, vérifiez votre panier puis revalidez.";
-          }
+          if (priceChanged && sizesChanged) msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
+          else if (priceChanged) msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
+          else msg.textContent = "Les tailles disponibles ont changé, vérifiez votre panier puis revalidez.";
 
           $("validate").disabled = false;
           $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
-          
-          $("viewCheckout").classList.remove("active");
-          $("viewCart").classList.add("active");
+          goToCart();
           return;
         }
 
@@ -776,9 +1072,9 @@
           total: total,
           fraisLivraison: 0,
           position: position ? {
-            lat: Number(position.lat),
-            lng: Number(position.lng),
-            mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`
+            lat: Number(position.lat), lng: Number(position.lng),
+            mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`,
+            source: position.source || "inconnue"
           } : null,
           adresseTexte: manual,
           statut: "en_attente",
@@ -811,7 +1107,7 @@
         window.scrollTo(0, 0);
 
         const actionsDiv = $("paymentActions");
-        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" 
+        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR"
           ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}`
           : null;
 
@@ -835,9 +1131,7 @@
             </div>`;
           }
           if (waLink) {
-            html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">
-              J'ai payé : envoyer la preuve sur WhatsApp
-            </a>`;
+            html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">J'ai payé : envoyer la preuve sur WhatsApp</a>`;
           }
           html += `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
           actionsDiv.innerHTML = html;
@@ -855,218 +1149,63 @@
     render();
     loadStocks().then(render);
   </script>
-  <!-- ================= DÉBUT FOOTER NUMA ================= -->
-<style>
-  /* CSS scopé uniquement pour le footer */
-  .numa-footer {
-    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-    background-color: #0a0a0a;
-    color: #fff;
-    margin-top: 60px; /* Espace avant le footer */
-    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
-  }
-  .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
-  .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
-  
-  /* Grille principale */
-  .numa-footer-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 60px 24px;
-  }
-  
-  /* Grille principale */
-  .numa-footer-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  @media (min-width: 768px) {
-    .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
-  }
 
-  /* Colonne Marque */
-  .numa-footer-brand .numa-logo {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    display: inline-block;
-    margin-bottom: 16px;
-  }
-  .numa-footer-brand p {
-    font-size: 13px;
-    color: #9ca3af;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    max-width: 280px;
-  }
-  .numa-footer-contact {
-    font-size: 13px;
-    color: #d1d5db;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+  <!-- ================= FOOTER NUMA ================= -->
+  <style>
+    .numa-footer { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; background-color: #0a0a0a; color: #fff; margin-top: 60px; padding-bottom: 80px; }
+    .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
+    .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
+    .numa-footer-inner { max-width: 1280px; margin: 0 auto; padding: 60px 24px; }
+    .numa-footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+    @media (min-width: 768px) { .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; } }
+    .numa-footer-brand .numa-logo { font-size: 24px; font-weight: 800; letter-spacing: 0.1em; display: inline-block; margin-bottom: 16px; }
+    .numa-footer-brand p { font-size: 13px; color: #9ca3af; line-height: 1.6; margin-bottom: 20px; max-width: 280px; }
+    .numa-footer-contact { font-size: 13px; color: #d1d5db; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
+    .numa-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #fff; margin-bottom: 20px; }
+    .numa-footer-col ul { list-style: none; }
+    .numa-footer-col ul li { margin-bottom: 12px; }
+    .numa-footer-col ul li a { font-size: 13.5px; color: #9ca3af; }
+    .numa-footer-col ul li a:hover { color: #fff; }
+    .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
+    .numa-socials a { width: 36px; height: 36px; border-radius: 50%; background: #1f1f1f; display: grid; place-items: center; color: #d1d5db; }
+    .numa-socials a:hover { background: #e11d48; color: #fff; }
+    .numa-socials svg { width: 18px; height: 18px; }
+    .numa-footer-bottom { border-top: 1px solid #262626; padding: 24px; text-align: center; }
+    .numa-footer-bottom-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; color: #6b7280; }
+    @media (min-width: 768px) { .numa-footer-bottom-inner { flex-direction: row; } .numa-footer { padding-bottom: 0; } }
+    .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+    .numa-payments span { background: #1f1f1f; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #d1d5db; }
+  </style>
 
-  /* Titres colonnes */
-  .numa-footer-col h4 {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: #fff;
-    margin-bottom: 20px;
-  }
-
-  /* Liens */
-  .numa-footer-col ul { list-style: none; }
-  .numa-footer-col ul li { margin-bottom: 12px; }
-  .numa-footer-col ul li a {
-    font-size: 13.5px;
-    color: #9ca3af;
-  }
-  .numa-footer-col ul li a:hover { color: #fff; }
-
-  /* Réseaux sociaux */
-  .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
-  .numa-socials a {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: #1f1f1f;
-    display: grid; place-items: center;
-    color: #d1d5db;
-  }
-  .numa-socials a:hover { background: #e11d48; color: #fff; }
-  .numa-socials svg { width: 18px; height: 18px; }
-
-  /* Barre du bas */
-  .numa-footer-bottom {
-    border-top: 1px solid #262626;
-    padding: 24px;
-    text-align: center;
-  }
-  .numa-footer-bottom-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    font-size: 12px;
-    color: #6b7280;
-  }
-  @media (min-width: 768px) {
-    .numa-footer-bottom-inner { flex-direction: row; }
-    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
-  }
-  
-  .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .numa-payments span {
-    background: #1f1f1f;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #d1d5db;
-  }
-</style>
-
-<footer class="numa-footer">
-  <div class="numa-footer-inner">
-    <div class="numa-footer-grid">
-      
-      <!-- Colonne 1 : Marque & Contact -->
-      <div class="numa-footer-brand">
-        <a href="index.html" class="numa-logo">NUMA.</a>
-        <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
-        
-        <div class="numa-footer-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Petit Mbao, Dakar, Sénégal
+  <footer class="numa-footer">
+    <div class="numa-footer-inner">
+      <div class="numa-footer-grid">
+        <div class="numa-footer-brand">
+          <a href="index.html" class="numa-logo">NUMA.</a>
+          <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
+          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Petit Mbao, Dakar, Sénégal</div>
+          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>+221 76 658 95 98</div>
+          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>service.numa.com@gmail.com</div>
+          <div class="numa-socials">
+            <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+            <a href="#" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+            <a href="#" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg></a>
+            <a href="#" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          </div>
         </div>
-        <div class="numa-footer-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
-          +221 76 658 95 98
-        </div>
-        <div class="numa-footer-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
-          service.numa.com@gmail.com
-        </div>
-
-        <div class="numa-socials">
-          <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener" aria-label="Facebook">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- Colonne 2 : Boutique -->
-      <div class="numa-footer-col">
-        <h4>Boutique</h4>
-        <ul>
-          <li><a href="nouveautes.html">Nouveautés</a></li>
-          <li><a href="categories.html?sexe=homme">Collection Homme</a></li>
-          <li><a href="categories.html?sexe=femme">Collection Femme</a></li>
-          <li><a href="promotions.html">Promotions</a></li>
-          <li><a href="guide-des-tailles.html">Guide des tailles</a></li>
-        </ul>
-      </div>
-
-      <!-- Colonne 3 : Aide -->
-      <div class="numa-footer-col">
-        <h4>Aide & Services</h4>
-        <ul>
-          <li><a href="contact.html">Nous contacter</a></li>
-          <li><a href="livraison-retours.html">Livraison & Retours</a></li>
-          <li><a href="compte.html">Mon compte</a></li>
-          <li><a href="favoris.html">Mes favoris</a></li>
-          <li><a href="a-propos.html">À propos de NUMA</a></li>
-        </ul>
-      </div>
-
-      <!-- Colonne 4 : Légal -->
-      <div class="numa-footer-col">
-        <h4>Informations</h4>
-        <ul>
-          <li><a href="mentions-legales.html">Mentions légales</a></li>
-          <li><a href="cgv.html">CGV</a></li>
-          <li><a href="confidentialite.html">Confidentialité</a></li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Barre inférieure -->
-  <div class="numa-footer-bottom">
-    <div class="numa-footer-bottom-inner">
-      <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
-      
-      <div class="numa-payments">
-        <span>Wave</span>
-        <span>Orange Money</span>
-        <span>Free Money</span>
+        <div class="numa-footer-col"><h4>Boutique</h4><ul><li><a href="nouveautes.html">Nouveautés</a></li><li><a href="categories.html?sexe=homme">Collection Homme</a></li><li><a href="categories.html?sexe=femme">Collection Femme</a></li><li><a href="promotions.html">Promotions</a></li><li><a href="guide-des-tailles.html">Guide des tailles</a></li></ul></div>
+        <div class="numa-footer-col"><h4>Aide & Services</h4><ul><li><a href="contact.html">Nous contacter</a></li><li><a href="livraison-retours.html">Livraison & Retours</a></li><li><a href="compte.html">Mon compte</a></li><li><a href="favoris.html">Mes favoris</a></li><li><a href="a-propos.html">À propos de NUMA</a></li></ul></div>
+        <div class="numa-footer-col"><h4>Informations</h4><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="cgv.html">CGV</a></li><li><a href="confidentialite.html">Confidentialité</a></li></ul></div>
       </div>
     </div>
-  </div>
-</footer>
-
-<script>
-  // Script ultra-léger pour l'année automatique
-  document.getElementById('numaYear').textContent = new Date().getFullYear();
-</script>
-<!-- ================= FIN FOOTER NUMA ================= -->
+    <div class="numa-footer-bottom">
+      <div class="numa-footer-bottom-inner">
+        <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
+        <div class="numa-payments"><span>Wave</span><span>Orange Money</span><span>Free Money</span></div>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById('numaYear').textContent = new Date().getFullYear();</script>
 </body>
 </html>
