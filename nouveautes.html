@@ -135,6 +135,12 @@
       .card .thumb:hover .slider-btn { opacity: 1; }
       .btn-view, .btn-add { padding: 12px; }
     }
+    /* iPhone : empêche le zoom automatique quand on touche un champ */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea { font-size: 16px !important; }
+}
+/* Évite aussi le zoom au double-tap sur les boutons et liens */
+html { touch-action: manipulation; }
   </style>
 </head>
 <body>
