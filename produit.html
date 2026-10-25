@@ -52,8 +52,8 @@
     .thumb.active { border-color: var(--black); }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
     
-    /* MODIFICATION ICI : Réduction de 20% sur mobile (80% de largeur) */
-    .main-img { flex: none; width: 80%; aspect-ratio: 3/4; background: var(--gray); border-radius: 12px; overflow: hidden; position: relative; margin: 0 auto; }
+    /* MODIFICATION ICI : Réduction de 20% sur mobile (64% de largeur au lieu de 80%) */
+    .main-img { flex: none; width: 64%; aspect-ratio: 3/4; background: var(--gray); border-radius: 12px; overflow: hidden; position: relative; margin: 0 auto; }
     @media (min-width: 600px) { .main-img { flex: 1; width: auto; margin: 0; } }
     @media (min-width: 900px) { .main-img { flex: 1; width: 100%; } }
 
@@ -79,11 +79,6 @@
     /* OPTIONS */
     .option { margin-bottom: 24px; }
     .option-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
-    .option-head span { color: #888; font-weight: 500; text-transform: none; letter-spacing: 0; }
-    
-    .colors { display: flex; gap: 12px; }
-    .color { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; transition: all .2s; position: relative; }
-    .color.active { border-color: var(--black); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--black); }
     
     .sizes { display: flex; gap: 10px; flex-wrap: wrap; }
     .size { min-width: 50px; height: 44px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 14px; font-weight: 700; transition: .2s; display: grid; place-items: center; }
@@ -295,13 +290,7 @@
           sexe: gv(f.sexe) || "",
           description: gv(f.description) || "Un vêtement de qualité supérieure, conçu pour durer. Coupe confortable et matière agréable à porter.",
           matiere: gv(f.matiere) || "100% Coton biologique certifié. Lavage machine à 30°C.",
-          stock: normalizeStock(f.stock ?? f.tailles ?? f.sizes),
-          couleurs: (() => {
-            if (f.couleurs && f.couleurs.arrayValue) {
-              return (f.couleurs.arrayValue.values || []).map(v => v.stringValue);
-            }
-            return ["Sable", "Noir", "Sauge"];
-          })()
+          stock: normalizeStock(f.stock ?? f.tailles ?? f.sizes)
         };
 
         renderPage(product);
@@ -328,11 +317,6 @@
       const sizesHTML = sizesKeys.map(s => {
         const isOut = p.stock[s] === 0;
         return `<button class="size" data-size="${s}" ${isOut ? 'disabled' : ''}>${s}</button>`;
-      }).join("");
-
-      const colorsHTML = p.couleurs.map((c, i) => {
-        const hex = c.toLowerCase() === "noir" ? "#111" : c.toLowerCase() === "sauge" ? "#8a9a7b" : c.toLowerCase() === "sable" ? "#d9c7ab" : c.toLowerCase() === "blanc" ? "#fff" : c.toLowerCase() === "bleu" ? "#3b82f6" : "#d4d4d4";
-        return `<button class="color ${i===0?'active':''}" style="background:${hex}" data-color="${c}" aria-label="${c}"></button>`;
       }).join("");
 
       $("mainContent").innerHTML = `
@@ -372,12 +356,7 @@
             </div>
 
             <div class="option">
-              <div class="option-head">Couleur <span id="colorName">${p.couleurs[0]}</span></div>
-              <div class="colors">${colorsHTML}</div>
-            </div>
-
-            <div class="option">
-              <div class="option-head">Taille <span id="sizeHint">Sélectionnez une taille</span></div>
+              <div class="option-head">Taille disponible</div>
               <div class="sizes" id="sizesContainer">${sizesHTML}</div>
             </div>
 
@@ -462,7 +441,6 @@
       `;
 
       let selectedSize = defaultSize;
-      let selectedColor = p.couleurs[0];
       let qty = 1;
 
       document.querySelectorAll('.thumb').forEach(thumb => {
@@ -470,15 +448,6 @@
           document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
           $("mainImage").src = thumb.dataset.img;
-        });
-      });
-
-      document.querySelectorAll('.color').forEach(colorBtn => {
-        colorBtn.addEventListener('click', () => {
-          document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
-          colorBtn.classList.add('active');
-          selectedColor = colorBtn.dataset.color;
-          $("colorName").textContent = selectedColor;
         });
       });
 
@@ -516,7 +485,6 @@
         
         if (sizeBtn.dataset.size === defaultSize) {
           sizeBtn.classList.add('active');
-          $("sizeHint").textContent = `Taille ${defaultSize}`;
           updateStockUI();
         }
 
@@ -524,7 +492,6 @@
           document.querySelectorAll('.size').forEach(s => s.classList.remove('active'));
           sizeBtn.classList.add('active');
           selectedSize = sizeBtn.dataset.size;
-          $("sizeHint").textContent = `Taille ${selectedSize}`;
           updateStockUI();
         });
       });
@@ -555,14 +522,14 @@
       $("buyBtn").addEventListener('click', () => {
         if (!selectedSize) return;
         const cart = readLS(CART_KEY, []);
-        const idx = cart.findIndex(x => x.id === p.id && x.size === selectedSize && x.color === selectedColor);
+        const idx = cart.findIndex(x => x.id === p.id && x.size === selectedSize);
         
         if (idx >= 0) {
           cart[idx].qty = Math.min(10, (cart[idx].qty || 1) + qty);
         } else {
           cart.push({
             id: p.id, name: p.nom, price: p.prix, img: p.image,
-            qty: qty, size: selectedSize, color: selectedColor
+            qty: qty, size: selectedSize
           });
         }
         writeLS(CART_KEY, cart);
