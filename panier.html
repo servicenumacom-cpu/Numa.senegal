@@ -247,7 +247,7 @@
     .gps-coords { margin-top: 10px; padding: 8px 10px; background: var(--gray); border-radius: 6px; font-size: 11px; color: #666; font-family: monospace; word-break: break-all; display: none; }
     .gps-card.active ~ .gps-coords { display: block; }
 
-    /* CGV CARD — élégante, pré-cochée */
+    /* CGV CARD */
     .cgv-card {
       display: flex;
       align-items: flex-start;
@@ -272,56 +272,19 @@
       pointer-events: none;
       width: 0; height: 0;
     }
-    .cgv-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .cgv-title {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--black);
-      margin-bottom: 3px;
-    }
-    .cgv-text {
-      display: block;
-      font-size: 11.5px;
-      color: #666;
-      line-height: 1.5;
-    }
-    .cgv-text a {
-      color: var(--black);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      font-weight: 600;
-    }
+    .cgv-content { flex: 1; min-width: 0; }
+    .cgv-title { display: block; font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+    .cgv-text { display: block; font-size: 11.5px; color: #666; line-height: 1.5; }
+    .cgv-text a { color: var(--black); text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
     .cgv-check {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      border: 1.5px solid var(--line);
-      background: #fff;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      margin-top: 1px;
+      width: 22px; height: 22px; border-radius: 6px;
+      border: 1.5px solid var(--line); background: #fff;
+      display: grid; place-items: center; flex-shrink: 0;
+      transition: all 0.2s; margin-top: 1px;
     }
-    .cgv-check svg {
-      width: 14px;
-      height: 14px;
-      color: #fff;
-      stroke-width: 3;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .cgv-card.checked .cgv-check {
-      background: var(--green);
-      border-color: var(--green);
-    }
-    .cgv-card.checked .cgv-check svg {
-      opacity: 1;
-    }
+    .cgv-check svg { width: 14px; height: 14px; color: #fff; stroke-width: 3; opacity: 0; transition: opacity 0.2s; }
+    .cgv-card.checked .cgv-check { background: var(--green); border-color: var(--green); }
+    .cgv-card.checked .cgv-check svg { opacity: 1; }
 
     /* BUTTON VALIDER */
     .btn-confirm {
@@ -483,14 +446,13 @@
       </div>
     </div>
 
-    <!-- VUE 2 : CHECKOUT — REDESIGNÉE -->
+    <!-- VUE 2 : CHECKOUT -->
     <div class="view" id="viewCheckout">
       <button class="back-link" id="btnBackToCart">
         <svg viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
         Retour au panier
       </button>
 
-      <!-- Stepper élégant -->
       <div class="stepper">
         <span class="step done">
           <span class="step-dot">
@@ -515,7 +477,6 @@
         <p>Renseignez vos informations pour recevoir vos articles.</p>
       </div>
 
-      <!-- Récap élégant -->
       <div class="recap-card">
         <div class="recap-row">
           <span class="recap-label">
@@ -539,7 +500,6 @@
 
       <form id="checkoutForm" onsubmit="return false;">
 
-        <!-- Nom -->
         <div class="form-field">
           <label class="form-label" for="nom">Nom complet <span class="req">*</span></label>
           <div class="input-wrap" id="wrapNom">
@@ -548,7 +508,6 @@
           </div>
         </div>
 
-        <!-- Téléphone -->
         <div class="form-field">
           <label class="form-label" for="tel">Numéro WhatsApp <span class="req">*</span></label>
           <div class="input-wrap" id="wrapTel">
@@ -557,7 +516,6 @@
           </div>
         </div>
 
-        <!-- Adresse avec bouton Parcourir intégré -->
         <div class="form-field">
           <label class="form-label" for="manual">Adresse de livraison <span class="req">*</span></label>
           <div class="input-wrap" id="wrapManual">
@@ -570,7 +528,6 @@
           </div>
         </div>
 
-        <!-- GPS CARD -->
         <div class="form-field">
           <label class="form-label">Position GPS <span style="font-size:11px;font-weight:500;color:#999;margin-left:4px">(facultatif)</span></label>
           <div class="gps-card" id="gpsCard">
@@ -588,7 +545,6 @@
           <div class="gps-coords" id="gpsCoords"></div>
         </div>
 
-        <!-- CGV CARD — PRÉ-COCHÉE PAR DÉFAUT -->
         <label class="cgv-card checked" id="cgvCard">
           <input type="checkbox" id="acceptCgv" checked>
           <div class="cgv-content">
@@ -612,7 +568,6 @@
     </div>
   </main>
 
-  <!-- BARRE FIXE PANIER (mobile) -->
   <div class="sticky-bar" id="stickyBar">
     <div class="total-info">
       <span>Total</span>
@@ -621,7 +576,6 @@
     <button class="btn-validate" id="btnGoCheckout">VALIDER</button>
   </div>
 
-  <!-- MODALE : Choix commune -->
   <div class="modal-overlay" id="communesModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -632,7 +586,6 @@
     </div>
   </div>
 
-  <!-- MODALE : Permission GPS refusée -->
   <div class="modal-overlay" id="permissionModal">
     <div class="modal-card permission-modal">
       <div class="modal-body">
@@ -734,7 +687,6 @@
       return cleaned;
     }
 
-    // Normalise le téléphone : retire +221, 00221, ou 0 en tête
     function normalizePhone(raw) {
       let d = String(raw || "").replace(/\D/g, "");
       if (d.startsWith("00221")) d = d.substring(5);
@@ -765,13 +717,11 @@
       $("validate").disabled = cart.length === 0 || !$("acceptCgv").checked;
     }
 
-    // CGV : sync classe visuelle + état du bouton
     $("acceptCgv").addEventListener("change", (e) => {
       $("cgvCard").classList.toggle("checked", e.target.checked);
       updateValidate();
     });
 
-    // Communes modal
     function buildCommunesModal() {
       const body = $("communesBody");
       let html = "";
@@ -799,13 +749,11 @@
     });
     $("communesModal").addEventListener("click", (e) => { if (e.target === $("communesModal")) closeCommunesModal(); });
 
-    // GPS modale
     function openPermissionModal() { $("permissionModal").classList.add("show"); }
     function closePermissionModal() { $("permissionModal").classList.remove("show"); }
     window.closePermissionModal = closePermissionModal;
     $("permissionModal").addEventListener("click", (e) => { if (e.target === $("permissionModal")) closePermissionModal(); });
 
-    // GPS renforcé (3 tentatives)
     function geolocPromise(options) {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) { reject({ code: 2, message: "Géolocalisation non supportée" }); return; }
@@ -884,7 +832,26 @@
       }));
     }
 
+    /* ================================================================
+       RENDU — CORRECTIF 3 : sync silencieuse des tailles
+       ----------------------------------------------------------------
+       On met à jour it.sizes en mémoire à partir des données serveur,
+       SANS déclencher de message. Ça évite les faux positifs lors de
+       la validation.
+       ================================================================ */
     function render() {
+      // CORRECTIF 3 : synchronisation silencieuse des tailles en cache
+      let needsResync = false;
+      cart.forEach(it => {
+        if (!it.id || !stockMaps[it.id]) return;
+        const sizesArr = normalizeSizes(stockMaps[it.id]);
+        if (sizesArr.length > 0 && JSON.stringify(it.sizes) !== JSON.stringify(sizesArr)) {
+          it.sizes = sizesArr;
+          needsResync = true;
+        }
+      });
+      if (needsResync) saveCart();
+
       const box = $("bands");
       if (cart.length === 0) {
         box.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/></svg><p>Votre panier est vide.</p><a href="index.html" class="btn-dark">Voir les nouveautés</a></div>`;
@@ -938,6 +905,12 @@
       saveCart(); render();
     });
 
+    /* ================================================================
+       VALIDATION — CORRECTIF 1 appliqué
+       ----------------------------------------------------------------
+       On ne signale "tailles changées" QUE si la taille choisie par
+       le client a réellement disparu du stock.
+       ================================================================ */
     $("validate").addEventListener("click", async () => {
       const msg = $("msg");
       msg.textContent = "";
@@ -982,16 +955,35 @@
           const titreServeur = String(data.titre || it.name || "Article");
           const imageServeur = String(data.imageUrl || it.img || "");
           const sizesServeur = normalizeSizes(data.stock ?? data.tailles ?? data.sizes ?? data.taille ?? null);
+
           if (!Number.isFinite(prixServeur) || prixServeur < 0) { errors.push(`Le prix de "${titreServeur}" est invalide.`); continue; }
           if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) priceChanged = true;
 
           let tailleFinale = "Taille unique";
+
           if (sizesServeur.length > 0) {
-            if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) { it.sizes = sizesServeur; sizesChanged = true; }
-            if (!it.size) { errors.push(`Choisissez la taille de "${titreServeur}".`); $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); continue; }
-            if (!sizesServeur.includes(String(it.size).toUpperCase())) { errors.push(`Taille "${it.size}" indisponible pour "${titreServeur}".`); it.size = null; $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); sizesChanged = true; continue; }
+            // CORRECTIF 1 : resynchronisation silencieuse, on ne flag PAS sizesChanged
+            it.sizes = sizesServeur;
+
+            if (!it.size) {
+              errors.push(`Choisissez la taille de "${titreServeur}".`);
+              $("band-" + i).classList.add("need");
+              firstBadBand = firstBadBand || $("band-" + i);
+              continue;
+            }
+            if (!sizesServeur.includes(String(it.size).toUpperCase())) {
+              // SEULE vraie raison de signaler un changement : la taille choisie a disparu
+              errors.push(`La taille "${it.size}" n'est plus disponible pour "${titreServeur}". Choisissez une autre taille.`);
+              it.size = null;
+              $("band-" + i).classList.add("need");
+              firstBadBand = firstBadBand || $("band-" + i);
+              sizesChanged = true;
+              continue;
+            }
             tailleFinale = it.size;
-          } else if (it.sizes && it.sizes.length) { it.sizes = []; it.size = null; sizesChanged = true; }
+          } else if (it.sizes && it.sizes.length) {
+            it.sizes = []; it.size = null; sizesChanged = true;
+          }
 
           let dispo = Infinity;
           if (sizesServeur.length > 0) { const st = data.stock || data.tailles || data.sizes || {}; const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(tailleFinale).toUpperCase()); dispo = k !== undefined ? (Number(st[k]) || 0) : 0; }
@@ -1016,7 +1008,7 @@
           saveCart(); render();
           if (priceChanged && sizesChanged) msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
           else if (priceChanged) msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
-          else msg.textContent = "Les tailles disponibles ont changé, vérifiez votre panier puis revalidez.";
+          else msg.textContent = "Une des tailles de votre panier n'est plus disponible. Choisissez une nouvelle taille puis revalidez.";
           $("validate").disabled = false;
           $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
