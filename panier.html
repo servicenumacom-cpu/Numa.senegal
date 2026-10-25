@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Mon panier – NUMA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --wave: #1dc3f1; --max: 1280px; }
-    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
     button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
     img { display: block; max-width: 100%; }
@@ -30,79 +30,135 @@
     .nav-mobile { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
     .nav-mobile::-webkit-scrollbar { display: none; }
     .nav-desktop a.current, .nav-mobile a.current { font-weight: 800; }
-    .nav-mobile a.current { text-decoration: underline; text-underline-offset: 5px; }
 
-    /* PAGE PANIER */
+    /* PAGE */
     .page { max-width: var(--max); margin: 0 auto; padding: 24px 16px 30px; }
-    .page-title { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* HEADERS DE VUE */
+    .page-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
     .page-title h1 { font-size: 22px; font-weight: 800; }
-    .page-title span { font-size: 14px; font-weight: 500; color: #777; }
-    .layout { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+    .page-title span { font-size: 14px; font-weight: 500; color: #777; margin-left: 8px; }
+    .clear-cart { font-size: 12px; color: #999; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
 
-    /* BANDES PRODUITS */
-    .bands { display: flex; flex-direction: column; gap: 12px; }
-    .band { position: relative; display: grid; grid-template-columns: 84px 1fr auto 38px; gap: 14px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    /* BANDEAU RÉASSURANCE */
+    .reassurance {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #fff1f2; border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 20px; gap: 12px;
+    }
+    .reassurance-item { display: flex; align-items: center; gap: 10px; }
+    .reassurance-item svg { width: 20px; height: 20px; color: var(--black); flex-shrink: 0; }
+    .reassurance-item .text { display: flex; flex-direction: column; line-height: 1.2; }
+    .reassurance-item .text strong { font-size: 12px; font-weight: 700; }
+    .reassurance-item .text span { font-size: 11px; color: #777; }
+
+    /* CARTES PRODUITS (Compactes) */
+    .bands { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .band {
+      display: grid; grid-template-columns: 64px 1fr; gap: 12px;
+      padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff;
+      align-items: center;
+    }
     .band.need { border-color: var(--red); }
-    .band-img { width: 84px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: var(--gray); }
-    .band-info { min-width: 0; }
-    .band-name { font-size: 14px; font-weight: 600; line-height: 1.25; margin-bottom: 4px; }
-    .band-price { font-size: 15px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
-    .sizes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .sizes-label { font-size: 12px; font-weight: 600; color: #666; margin-right: 2px; }
-    .chip { min-width: 38px; height: 32px; padding: 0 10px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 13px; font-weight: 600; }
+    .band-img { width: 64px; aspect-ratio: 3/4; object-fit: cover; border-radius: 8px; background: var(--gray); }
+    .band-info { min-width: 0; display: flex; flex-direction: column; }
+    .band-name { font-size: 13.5px; font-weight: 600; line-height: 1.25; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .band-price { font-size: 14px; font-weight: 800; color: var(--red); margin-bottom: 6px; }
+    
+    .band-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .sizes-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .chip { min-width: 32px; height: 28px; padding: 0 8px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 12px; font-weight: 600; display: grid; place-items: center; }
     .chip.sel { background: var(--black); color: #fff; border-color: var(--black); }
-    .one-size { font-size: 12px; font-weight: 600; color: #666; background: var(--gray); padding: 6px 10px; border-radius: 6px; }
-    .size-err { display: none; width: 100%; font-size: 12px; font-weight: 600; color: var(--red); margin-top: 2px; }
+    .one-size { font-size: 11px; font-weight: 600; color: #666; background: var(--gray); padding: 4px 8px; border-radius: 4px; }
+    
+    .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .qty button { width: 28px; height: 28px; font-size: 16px; font-weight: 600; color: #666; }
+    .qty span { width: 24px; text-align: center; font-weight: 700; font-size: 13px; }
+    
+    .band-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+    .line-total { font-size: 14px; font-weight: 800; color: var(--red); }
+    .trash { color: #999; padding: 4px; border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
+    .trash:hover { color: var(--red); }
+    .trash svg { width: 16px; height: 16px; }
+    
+    .size-err { display: none; width: 100%; font-size: 11px; font-weight: 600; color: var(--red); margin-top: 4px; }
     .band.need .size-err { display: block; }
-    
-    .band-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-    .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; }
-    .qty button { width: 32px; height: 32px; font-size: 18px; font-weight: 600; }
-    .qty span { min-width: 22px; text-align: center; font-weight: 700; font-size: 14px; }
-    .line-total { font-size: 15px; font-weight: 800; white-space: nowrap; color: var(--red); }
 
-    .trash { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: var(--red); opacity: 0; transition: .2s; }
-    .band:hover .trash { opacity: 1; }
-    .trash:hover { background: #fde8ed; }
+    /* RÉCAPITULATIF (Compact) */
+    .summary-box { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: #fff; margin-bottom: 20px; }
+    .summary-box h2 { font-size: 16px; font-weight: 800; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+    .row { display: flex; justify-content: space-between; gap: 10px; margin: 8px 0; font-size: 13.5px; color: #555; }
+    .row.total { font-size: 17px; font-weight: 800; color: var(--black); border-top: 1.5px solid var(--line); padding-top: 12px; margin-top: 12px; }
+    .row.total span:last-child { color: var(--red); }
+
+    /* BARRE FIXE PANIER */
+    .sticky-bar {
+      position: fixed; left: 0; right: 0; bottom: 76px;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 12px 16px; z-index: 55;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: 0 -4px 15px rgba(0,0,0,.05);
+    }
+    .sticky-bar .total-info { display: flex; flex-direction: column; }
+    .sticky-bar .total-info span { font-size: 11px; color: #777; font-weight: 600; }
+    .sticky-bar .total-info strong { font-size: 20px; font-weight: 800; color: var(--red); line-height: 1; }
+    .sticky-bar .btn-validate {
+      background: var(--black); color: #fff; padding: 0 32px; height: 48px;
+      border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* CHECKOUT (Vue 2) */
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 16px; }
+    .back-link:hover { color: var(--black); }
+    .back-link svg { width: 16px; height: 16px; }
     
+    .stepper { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #888; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; }
+    .stepper .step { display: flex; align-items: center; gap: 4px; }
+    .stepper .step.done { color: var(--green); }
+    .stepper .step.current { color: var(--black); font-weight: 700; }
+    .stepper .sep { color: #ccc; }
+    
+    .checkout-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .checkout-title p { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+    .recap-box { background: #f9fafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 24px; }
+    .recap-box .row { margin: 4px 0; font-size: 13px; }
+    .recap-box .row.total { border-top: 1px solid #e5e5e5; margin-top: 8px; padding-top: 8px; font-size: 15px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #333; }
+    .form-group input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
+    .form-group input.err { border-color: var(--red); }
+    .form-group input:focus { outline: none; border-color: var(--black); }
+    
+    .pos-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 13px; background: #fff; }
+    .pos-btn.ok { border-color: var(--green); color: var(--green); background: #f0fdf4; }
+    .pos-status { font-size: 11.5px; margin-top: 6px; color: #888; text-align: center; }
+    
+    .cgv-label { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: #555; margin: 24px 0; cursor: pointer; }
+    .cgv-label input { margin-top: 2px; accent-color: var(--black); width: 16px; height: 16px; flex-shrink: 0; }
+    .cgv-label a { text-decoration: underline; color: var(--black); font-weight: 600; }
+
+    .btn-confirm {
+      width: 100%; background: var(--black); color: #fff; padding: 16px;
+      border-radius: 8px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+      display: flex; justify-content: center; align-items: center; gap: 10px; transition: .2s;
+    }
+    .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+    
+    .msg { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 1em; text-align: center; }
+    .note { font-size: 11.5px; color: #888; margin-top: 12px; text-align: center; }
+
+    /* EMPTY */
     .empty { text-align: center; padding: 60px 16px; border: 1px dashed var(--line); border-radius: 12px; }
     .empty svg { width: 54px; height: 54px; margin: 0 auto 14px; color: #aaa; }
     .btn-dark { display: inline-block; background: var(--black); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 26px; border-radius: 6px; }
 
-    /* RÉCAPITULATIF */
-    .summary { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: #fff; }
-    .summary h2 { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
-    .row { display: flex; justify-content: space-between; gap: 10px; margin: 9px 0; font-size: 14px; }
-    .row.total { font-size: 18px; font-weight: 800; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; }
-    .row.total #total { color: var(--red); }
-
-    .field label { display: block; font-size: 12px; font-weight: 700; margin: 16px 0 6px; }
-    .field input { width: 100%; padding: 12px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; }
-    .field input.err { border-color: var(--red); }
-    .field input:focus { outline: none; border-color: var(--black); }
-
-    .pos-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid var(--black); border-radius: 8px; font-weight: 700; font-size: 14px; }
-    .pos-btn.ok { border-color: var(--green); color: var(--green); }
-    .pos-btn.err { border-color: var(--red); }
-    .pos-status { font-size: 12px; margin-top: 8px; color: #666; }
-    .pos-status.ok { color: var(--green); }
-    #manualWrap { display: none; margin-top: 10px; }
-
-    /* CHOIX DU PAIEMENT */
-    .payment-methods { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 10px; }
-    .payment-option { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1.5px solid var(--line); border-radius: 8px; cursor: pointer; transition: .2s; }
-    .payment-option.selected { border-color: var(--black); background: #fafafa; }
-    .payment-option input[type="radio"] { accent-color: var(--black); width: 18px; height: 18px; cursor: pointer; }
-    .payment-option span { font-size: 14px; font-weight: 600; }
-
-    .msg { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 1em; }
-    
-    .validate { margin-top: 10px; width: 100%; padding: 16px; border-radius: 8px; background: var(--black); color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .validate:disabled { background: #bbb; cursor: not-allowed; }
-    
-    .note { font-size: 12px; color: #777; margin-top: 12px; text-align: center; }
-
-    /* ÉCRAN DE CONFIRMATION */
+    /* SUCCÈS */
     #successScreen { display: none; max-width: 600px; margin: 40px auto; padding: 30px; border: 1px solid var(--line); border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
     #successScreen.show { display: block; }
     .success-icon { width: 70px; height: 70px; background: #e7f6ec; color: var(--green); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 20px; }
@@ -116,37 +172,38 @@
     .wave-instructions { background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 16px; border-radius: 8px; font-size: 14px; color: #166534; text-align: left; line-height: 1.6; margin-bottom: 10px; }
     .btn-whatsapp { background: #25d366; color: #fff; padding: 16px; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; text-decoration: none; }
 
-    /* BARRE DU BAS */
+    /* TABBAR */
     .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
     .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
     .tabbar svg { width: 26px; height: 26px; }
     .tabbar a.current { font-weight: 800; }
     .tabbar a.current::before { content: ""; position: absolute; top: -8px; width: 22px; height: 3px; border-radius: 2px; background: var(--black); }
 
-    @media (max-width: 520px) {
-      .band { grid-template-columns: 70px 1fr 34px; gap: 10px; }
-      .band-img { width: 70px; }
-      .band-side { grid-column: 2 / 3; flex-direction: row; justify-content: space-between; align-items: center; }
-      .trash { grid-column: 3; grid-row: 1; align-self: start; }
-    }
     @media (min-width: 1024px) {
       body { padding-bottom: 0; }
-      .tabbar, .nav-mobile { display: none; }
+      .tabbar, .nav-mobile, .sticky-bar { display: none !important; }
       .header-inner { padding: 18px 40px; }
       .brand-icon { width: 52px; height: 52px; }
       .brand-word { height: 26px; }
       .nav-desktop { display: flex; gap: 36px; font-size: 14px; font-weight: 600; }
       .page { padding: 40px 40px 60px; }
       .page-title h1 { font-size: 28px; }
-      .layout { grid-template-columns: 1fr 380px; gap: 36px; }
-      .summary { position: sticky; top: 110px; }
+      
+      .layout { display: grid; grid-template-columns: 1fr 380px; gap: 36px; align-items: start; }
+      .summary-box { position: sticky; top: 110px; }
+      
+      .band { grid-template-columns: 80px 1fr; gap: 16px; padding: 16px; }
+      .band-img { width: 80px; }
+      .band-name { font-size: 15px; }
+      .band-price { font-size: 16px; }
+      
+      .btn-confirm { max-width: 400px; margin: 0 auto; }
     }
-    /* iPhone : empêche le zoom automatique quand on touche un champ */
-@supports (-webkit-touch-callout: none) {
-  input, select, textarea { font-size: 16px !important; }
-}
-/* Évite aussi le zoom au double-tap sur les boutons et liens */
-html { touch-action: manipulation; }
+    
+    @supports (-webkit-touch-callout: none) {
+      input, select, textarea { font-size: 16px !important; }
+    }
+    html { touch-action: manipulation; }
   </style>
 </head>
 <body>
@@ -172,27 +229,85 @@ html { touch-action: manipulation; }
   </header>
 
   <main class="page" id="mainPage">
-    <div class="page-title">
-      <h1>MON PANIER</h1>
-      <span id="count"></span>
+    
+    <!-- VUE 1 : PANIER -->
+    <div class="view active" id="viewCart">
+      <div class="page-title">
+        <div>
+          <h1 style="display:inline">MON PANIER</h1>
+          <span id="count"></span>
+        </div>
+        <button class="clear-cart" id="btnClearCart">Vider le panier</button>
+      </div>
+
+      <div class="reassurance">
+        <div class="reassurance-item">
+          <svg viewBox="0 0 24 24"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <div class="text">
+            <strong>Livraison gratuite</strong>
+            <span>Partout au Sénégal</span>
+          </div>
+        </div>
+        <div class="reassurance-item">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div class="text">
+            <strong>Paiement sécurisé</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="bands" id="bands"></div>
+        <aside class="summary-box">
+          <h2>RÉCAPITULATIF</h2>
+          <div class="row"><span>Articles</span><span id="nbArticlesCart">0</span></div>
+          <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
+          <div class="row total"><span>Total</span><span id="totalCart">0 CFA</span></div>
+        </aside>
+      </div>
     </div>
 
-    <div class="layout">
-      <section class="bands" id="bands"></section>
+    <!-- VUE 2 : CHECKOUT -->
+    <div class="view" id="viewCheckout">
+      <button class="back-link" id="btnBackToCart">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        Retour au panier
+      </button>
 
-      <aside class="summary" id="summary">
-        <h2>RÉCAPITULATIF</h2>
-        <div class="row"><span>Articles</span><span id="nbArticles">0</span></div>
+      <div class="stepper">
+        <span class="step done">Panier ✓</span>
+        <span class="sep">—</span>
+        <span class="step current">Livraison</span>
+        <span class="sep">—</span>
+        <span class="step">Paiement</span>
+      </div>
+
+      <div class="checkout-title">
+        <h1>Finaliser ma commande</h1>
+        <p>Renseignez vos informations pour recevoir vos articles.</p>
+      </div>
+
+      <div class="recap-box">
+        <div class="row"><span>Articles</span><span id="nbArticlesCheckout">0</span></div>
         <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
-        <div class="row total"><span>Total</span><span id="total">0 CFA</span></div>
+        <div class="row total"><span>Total à payer</span><span id="totalCheckout">0 CFA</span></div>
+      </div>
 
-        <div class="field">
+      <form id="checkoutForm" onsubmit="return false;">
+        <div class="form-group">
           <label for="nom">Votre nom *</label>
-          <input id="nom" placeholder="Ex : Awa Diop">
+          <input id="nom" placeholder="Ex : Awa Diop" required>
+        </div>
+        <div class="form-group">
           <label for="tel">Votre numéro WhatsApp *</label>
-          <input id="tel" type="tel" placeholder="Ex : 77 000 00 00">
+          <input id="tel" type="tel" placeholder="Ex : 77 000 00 00" required>
+        </div>
+        <div class="form-group">
           <label for="manual">Quartier / adresse de livraison *</label>
-          <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée">
+          <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée" required>
+        </div>
+
+        <div class="form-group">
           <label>Position GPS (facultatif, aide le livreur)</label>
           <button class="pos-btn" id="posBtn" type="button">
             <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
@@ -201,35 +316,31 @@ html { touch-action: manipulation; }
           <p class="pos-status" id="posStatus">Appuyez pour partager votre position.</p>
         </div>
 
-        <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:20px 0 6px;cursor:pointer">
-          <input type="checkbox" id="acceptCgv" style="margin-top:3px;width:16px;height:16px;accent-color:#0a0a0a">
+        <label class="cgv-label">
+          <input type="checkbox" id="acceptCgv">
           <span>
-            J'ai lu et j'accepte les
-            <a href="cgv.html" target="_blank" style="text-decoration:underline">Conditions Générales de Vente</a>
-            et la
-            <a href="confidentialite.html" target="_blank" style="text-decoration:underline">Politique de confidentialité</a>.
+            J'ai lu et j'accepte les <a href="cgv.html" target="_blank">Conditions Générales de Vente</a> et la <a href="confidentialite.html" target="_blank">Politique de confidentialité</a>.
           </span>
         </label>
 
-        <div class="payment-methods">
-          <label class="payment-option selected" id="optWave">
-            <input type="radio" name="payment" value="wave" checked>
-            <span>Payer avec Wave</span>
-          </label>
-       
-
-        </div>
-
         <div class="msg" id="msg"></div>
-        
-        <button class="validate" id="validate" type="button">
-          <span id="validateText">Valider et payer avec Wave</span>
+
+        <button type="button" class="btn-confirm" id="validate">
+          <span id="validateText">VALIDER</span>
           <svg id="validateSpinner" style="display:none; width:20px; height:20px; animation: spin 1s linear infinite;" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="white" stroke-width="2"/></svg>
         </button>
-        <p class="note">Votre commande sera enregistrée avant la redirection.</p>
-      </aside>
+      </form>
     </div>
   </main>
+
+  <!-- BARRE FIXE PANIER -->
+  <div class="sticky-bar" id="stickyBar">
+    <div class="total-info">
+      <span>Total</span>
+      <strong id="totalSticky">0 CFA</strong>
+    </div>
+    <button class="btn-validate" id="btnGoCheckout">VALIDER</button>
+  </div>
 
   <div id="successScreen">
     <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -280,16 +391,8 @@ html { touch-action: manipulation; }
     let position = null;
     try { position = JSON.parse(localStorage.getItem(POS_KEY)); } catch (e) {}
 
-    /* ================================================================
-       FONCTION RÉUTILISABLE : normalise les tailles disponibles
-       ----------------------------------------------------------------
-       Le champ Firestore "stock" est une map du type :
-         { S: 0, M: 0, L: 4, XL: 0 }
-       On ne garde QUE les tailles avec un stock > 0.
-       ================================================================ */
     function normalizeSizes(valeur) {
       let obj = valeur;
-
       if (obj && typeof obj === "object" && obj.mapValue) {
         const fields = obj.mapValue.fields || {};
         const map = {};
@@ -352,13 +455,32 @@ html { touch-action: manipulation; }
 
     const paymentMode = "wave";
 
+    // Navigation entre les vues
+    $("btnGoCheckout").addEventListener("click", () => {
+      if (cart.length === 0) return;
+      $("viewCart").classList.remove("active");
+      $("viewCheckout").classList.add("active");
+      window.scrollTo(0, 0);
+    });
+
+    $("btnBackToCart").addEventListener("click", () => {
+      $("viewCheckout").classList.remove("active");
+      $("viewCart").classList.add("active");
+      window.scrollTo(0, 0);
+    });
+
+    $("btnClearCart").addEventListener("click", () => {
+      if (!confirm("Voulez-vous vraiment vider votre panier ?")) return;
+      cart = [];
+      saveCart(); render();
+    });
+
     // Bouton de validation actif seulement si panier non vide ET CGV cochées
     function updateValidate() {
       $("validate").disabled = cart.length === 0 || !$("acceptCgv").checked;
     }
     $("acceptCgv").addEventListener("change", updateValidate);
 
-    // Stock réel de chaque produit (tailles et quantités disponibles)
     const stockMaps = {};
     async function loadStocks() {
       await Promise.all(cart.map(async it => {
@@ -373,18 +495,17 @@ html { touch-action: manipulation; }
       }));
     }
 
-    // Affichage du panier
     function render() {
       const box = $("bands");
       if (cart.length === 0) {
         box.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/></svg><p>Votre panier est vide.</p><a href="index.html" class="btn-dark">Voir les nouveautés</a></div>`;
-        $("validate").disabled = true;
+        $("stickyBar").style.display = "none";
       } else {
+        $("stickyBar").style.display = "flex";
         box.innerHTML = cart.map((it, i) => {
-          // Normalise les tailles à l'affichage (au cas où elles auraient changé)
           const sizesArr = normalizeSizes(stockMaps[it.id] || null);
           const sizes = sizesArr.length
-            ? `<span class="sizes-label">Taille :</span>` + sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("")
+            ? sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("")
             : `<span class="one-size">Taille unique</span>`;
           return `
           <article class="band" id="band-${i}">
@@ -392,26 +513,32 @@ html { touch-action: manipulation; }
             <div class="band-info">
               <p class="band-name">${esc(it.name)}</p>
               <p class="band-price">${fmt(it.price)}</p>
-              <div class="sizes">${sizes}<span class="size-err">Choisissez une taille</span></div>
-            </div>
-            <div class="band-side">
-              <div class="qty">
-                <button data-act="minus" data-i="${i}">−</button>
-                <span>${it.qty}</span>
-                <button data-act="plus" data-i="${i}">+</button>
+              <div class="sizes-wrap">${sizes}<span class="size-err">Choisissez une taille</span></div>
+              <div class="band-bottom">
+                <div class="qty">
+                  <button data-act="minus" data-i="${i}">−</button>
+                  <span>${it.qty}</span>
+                  <button data-act="plus" data-i="${i}">+</button>
+                </div>
+                <span class="line-total">${fmt(it.price * it.qty)}</span>
+                <button class="trash" data-act="del" data-i="${i}">
+                  <svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
+                </button>
               </div>
-              <span class="line-total">${fmt(it.price * it.qty)}</span>
             </div>
-            <button class="trash" data-act="del" data-i="${i}">${'<svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>'}</button>
           </article>`;
         }).join("");
-        $("validate").disabled = false;
       }
       
       const nb = cart.reduce((s, x) => s + x.qty, 0);
       const total = cart.reduce((s, x) => s + x.qty * x.price, 0);
-      $("nbArticles").textContent = nb;
-      $("total").textContent = fmt(total);
+      
+      $("nbArticlesCart").textContent = nb;
+      $("totalCart").textContent = fmt(total);
+      $("nbArticlesCheckout").textContent = nb;
+      $("totalCheckout").textContent = fmt(total);
+      $("totalSticky").textContent = fmt(total);
+      
       $("count").textContent = nb ? `(${nb} article${nb > 1 ? "s" : ""})` : "";
       $("cartCount").textContent = nb;
       updateValidate();
@@ -436,7 +563,6 @@ html { touch-action: manipulation; }
       saveCart(); render();
     });
 
-    // Position GPS
     function showPosition() {
       if (!position) return;
       $("posBtn").classList.add("ok");
@@ -463,9 +589,6 @@ html { touch-action: manipulation; }
       );
     });
 
-    // ============================================================
-    // VALIDATION : VÉRIFICATION DES PRIX **ET** DES TAILLES
-    // ============================================================
     $("validate").addEventListener("click", async () => {
       const msg = $("msg");
       msg.textContent = "";
@@ -476,7 +599,6 @@ html { touch-action: manipulation; }
 
       if (cart.length === 0) return;
 
-      // 1) Validations de base (nom, tel, position) — faites d'abord
       const nom = $("nom").value.trim();
       const tel = $("tel").value.trim();
       const manual = $("manual").value.trim();
@@ -488,13 +610,11 @@ html { touch-action: manipulation; }
       if (manual.length < 3) { $("manual").classList.add("err"); msg.textContent = "Indiquez votre quartier ou un repère."; return; }
       if (!$("acceptCgv").checked) { msg.textContent = "Acceptez les CGV pour continuer."; return; }
 
-      // 2) Désactiver le bouton
       $("validate").disabled = true;
-      $("validateText").textContent = "Vérification des prix et tailles...";
+      $("validateText").textContent = "VÉRIFICATION...";
       $("validateSpinner").style.display = "inline";
 
       try {
-        // 3) Lecture des documents produits en parallèle
         const snaps = await Promise.all(cart.map(it => {
           if (!it.id) {
             return Promise.resolve({ __missingId: true, name: it.name, __id: null });
@@ -504,7 +624,6 @@ html { touch-action: manipulation; }
             .catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
         }));
 
-        // 4) Vérification prix + tailles
         let priceChanged = false;
         let sizesChanged = false;
         const freshArticles = [];
@@ -515,7 +634,6 @@ html { touch-action: manipulation; }
           const it = cart[i];
           const result = snaps[i];
 
-          // Cas : pas d'id
           if (!it.id || (result && result.__missingId)) {
             errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`);
             continue;
@@ -531,8 +649,6 @@ html { touch-action: manipulation; }
           const prixServeur = Number(data.prix) || 0;
           const titreServeur = String(data.titre || it.name || "Article");
           const imageServeur = String(data.imageUrl || it.img || "");
-
-          // ⬇️ LECTURE DES TAILLES SERVEUR
           const sizesServeur = normalizeSizes(data.stock ?? data.tailles ?? data.sizes ?? data.taille ?? null);
 
           if (!Number.isFinite(prixServeur) || prixServeur < 0) {
@@ -540,22 +656,18 @@ html { touch-action: manipulation; }
             continue;
           }
 
-          // Détection du changement de prix
           if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) {
             priceChanged = true;
           }
 
-          // ⬇️ VALIDATION DES TAILLES
           let tailleFinale = "Taille unique";
 
           if (sizesServeur.length > 0) {
-            // Synchronise les tailles du panier avec celles du serveur
             if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) {
               it.sizes = sizesServeur;
               sizesChanged = true;
             }
 
-            // Le client doit avoir choisi une taille valide
             if (!it.size) {
               errors.push(`Choisissez la taille de "${titreServeur}".`);
               $("band-" + i).classList.add("need");
@@ -572,7 +684,6 @@ html { touch-action: manipulation; }
             }
             tailleFinale = it.size;
           } else {
-            // Pas de taille dispo : on force "Taille unique"
             if (it.sizes && it.sizes.length) {
               it.sizes = [];
               it.size = null;
@@ -608,18 +719,20 @@ html { touch-action: manipulation; }
           });
         }
 
-        // 5) Si erreurs bloquantes (prix manquants, tailles invalides, etc.)
         if (errors.length > 0) {
           if (sizesChanged) { saveCart(); render(); }
           msg.textContent = errors[0];
           $("validate").disabled = false;
-          $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+          $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
-          if (firstBadBand) firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (firstBadBand) {
+            $("viewCheckout").classList.remove("active");
+            $("viewCart").classList.add("active");
+            setTimeout(() => firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+          }
           return;
         }
 
-        // 6) Prix ou tailles ont changé : on met à jour le panier et on redemande
         if (priceChanged || sizesChanged) {
           freshArticles.forEach(fa => {
             const idx = cart.findIndex(c => c.id === fa.produitId);
@@ -641,12 +754,14 @@ html { touch-action: manipulation; }
           }
 
           $("validate").disabled = false;
-          $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+          $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
+          
+          $("viewCheckout").classList.remove("active");
+          $("viewCart").classList.add("active");
           return;
         }
 
-        // 7) Construction de la commande avec les prix/tailles validés serveur
         const total = freshArticles.reduce((s, a) => s + a.prix * a.quantite, 0);
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const randStr = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -673,24 +788,24 @@ html { touch-action: manipulation; }
           createdAt: serverTimestamp()
         };
 
-        $("validateText").textContent = "Enregistrement...";
+        $("validateText").textContent = "ENREGISTREMENT...";
 
-     const orderRef = await addDoc(collection(db, "commandes"), orderData);
+        const orderRef = await addDoc(collection(db, "commandes"), orderData);
 
-// Alerte email pour l'admin (silencieuse, ne bloque jamais la commande)
-if (currentUser) {
-  currentUser.getIdToken()
-    .then(token => fetch("/api/nouvelle-commande", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify({ orderId: orderRef.id }),
-      keepalive: true
-    }))
-    .catch(() => {});
-}
-        // 8) Succès : vider le panier, afficher écran
+        if (currentUser) {
+          currentUser.getIdToken()
+            .then(token => fetch("/api/nouvelle-commande", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+              body: JSON.stringify({ orderId: orderRef.id }),
+              keepalive: true
+            }))
+            .catch(() => {});
+        }
+
         localStorage.removeItem(CART_KEY);
         $("mainPage").style.display = "none";
+        $("stickyBar").style.display = "none";
         $("successScreen").classList.add("show");
         $("orderNumberDisplay").textContent = numero;
         window.scrollTo(0, 0);
@@ -732,7 +847,7 @@ if (currentUser) {
         console.error("Erreur validation panier:", error);
         msg.textContent = "Erreur : " + (error.message || "Vérifiez votre connexion et réessayez.");
         $("validate").disabled = false;
-        $("validateText").textContent = paymentMode === 'wave' ? "Valider et payer avec Wave" : "Valider la commande";
+        $("validateText").textContent = "VALIDER";
         $("validateSpinner").style.display = "none";
       }
     });
@@ -753,6 +868,7 @@ if (currentUser) {
   .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
   .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
   
+  /* Grille principale */
   .numa-footer-inner {
     max-width: 1280px;
     margin: 0 auto;
