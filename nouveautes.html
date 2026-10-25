@@ -6,16 +6,17 @@
   <title>Nouveautés - NUMA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --gold: #b9935a; --max: 1280px; }
-    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
+    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --green: #16a34a; --max: 1280px; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
     button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
     img { display: block; max-width: 100%; }
     svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* HEADER & RECHERCHE */
+    /* ===== HEADER & RECHERCHE ===== */
     .header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.06); }
     .header-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
     .brand { display: flex; align-items: center; gap: 12px; }
@@ -40,7 +41,7 @@
     .search-close { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; }
     .search-close:hover { background: var(--gray); }
 
-    /* PAGE HERO */
+    /* ===== HERO ===== */
     .page-hero { background: var(--black); color: #fff; text-align: center; padding: 50px 16px 40px; position: relative; overflow: hidden; }
     .page-hero::before { content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; }
     .page-hero .crumbs { font-size: 13px; color: #aaa; margin-bottom: 16px; position: relative; z-index: 2; }
@@ -49,42 +50,54 @@
     .page-hero p.sub { margin-top: 10px; font-size: 14px; color: #ccc; position: relative; z-index: 2; max-width: 500px; margin: 10px auto 0; }
     .fresh-badge { display: inline-block; background: var(--red); color: #fff; padding: 6px 16px; border-radius: 99px; font-weight: 800; font-size: 12px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2; }
 
-    /* SECTION PRINCIPALE */
+    /* ===== SECTION PRINCIPALE ===== */
     .section { max-width: var(--max); margin: 0 auto; padding: 28px 16px 20px; }
     .list-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
     .list-head h2 { font-size: 20px; font-weight: 800; margin: 0; }
     .sort { display: flex; align-items: center; gap: 10px; font-size: 13px; }
     .sort select { border: 1.5px solid var(--black); border-radius: 6px; padding: 8px 12px; font: inherit; font-weight: 600; background: #fff; cursor: pointer; }
 
-    /* GRILLE & CARTES */
+    /* ===== GRILLE & CARTES ===== */
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
+    .card { display: flex; flex-direction: column; }
     .card .thumb { position: relative; aspect-ratio: 3 / 4; background: var(--gray); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-    .card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s, opacity .3s; }
+    
+    /* CORRECTION IMAGE : On centre bien l'image sur le haut */
+    .card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .4s, opacity .3s; }
     .card:hover .thumb img { transform: scale(1.05); }
+    
     .thumb .img-secondary { position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; }
     .card.slider-active .img-secondary { opacity: 1; z-index: 2; }
     .card.slider-active .img-primary { opacity: 0; }
-    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.85); display: grid; place-items: center; z-index: 10; opacity: 0; transition: opacity .2s; cursor: pointer; }
+    
+    /* CORRECTION SLIDER : Toujours visible sur mobile */
+    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.85); display: grid; place-items: center; z-index: 10; opacity: 1; transition: opacity .2s; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .slider-btn:hover { background: #fff; }
     .slider-btn.left { left: 8px; }
     .slider-btn.right { right: 8px; }
     .slider-btn svg { width: 16px; height: 16px; color: var(--black); }
-    .card .thumb:hover .slider-btn { opacity: 1; }
-
+    
     .tag-new { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--black); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 4px; letter-spacing: .5px; }
     .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
     .price { font-size: 17px; font-weight: 800; color: var(--red); }
     .fav { width: 26px; height: 26px; flex: none; }
     .fav svg { width: 22px; height: 22px; }
     .fav.on svg { fill: var(--red); stroke: var(--red); }
-    .name { font-size: 14px; margin-bottom: 8px; line-height: 1.25; }
-    .add { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 14px; border-radius: 8px; background: #fff; color: var(--black); border: 1.5px solid var(--black); font-size: 13.5px; font-weight: 700; transition: .2s; }
-    .add:hover { background: var(--black); color: #fff; }
-    .add.added { background: var(--green); border-color: var(--green); color: #fff; }
+    .name { font-size: 14px; font-weight: 500; margin-bottom: 8px; line-height: 1.25; color: #333; }
+    
+    /* ===== NOUVEAUX BOUTONS (Voir + Panier) ===== */
+    .card-link { display: block; color: inherit; }
+    .card-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-view { flex: 2; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 8px; background: var(--black); color: #fff; font-size: 13.5px; font-weight: 700; transition: .2s; text-decoration: none; border: 1.5px solid var(--black); }
+    .btn-view:hover { background: var(--red); border-color: var(--red); }
+    .btn-add { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: #fff; color: var(--black); border: 1.5px solid var(--black); transition: .2s; cursor: pointer; }
+    .btn-add:hover { background: var(--gray); }
+    .btn-add.added { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn-add svg { width: 20px; height: 20px; }
 
     .empty { text-align: center; padding: 40px 0; color: #666; font-weight: 600; grid-column: 1 / -1; }
     .more-wrap { display: flex; justify-content: center; margin-top: 28px; }
-    .btn-outline { border: 2px solid var(--black); border-radius: 8px; padding: 14px 70px; font-weight: 700; font-size: 16px; }
+    .btn-outline { border: 2px solid var(--black); border-radius: 8px; padding: 14px 70px; font-weight: 700; font-size: 16px; transition: 0.2s; }
     .btn-outline:hover { background: var(--black); color: #fff; }
     .btn-outline[hidden] { display: none; }
     
@@ -94,7 +107,7 @@
     .skel-line { height: 14px; background: #f0f0f0; border-radius: 4px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: .6; } 50% { opacity: 1; } 100% { opacity: .6; } }
 
-    /* TABBAR */
+    /* ===== TABBAR & FOOTER ===== */
     .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--line); padding: 8px 0 10px; }
     .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; position: relative; }
     .tabbar svg { width: 26px; height: 26px; }
@@ -118,6 +131,9 @@
       .page-hero h1 { font-size: 56px; }
       .section { padding: 48px 40px 60px; }
       .grid, .skeleton { grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
+      .slider-btn { opacity: 0; }
+      .card .thumb:hover .slider-btn { opacity: 1; }
+      .btn-view, .btn-add { padding: 12px; }
     }
   </style>
 </head>
@@ -129,7 +145,6 @@
       <nav class="nav-desktop"><a href="nouveautes.html" class="current">Nouveautés</a><a href="categories.html?sexe=homme">Homme</a><a href="categories.html?sexe=femme">Femme</a><a href="promotions.html">Promotions</a></nav>
       
       <div class="actions">
-        <!-- BOUTON RECHERCHE -->
         <button aria-label="Rechercher" id="searchToggle"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
         <a href="favoris.html" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span class="badge" id="favCount" style="display:none">0</span></a>
         <a href="panier.html" aria-label="Panier"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartCount">0</span></a>
@@ -137,7 +152,6 @@
       </div>
     </div>
 
-    <!-- BARRE DE RECHERCHE (CACHÉE PAR DÉFAUT) -->
     <div class="search-bar" id="searchBar">
       <div class="search-inner">
         <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off">
@@ -183,9 +197,6 @@
   </nav>
 
   <script type="module">
-    /* ================================================================
-       0. IMPORTS FIREBASE
-       ================================================================ */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -206,9 +217,6 @@
     let currentUser = null;
     let favSyncDone = false;
 
-    /* ================================================================
-       1. CONFIGURATION
-       ================================================================ */
     const FIRESTORE_REST_URL = "https://firestore.googleapis.com/v1/projects/numa-com/databases/(default)/documents/produits";
     const CART_KEY = "numa_cart";
     const FAV_KEY = "numa_favs";
@@ -224,13 +232,7 @@
     const readLS = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fb; } catch (e) { return fb; } };
     const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
-    /* ================================================================
-       2. RECHERCHE FLOUE (TOLÉRANCE AUX FAUTES)
-       ================================================================ */
-    function normalizeText(t) {
-      return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-    }
-
+    function normalizeText(t) { return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); }
     function levenshtein(a, b) {
       const m = [];
       for (let i = 0; i <= b.length; i++) m[i] = [i];
@@ -240,17 +242,11 @@
       }
       return m[b.length][a.length];
     }
-
     function matchesSearch(title, query) {
-      const nt = normalizeText(title);
-      const qw = normalizeText(query).split(/\s+/);
-      const tw = nt.split(/\s+/);
+      const nt = normalizeText(title), qw = normalizeText(query).split(/\s+/), tw = nt.split(/\s+/);
       return qw.every(q => tw.some(t => t.includes(q) || levenshtein(q, t) <= 2));
     }
 
-    /* ================================================================
-       3. NORMALISATION DES TAILLES
-       ================================================================ */
     function normalizeSizes(valeur) {
       let obj = valeur;
       if (obj && typeof obj === "object" && obj.mapValue) {
@@ -280,18 +276,13 @@
       return cleaned;
     }
 
-    /* ================================================================
-       4. CHARGEMENT PRODUITS (CACHE + FORCE FETCH POUR RECHERCHE)
-       ================================================================ */
     function getCache() {
       try { const raw = sessionStorage.getItem(CACHE_KEY); if (!raw) return null; const o = JSON.parse(raw); if (!o || typeof o.t !== "number" || !Array.isArray(o.data)) return null; if (Date.now() - o.t > CACHE_TTL) return null; return o.data; } catch (e) { return null; }
     }
     function setCache(data) { try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch (e) {} }
 
     async function loadAllProducts(forceFetch = false) {
-      if (!forceFetch) {
-        const cached = getCache(); if (cached) return cached;
-      }
+      if (!forceFetch) { const cached = getCache(); if (cached) return cached; }
       let allDocs = []; let pageToken = null; let pageCount = 0; let lastError = null;
       while (pageCount < MAX_PAGES) {
         pageCount++;
@@ -338,9 +329,6 @@
       return products;
     }
 
-    /* ================================================================
-       5. FAVORIS
-       ================================================================ */
     function getLocalFavs() {
       try {
         const raw = localStorage.getItem(FAV_KEY);
@@ -408,9 +396,6 @@
       } catch (e) { console.error("Sync favoris login échouée:", e); }
     }
 
-    /* ================================================================
-       6. BADGES
-       ================================================================ */
     function updateBadges() {
       const cart = readLS(CART_KEY, []);
       const favs = getLocalFavs();
@@ -419,9 +404,6 @@
       $("favCount").style.display = favs.length ? "grid" : "none";
     }
 
-    /* ================================================================
-       7. PANIER
-       ================================================================ */
     function addToCart(p) {
       if (!p.id) { alert("Erreur : identifiant du produit manquant."); return; }
       const sizes = normalizeSizes(p.sizes || p.stock || p.tailles || null);
@@ -439,9 +421,6 @@
       writeLS(CART_KEY, cart); updateBadges();
     }
 
-    /* ================================================================
-       8. AFFICHAGE & RECHERCHE
-       ================================================================ */
     let allProducts = []; 
     let filteredProducts = []; 
     let sortMode = "new"; 
@@ -467,24 +446,33 @@
       empty.hidden = true;
       countEl.textContent = `${filteredProducts.length} article${filteredProducts.length > 1 ? "s" : ""}`;
       
+      // ===== CORRECTION DU HTML DE LA CARTE =====
       grid.innerHTML = visible.map((p, i) => {
         const name = esc(p.nom || "Article"); const price = Number(p.prix || 0);
         const imgP = p.image || "https://via.placeholder.com/700x900"; const imgS = p.imageSecondary || imgP;
         const favOn = isFav(p.id) ? "on" : "";
+        
         return `<article class="card" data-index="${i}">
-          <div class="thumb" onmouseenter="loadSecondaryImage(this)">
-            <span class="tag-new">NOUVEAU</span>
-            <img class="img-primary" src="${esc(imgP)}" alt="${name}" loading="lazy">
-            <img class="img-secondary" data-src="${esc(imgS)}" alt="">
-            <button class="slider-btn left"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-            <button class="slider-btn right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
-          </div>
+          <a href="produit.html?id=${p.id}" class="card-link">
+            <div class="thumb" onmouseenter="loadSecondaryImage(this)" ontouchstart="loadSecondaryImage(this)">
+              <span class="tag-new">NOUVEAU</span>
+              <img class="img-primary" src="${esc(imgP)}" alt="${name}" loading="lazy">
+              <img class="img-secondary" data-src="${esc(imgS)}" alt="${name} secondaire">
+              <button class="slider-btn left"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="slider-btn right"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+            </div>
+          </a>
           <div class="price-row">
             <span class="price">${fmt(price)}</span>
-            <button class="fav ${favOn}"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></button>
+            <button class="fav ${favOn}" aria-label="Favoris"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg></button>
           </div>
-          <p class="name">${name}</p>
-          <button class="add"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.5 12h11L21 7H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg> Ajouter au panier</button>
+          <a href="produit.html?id=${p.id}" class="card-link">
+            <p class="name">${name}</p>
+          </a>
+          <div class="card-actions">
+            <a href="produit.html?id=${p.id}" class="btn-view">Voir</a>
+            <button class="btn-add" aria-label="Ajouter au panier"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.5 12h11L21 7H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg></button>
+          </div>
         </article>`;
       }).join("");
       moreBtn.hidden = visibleCount >= filteredProducts.length;
@@ -492,12 +480,11 @@
 
     window.loadSecondaryImage = (el) => {
       const img = el.querySelector('.img-secondary');
-      if (!img.src || img.src === window.location.href) img.src = img.getAttribute('data-src');
+      if (!img.src || img.src === window.location.href) {
+        img.src = img.getAttribute('data-src');
+      }
     };
 
-    /* ================================================================
-       9. SYSTÈME DE RECHERCHE (LOCAL PUIS BDD)
-       ================================================================ */
     async function performSearch(query) {
       const q = query.trim();
       
@@ -512,14 +499,12 @@
       isSearching = true;
       $("sectionTitle").textContent = `RÉSULTATS POUR « ${q} »`;
       
-      // 1. Recherche locale (dans les produits déjà chargés)
       let results = allProducts.filter(p => matchesSearch(p.nom || "", q));
 
-      // 2. Si aucun résultat local, on cherche dans la BDD (force fetch)
       if (results.length === 0) {
         $("grid").innerHTML = `<div class="skeleton">${Array.from({length:4}).map(()=>`<div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div></div>`).join("")}</div>`;
         try {
-          allProducts = await loadAllProducts(true); // true = force fetch sans cache
+          allProducts = await loadAllProducts(true);
           results = allProducts.filter(p => matchesSearch(p.nom || "", q));
         } catch (err) {
           console.error("Erreur recherche DB:", err);
@@ -531,7 +516,6 @@
       applySort();
     }
 
-    // Écouteurs pour la barre de recherche
     const searchToggle = $("searchToggle");
     const searchBar = $("searchBar");
     const searchInput = $("searchInput");
@@ -550,15 +534,11 @@
       performSearch("");
     });
 
-    // Debounce pour éviter de lancer la recherche à chaque lettre
     searchInput.addEventListener("input", (e) => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => performSearch(e.target.value), 400);
     });
 
-    /* ================================================================
-       10. CHARGEMENT INITIAL
-       ================================================================ */
     async function loadProducts() {
       $("grid").innerHTML = `<div class="skeleton">${Array.from({length:8}).map(()=>`<div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div></div>`).join("")}</div>`;
       try {
@@ -572,23 +552,26 @@
       }
     }
 
-    /* ================================================================
-       11. INTERACTIONS CARTES
-       ================================================================ */
     $("grid").addEventListener("click", async e => {
       const card = e.target.closest(".card"); if (!card) return;
       const p = filteredProducts[+card.dataset.index]; if (!p) return;
       
-      if (e.target.closest(".slider-btn")) { e.preventDefault(); card.classList.toggle("slider-active"); return; }
+      if (e.target.closest(".slider-btn")) { 
+        e.preventDefault(); 
+        card.classList.toggle("slider-active"); 
+        return; 
+      }
       if (e.target.closest(".fav")) {
         const on = await toggleFav(p.id);
         e.target.closest(".fav").classList.toggle("on", on);
         return;
       }
-      if (e.target.closest(".add")) {
+      if (e.target.closest(".btn-add")) {
         addToCart(p);
-        const btn = e.target.closest(".add"); const orig = btn.innerHTML;
-        btn.classList.add("added"); btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Ajouté !`;
+        const btn = e.target.closest(".btn-add"); 
+        const orig = btn.innerHTML;
+        btn.classList.add("added"); 
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>`;
         setTimeout(() => { btn.classList.remove("added"); btn.innerHTML = orig; }, 1000);
       }
     });
@@ -596,9 +579,6 @@
     $("sort").addEventListener("change", e => { sortMode = e.target.value; visibleCount = PAGE_SIZE; applySort(); });
     $("moreBtn").addEventListener("click", () => { visibleCount += PAGE_SIZE; renderProducts(); });
 
-    /* ================================================================
-       12. AUTH
-       ================================================================ */
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user && !favSyncDone) {
@@ -610,14 +590,11 @@
       }
     });
 
-    /* ================================================================
-       13. INITIALISATION
-       ================================================================ */
     updateBadges();
     loadProducts();
   </script>
 
-  <!-- ================= FOOTER NUMA ================= -->
+  <!-- ================= DÉBUT FOOTER NUMA ================= -->
   <style>
     .numa-footer { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; background-color: #0a0a0a; color: #fff; margin-top: 60px; padding-bottom: 80px; }
     .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
