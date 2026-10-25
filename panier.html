@@ -58,7 +58,6 @@
     .band-info { min-width: 0; display: flex; flex-direction: column; }
     .band-name { font-size: 13.5px; font-weight: 600; line-height: 1.25; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .band-price { font-size: 14px; font-weight: 800; color: var(--red); margin-bottom: 6px; }
-    .band-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
     .sizes-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .chip { min-width: 32px; height: 28px; padding: 0 8px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 12px; font-weight: 600; display: grid; place-items: center; }
     .chip.sel { background: var(--black); color: #fff; border-color: var(--black); }
@@ -81,7 +80,6 @@
     .row.total { font-size: 17px; font-weight: 800; color: var(--black); border-top: 1.5px solid var(--line); padding-top: 12px; margin-top: 12px; }
     .row.total span:last-child { color: var(--red); }
 
-    /* FIX PC : bouton VALIDER dans le récap */
     .btn-go-checkout-desktop {
       display: none;
       width: 100%; margin-top: 16px; padding: 14px;
@@ -91,7 +89,7 @@
     }
     .btn-go-checkout-desktop:hover { background: var(--red); }
 
-    /* BARRE FIXE PANIER (mobile) */
+    /* BARRE FIXE PANIER */
     .sticky-bar { position: fixed; left: 0; right: 0; bottom: 76px; background: #fff; border-top: 1px solid var(--line); padding: 12px 16px; z-index: 55; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 -4px 15px rgba(0,0,0,.05); }
     .sticky-bar .total-info { display: flex; flex-direction: column; }
     .sticky-bar .total-info span { font-size: 11px; color: #777; font-weight: 600; }
@@ -103,33 +101,127 @@
     .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 16px; }
     .back-link:hover { color: var(--black); }
     .back-link svg { width: 16px; height: 16px; }
-    .stepper { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #888; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; }
-    .stepper .step { display: flex; align-items: center; gap: 4px; }
+
+    /* Stepper élégant */
+    .stepper { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #aaa; margin-bottom: 24px; overflow-x: auto; white-space: nowrap; padding: 4px 0; }
+    .stepper .step { display: flex; align-items: center; gap: 6px; }
+    .stepper .step-dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: #f1f1f1; color: #999; flex-shrink: 0; }
     .stepper .step.done { color: var(--green); }
-    .stepper .step.current { color: var(--black); font-weight: 700; }
-    .stepper .sep { color: #ccc; }
-    .checkout-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-    .checkout-title p { font-size: 13px; color: #666; margin-bottom: 20px; }
-    .recap-box { background: #f9fafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 24px; }
-    .recap-box .row { margin: 4px 0; font-size: 13px; }
-    .recap-box .row.total { border-top: 1px solid #e5e5e5; margin-top: 8px; padding-top: 8px; font-size: 15px; }
+    .stepper .step.done .step-dot { background: var(--green); color: #fff; }
+    .stepper .step.current { color: var(--black); }
+    .stepper .step.current .step-dot { background: var(--black); color: #fff; }
+    .stepper .step-sep { flex-shrink: 0; width: 24px; height: 1.5px; background: var(--line); }
 
-    /* FORM */
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #333; }
-    .form-group input[type="text"], .form-group input[type="tel"] { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
-    .form-group input.err { border-color: var(--red); }
-    .form-group input:focus { outline: none; border-color: var(--black); }
+    .checkout-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; letter-spacing: -.3px; }
+    .checkout-title p { font-size: 13px; color: #666; margin-bottom: 22px; }
 
-    /* ADRESSE avec bouton Parcourir */
-    .input-with-action { display: flex; gap: 8px; }
-    .input-with-action input { flex: 1; }
-    .input-action-btn { padding: 0 14px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer; transition: .15s; }
-    .input-action-btn:hover { border-color: var(--black); background: #fafafa; }
-    .input-action-btn svg { width: 16px; height: 16px; }
-    @media (max-width: 380px) {
-      .input-with-action { flex-direction: column; }
-      .input-action-btn { padding: 11px; justify-content: center; }
+    /* Récap élégant */
+    .recap-card { background: #fafafa; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 26px; }
+    .recap-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13.5px; color: #555; }
+    .recap-label { display: flex; align-items: center; gap: 8px; }
+    .recap-label svg { width: 16px; height: 16px; color: #999; }
+    .recap-value { font-weight: 700; color: var(--black); }
+    .recap-value.green { color: var(--green); font-weight: 700; }
+    .recap-row.total { border-top: 1.5px dashed var(--line); margin-top: 6px; padding-top: 12px; font-size: 15px; font-weight: 800; color: var(--black); }
+    .recap-row.total .recap-value { color: var(--red); font-size: 18px; }
+
+    /* FORM FIELDS — DESIGN MODERNE */
+    .form-field { margin-bottom: 18px; }
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+      letter-spacing: 0.2px;
+    }
+    .form-label .req { color: var(--red); margin-left: 2px; }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      transition: all 0.15s ease;
+      overflow: hidden;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--black);
+      box-shadow: 0 0 0 4px rgba(10,10,10,.06);
+    }
+    .input-wrap.error {
+      border-color: var(--red);
+      background: #fff5f7;
+    }
+
+    .input-icon {
+      width: 18px;
+      height: 18px;
+      margin-left: 14px;
+      color: #aaa;
+      flex-shrink: 0;
+      stroke-width: 2;
+      transition: color 0.15s;
+    }
+    .input-wrap:focus-within .input-icon { color: var(--black); }
+
+    .input-wrap input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 14px 12px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--black);
+      -webkit-appearance: none;
+    }
+    .input-wrap input::placeholder {
+      color: #bbb;
+      font-weight: 400;
+    }
+
+    .input-prefix {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 12px 0 14px;
+      height: 48px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--black);
+      background: #fafafa;
+      border-right: 1.5px solid var(--line);
+      flex-shrink: 0;
+    }
+    .input-prefix .flag { font-size: 15px; }
+
+    .input-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 16px;
+      height: 48px;
+      background: transparent;
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border-left: 1.5px solid var(--line);
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .input-action:hover { background: #fafafa; }
+    .input-action svg { width: 15px; height: 15px; }
+    @media (max-width: 420px) {
+      .input-action span { display: none; }
+      .input-action { padding: 0 14px; }
     }
 
     /* GPS CARD */
@@ -155,11 +247,104 @@
     .gps-coords { margin-top: 10px; padding: 8px 10px; background: var(--gray); border-radius: 6px; font-size: 11px; color: #666; font-family: monospace; word-break: break-all; display: none; }
     .gps-card.active ~ .gps-coords { display: block; }
 
-    .cgv-label { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: #555; margin: 24px 0; cursor: pointer; }
-    .cgv-label input { margin-top: 2px; accent-color: var(--black); width: 16px; height: 16px; flex-shrink: 0; }
-    .cgv-label a { text-decoration: underline; color: var(--black); font-weight: 600; }
-    .btn-confirm { width: 100%; background: var(--black); color: #fff; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: .2s; }
-    .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+    /* CGV CARD — élégante, pré-cochée */
+    .cgv-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      margin: 24px 0 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: #fff;
+    }
+    .cgv-card:hover { border-color: #ccc; }
+    .cgv-card.checked {
+      border-color: var(--green);
+      background: #f0fdf4;
+    }
+    .cgv-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0; height: 0;
+    }
+    .cgv-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .cgv-title {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+    .cgv-text {
+      display: block;
+      font-size: 11.5px;
+      color: #666;
+      line-height: 1.5;
+    }
+    .cgv-text a {
+      color: var(--black);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+    .cgv-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      margin-top: 1px;
+    }
+    .cgv-check svg {
+      width: 14px;
+      height: 14px;
+      color: #fff;
+      stroke-width: 3;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .cgv-card.checked .cgv-check {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .cgv-card.checked .cgv-check svg {
+      opacity: 1;
+    }
+
+    /* BUTTON VALIDER */
+    .btn-confirm {
+      width: 100%;
+      background: var(--black);
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      transition: .2s;
+      box-shadow: 0 4px 12px rgba(10,10,10,.15);
+    }
+    .btn-confirm:hover:not(:disabled) { background: var(--red); box-shadow: 0 6px 16px rgba(225,29,72,.25); }
+    .btn-confirm:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     .msg { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 1em; text-align: center; }
 
     /* MODALES */
@@ -180,7 +365,6 @@
     .commune-btn.region-btn { background: #f9fafb; font-weight: 600; }
     @media (min-width: 600px) { .commune-grid { grid-template-columns: repeat(3, 1fr); } }
 
-    /* Modal permission GPS */
     .permission-modal { max-width: 380px; }
     .permission-modal .modal-body { text-align: center; padding: 32px 24px; }
     .permission-icon { width: 64px; height: 64px; background: #fff1f2; color: var(--red); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; font-size: 32px; }
@@ -234,6 +418,7 @@
       .band-img { width: 80px; }
       .band-name { font-size: 15px; }
       .band-price { font-size: 16px; }
+      .checkout-title h1 { font-size: 28px; }
       .btn-confirm { max-width: 400px; margin: 0 auto; }
     }
 
@@ -278,16 +463,11 @@
       <div class="reassurance">
         <div class="reassurance-item">
           <svg viewBox="0 0 24 24"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          <div class="text">
-            <strong>Livraison gratuite</strong>
-            <span>Partout au Sénégal</span>
-          </div>
+          <div class="text"><strong>Livraison gratuite</strong><span>Partout au Sénégal</span></div>
         </div>
         <div class="reassurance-item">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <div class="text">
-            <strong>Paiement sécurisé</strong>
-          </div>
+          <div class="text"><strong>Paiement sécurisé</strong></div>
         </div>
       </div>
 
@@ -298,25 +478,36 @@
           <div class="row"><span>Articles</span><span id="nbArticlesCart">0</span></div>
           <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
           <div class="row total"><span>Total</span><span id="totalCart">0 CFA</span></div>
-          <!-- Bouton VALIDER visible sur PC -->
           <button class="btn-go-checkout-desktop" id="btnGoCheckoutDesktop">VALIDER</button>
         </aside>
       </div>
     </div>
 
-    <!-- VUE 2 : CHECKOUT -->
+    <!-- VUE 2 : CHECKOUT — REDESIGNÉE -->
     <div class="view" id="viewCheckout">
       <button class="back-link" id="btnBackToCart">
         <svg viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
         Retour au panier
       </button>
 
+      <!-- Stepper élégant -->
       <div class="stepper">
-        <span class="step done">Panier ✓</span>
-        <span class="sep">—</span>
-        <span class="step current">Livraison</span>
-        <span class="sep">—</span>
-        <span class="step">Paiement</span>
+        <span class="step done">
+          <span class="step-dot">
+            <svg viewBox="0 0 24 24" style="width:12px;height:12px;color:#fff"><path d="M20 6L9 17l-5-5"/></svg>
+          </span>
+          Panier
+        </span>
+        <span class="step-sep"></span>
+        <span class="step current">
+          <span class="step-dot">2</span>
+          Livraison
+        </span>
+        <span class="step-sep"></span>
+        <span class="step">
+          <span class="step-dot">3</span>
+          Paiement
+        </span>
       </div>
 
       <div class="checkout-title">
@@ -324,37 +515,64 @@
         <p>Renseignez vos informations pour recevoir vos articles.</p>
       </div>
 
-      <div class="recap-box">
-        <div class="row"><span>Articles</span><span id="nbArticlesCheckout">0</span></div>
-        <div class="row"><span>Livraison</span><span style="color:var(--green);font-weight:700">Gratuite</span></div>
-        <div class="row total"><span>Total à payer</span><span id="totalCheckout">0 CFA</span></div>
+      <!-- Récap élégant -->
+      <div class="recap-card">
+        <div class="recap-row">
+          <span class="recap-label">
+            <svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+            Articles
+          </span>
+          <span class="recap-value" id="nbArticlesCheckout">0</span>
+        </div>
+        <div class="recap-row">
+          <span class="recap-label">
+            <svg viewBox="0 0 24 24"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Livraison
+          </span>
+          <span class="recap-value green">Gratuite</span>
+        </div>
+        <div class="recap-row total">
+          <span>Total à payer</span>
+          <span class="recap-value" id="totalCheckout">0 CFA</span>
+        </div>
       </div>
 
       <form id="checkoutForm" onsubmit="return false;">
-        <div class="form-group">
-          <label for="nom">Votre nom *</label>
-          <input id="nom" placeholder="Ex : Awa Diop" required>
-        </div>
-        <div class="form-group">
-          <label for="tel">Votre numéro WhatsApp *</label>
-          <input id="tel" type="tel" placeholder="Ex : 77 000 00 00" required>
+
+        <!-- Nom -->
+        <div class="form-field">
+          <label class="form-label" for="nom">Nom complet <span class="req">*</span></label>
+          <div class="input-wrap" id="wrapNom">
+            <svg class="input-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+            <input id="nom" type="text" placeholder="Ex : Awa Diop" autocomplete="name" required>
+          </div>
         </div>
 
-        <!-- ADRESSE avec bouton Parcourir -->
-        <div class="form-group">
-          <label for="manual">Quartier / adresse de livraison *</label>
-          <div class="input-with-action">
-            <input id="manual" placeholder="Ex : Petit Mbao, rue ..., près de la mosquée" required>
-            <button class="input-action-btn" id="browseBtn" type="button">
+        <!-- Téléphone -->
+        <div class="form-field">
+          <label class="form-label" for="tel">Numéro WhatsApp <span class="req">*</span></label>
+          <div class="input-wrap" id="wrapTel">
+            <span class="input-prefix"><span class="flag">🇸🇳</span> +221</span>
+            <input id="tel" type="tel" inputmode="numeric" placeholder="77 000 00 00" autocomplete="tel-national" required>
+          </div>
+        </div>
+
+        <!-- Adresse avec bouton Parcourir intégré -->
+        <div class="form-field">
+          <label class="form-label" for="manual">Adresse de livraison <span class="req">*</span></label>
+          <div class="input-wrap" id="wrapManual">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input id="manual" type="text" placeholder="Ex : Petit Mbao, rue 10, villa 42" autocomplete="street-address" required>
+            <button class="input-action" id="browseBtn" type="button" aria-label="Choisir une commune">
               <svg viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
-              Parcourir
+              <span>Choisir</span>
             </button>
           </div>
         </div>
 
-        <!-- POSITION GPS (redesignée) -->
-        <div class="form-group">
-          <label>Position GPS</label>
+        <!-- GPS CARD -->
+        <div class="form-field">
+          <label class="form-label">Position GPS <span style="font-size:11px;font-weight:500;color:#999;margin-left:4px">(facultatif)</span></label>
           <div class="gps-card" id="gpsCard">
             <div class="gps-icon">
               <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
@@ -370,11 +588,18 @@
           <div class="gps-coords" id="gpsCoords"></div>
         </div>
 
-        <label class="cgv-label">
-          <input type="checkbox" id="acceptCgv">
-          <span>
-            J'ai lu et j'accepte les <a href="cgv.html" target="_blank">Conditions Générales de Vente</a> et la <a href="confidentialite.html" target="_blank">Politique de confidentialité</a>.
-          </span>
+        <!-- CGV CARD — PRÉ-COCHÉE PAR DÉFAUT -->
+        <label class="cgv-card checked" id="cgvCard">
+          <input type="checkbox" id="acceptCgv" checked>
+          <div class="cgv-content">
+            <span class="cgv-title">J'accepte les conditions générales</span>
+            <span class="cgv-text">
+              J'ai lu et j'accepte les <a href="cgv.html" target="_blank">CGV</a> et la <a href="confidentialite.html" target="_blank">Politique de confidentialité</a>.
+            </span>
+          </div>
+          <div class="cgv-check">
+            <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
         </label>
 
         <div class="msg" id="msg"></div>
@@ -387,7 +612,7 @@
     </div>
   </main>
 
-  <!-- BARRE FIXE PANIER (mobile uniquement) -->
+  <!-- BARRE FIXE PANIER (mobile) -->
   <div class="sticky-bar" id="stickyBar">
     <div class="total-info">
       <span>Total</span>
@@ -413,7 +638,7 @@
       <div class="modal-body">
         <div class="permission-icon">📍</div>
         <h3>Localisation bloquée</h3>
-        <p>Votre navigateur bloque l'accès à votre position. Pour nous aider à vous livrer, autorisez la localisation dans les paramètres, ou saisissez votre commune manuellement.</p>
+        <p>Votre navigateur bloque l'accès à votre position. Autorisez la localisation dans les paramètres, ou saisissez votre commune manuellement.</p>
         <div class="permission-actions">
           <button class="btn-close" onclick="closePermissionModal()">Fermer</button>
           <button class="btn-retry" onclick="closePermissionModal(); locateUser();">Réessayer</button>
@@ -443,9 +668,6 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ==========================================
-    // CONFIGURATION
-    // ==========================================
     const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/";
     const WAVE_NUMERO = "À_REMPLIR";
     const WHATSAPP_VENDEUR = "221766589598";
@@ -471,100 +693,54 @@
     let position = null;
     try { position = JSON.parse(localStorage.getItem(POS_KEY)); } catch (e) {}
 
-    // ==========================================
-    // COMMUNES DU SÉNÉGAL (groupées par département)
-    // ==========================================
     const COMMUNES = {
-      "Dakar": [
-        "Biscuiterie", "Cambérène", "Dakar-Plateau", "Dieuppeul-Derklé",
-        "Fann-Point E-Amitié", "Gorée", "Grand Dakar", "Grand Yoff",
-        "Gueule Tapée-Fass-Colobane", "Hann Bel-Air", "HLM", "Médina",
-        "Mermoz-Sacré-Cœur", "Ngor", "Ouakam", "Parcelles Assainies",
-        "Patte d'Oie", "Sicap-Liberté", "Yoff"
-      ],
-      "Pikine": [
-        "Dalifort", "Diamaguène Sicap Mbao", "Djiddah Thiaroye Kao",
-        "Guinaaw Rail Nord", "Guinaaw Rail Sud", "Mbao", "Pikine Est",
-        "Pikine Nord", "Pikine Ouest", "Thiaroye Gare", "Thiaroye sur Mer",
-        "Tivaouane Diacksao"
-      ],
-      "Guédiawaye": [
-        "Golf Sud", "Médina Gounass", "Ndiarème Limamoulaye",
-        "Sam Notaire", "Wakhinane Nimzatt"
-      ],
-      "Keur Massar": [
-        "Jaxaay-Parcelles-Niakoul Rap", "Keur Massar Nord",
-        "Keur Massar Sud", "Malika", "Yeumbeul Nord", "Yeumbeul Sud"
-      ],
-      "Rufisque": [
-        "Bargny", "Bambilor", "Diamniadio", "Jandar",
-        "Rufisque Est", "Rufisque Nord", "Rufisque Ouest",
-        "Sangalkam", "Sebikotane", "Sendou", "Tivaouane Peulh-Niaga",
-        "Yène", "Déni Biram Ndao", "Cherif Lo"
-      ]
+      "Dakar": ["Biscuiterie","Cambérène","Dakar-Plateau","Dieuppeul-Derklé","Fann-Point E-Amitié","Gorée","Grand Dakar","Grand Yoff","Gueule Tapée-Fass-Colobane","Hann Bel-Air","HLM","Médina","Mermoz-Sacré-Cœur","Ngor","Ouakam","Parcelles Assainies","Patte d'Oie","Sicap-Liberté","Yoff"],
+      "Pikine": ["Dalifort","Diamaguène Sicap Mbao","Djiddah Thiaroye Kao","Guinaaw Rail Nord","Guinaaw Rail Sud","Mbao","Pikine Est","Pikine Nord","Pikine Ouest","Thiaroye Gare","Thiaroye sur Mer","Tivaouane Diacksao"],
+      "Guédiawaye": ["Golf Sud","Médina Gounass","Ndiarème Limamoulaye","Sam Notaire","Wakhinane Nimzatt"],
+      "Keur Massar": ["Jaxaay-Parcelles-Niakoul Rap","Keur Massar Nord","Keur Massar Sud","Malika","Yeumbeul Nord","Yeumbeul Sud"],
+      "Rufisque": ["Bargny","Bambilor","Diamniadio","Jandar","Rufisque Est","Rufisque Nord","Rufisque Ouest","Sangalkam","Sebikotane","Sendou","Tivaouane Peulh-Niaga","Yène","Déni Biram Ndao","Cherif Lo"]
     };
 
-    // Régions hors Dakar (sans détail des communes)
-    const REGIONS = [
-      "Thiès", "Mbour", "Saint-Louis", "Touba", "Kaolack",
-      "Ziguinchor", "Diourbel", "Louga", "Fatick", "Kolda",
-      "Tambacounda", "Matam", "Kaffrine", "Kédougou", "Sédhiou",
-      "Autre région"
-    ];
+    const REGIONS = ["Thiès","Mbour","Saint-Louis","Touba","Kaolack","Ziguinchor","Diourbel","Louga","Fatick","Kolda","Tambacounda","Matam","Kaffrine","Kédougou","Sédhiou","Autre région"];
 
-    /* ================================================================
-       NORMALISATION DES TAILLES
-       ================================================================ */
     function normalizeSizes(valeur) {
       let obj = valeur;
       if (obj && typeof obj === "object" && obj.mapValue) {
-        const fields = obj.mapValue.fields || {};
-        const map = {};
+        const fields = obj.mapValue.fields || {}; const map = {};
         for (const [k, v] of Object.entries(fields)) {
           const n = v.integerValue !== undefined ? parseInt(v.integerValue, 10)
                   : v.doubleValue !== undefined ? parseFloat(v.doubleValue)
-                  : v.stringValue !== undefined ? (parseInt(v.stringValue, 10) || 0)
-                  : 0;
+                  : v.stringValue !== undefined ? (parseInt(v.stringValue, 10) || 0) : 0;
           map[k] = n;
         }
         obj = map;
       }
       if (obj && typeof obj === "object" && !Array.isArray(obj) && !obj.arrayValue && !obj.stringValue) {
         const entries = Object.entries(obj);
-        const looksLikeStock = entries.length > 0 && entries.every(([k, v]) =>
-          /^[A-Za-z0-9]+$/.test(k) && (typeof v === "number" || typeof v === "string")
-        );
+        const looksLikeStock = entries.length > 0 && entries.every(([k, v]) => /^[A-Za-z0-9]+$/.test(k) && (typeof v === "number" || typeof v === "string"));
         if (looksLikeStock) {
           const ORDER = ["XS","S","M","L","XL","XXL","XXXL","3XL","4XL","5XL"];
           const dispo = entries.filter(([_, v]) => Number(v) > 0).map(([k]) => k.trim().toUpperCase());
-          dispo.sort((a, b) => {
-            const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
-            if (ia === -1 && ib === -1) return a.localeCompare(b);
-            if (ia === -1) return 1;
-            if (ib === -1) return -1;
-            return ia - ib;
-          });
+          dispo.sort((a, b) => { const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b); if (ia === -1 && ib === -1) return a.localeCompare(b); if (ia === -1) return 1; if (ib === -1) return -1; return ia - ib; });
           return dispo.slice(0, 12);
         }
       }
       let brut = obj;
-      if (brut && typeof brut === "object" && brut.arrayValue) {
-        brut = (brut.arrayValue.values || []).map(v => v.stringValue ?? "");
-      } else if (brut && typeof brut === "object" && brut.stringValue !== undefined) {
-        brut = brut.stringValue;
-      }
-      let arr = [];
-      if (Array.isArray(brut)) arr = brut;
-      else if (typeof brut === "string") arr = brut.split(/[,;\/|\n]+/);
-      else if (brut != null) arr = [brut];
+      if (brut && typeof brut === "object" && brut.arrayValue) brut = (brut.arrayValue.values || []).map(v => v.stringValue ?? "");
+      else if (brut && typeof brut === "object" && brut.stringValue !== undefined) brut = brut.stringValue;
+      let arr = []; if (Array.isArray(brut)) arr = brut; else if (typeof brut === "string") arr = brut.split(/[,;\/|\n]+/); else if (brut != null) arr = [brut];
       const seen = new Set(); const cleaned = [];
-      for (const item of arr) {
-        const s = String(item ?? "").trim().toUpperCase();
-        if (!s || seen.has(s)) continue;
-        seen.add(s); cleaned.push(s);
-        if (cleaned.length >= 12) break;
-      }
+      for (const item of arr) { const s = String(item ?? "").trim().toUpperCase(); if (!s || seen.has(s)) continue; seen.add(s); cleaned.push(s); if (cleaned.length >= 12) break; }
       return cleaned;
+    }
+
+    // Normalise le téléphone : retire +221, 00221, ou 0 en tête
+    function normalizePhone(raw) {
+      let d = String(raw || "").replace(/\D/g, "");
+      if (d.startsWith("00221")) d = d.substring(5);
+      else if (d.startsWith("221")) d = d.substring(3);
+      if (d.startsWith("0")) d = d.substring(1);
+      return d;
     }
 
     onAuthStateChanged(auth, (user) => {
@@ -574,18 +750,8 @@
 
     const paymentMode = "wave";
 
-    // Navigation entre vues
-    function goToCheckout() {
-      if (cart.length === 0) return;
-      $("viewCart").classList.remove("active");
-      $("viewCheckout").classList.add("active");
-      window.scrollTo(0, 0);
-    }
-    function goToCart() {
-      $("viewCheckout").classList.remove("active");
-      $("viewCart").classList.add("active");
-      window.scrollTo(0, 0);
-    }
+    function goToCheckout() { if (cart.length === 0) return; $("viewCart").classList.remove("active"); $("viewCheckout").classList.add("active"); window.scrollTo(0, 0); }
+    function goToCart() { $("viewCheckout").classList.remove("active"); $("viewCart").classList.add("active"); window.scrollTo(0, 0); }
 
     $("btnGoCheckout").addEventListener("click", goToCheckout);
     $("btnGoCheckoutDesktop").addEventListener("click", goToCheckout);
@@ -598,145 +764,71 @@
     function updateValidate() {
       $("validate").disabled = cart.length === 0 || !$("acceptCgv").checked;
     }
-    $("acceptCgv").addEventListener("change", updateValidate);
 
-    /* ================================================================
-       MODALE : Choix commune
-       ================================================================ */
+    // CGV : sync classe visuelle + état du bouton
+    $("acceptCgv").addEventListener("change", (e) => {
+      $("cgvCard").classList.toggle("checked", e.target.checked);
+      updateValidate();
+    });
+
+    // Communes modal
     function buildCommunesModal() {
       const body = $("communesBody");
       let html = "";
-
-      // Départements de Dakar
       for (const [dept, communes] of Object.entries(COMMUNES)) {
-        html += `<div class="dept-group">
-          <h4>${esc(dept)}</h4>
-          <div class="commune-grid">
-            ${communes.map(c => `<button type="button" class="commune-btn" data-commune="${esc(c)}">${esc(c)}</button>`).join("")}
-          </div>
-        </div>`;
+        html += `<div class="dept-group"><h4>${esc(dept)}</h4><div class="commune-grid">${communes.map(c => `<button type="button" class="commune-btn" data-commune="${esc(c)}">${esc(c)}</button>`).join("")}</div></div>`;
       }
-
-      // Autres régions
-      html += `<div class="dept-group">
-        <h4>Autres régions</h4>
-        <div class="commune-grid">
-          ${REGIONS.map(r => `<button type="button" class="commune-btn region-btn" data-region="${esc(r)}">${esc(r)}</button>`).join("")}
-        </div>
-      </div>`;
-
+      html += `<div class="dept-group"><h4>Autres régions</h4><div class="commune-grid">${REGIONS.map(r => `<button type="button" class="commune-btn region-btn" data-region="${esc(r)}">${esc(r)}</button>`).join("")}</div></div>`;
       body.innerHTML = html;
     }
     buildCommunesModal();
 
-    function openCommunesModal() {
-      $("communesModal").classList.add("show");
-      document.body.style.overflow = "hidden";
-    }
-    function closeCommunesModal() {
-      $("communesModal").classList.remove("show");
-      document.body.style.overflow = "";
-    }
+    function openCommunesModal() { $("communesModal").classList.add("show"); document.body.style.overflow = "hidden"; }
+    function closeCommunesModal() { $("communesModal").classList.remove("show"); document.body.style.overflow = ""; }
     window.closeCommunesModal = closeCommunesModal;
-
     $("browseBtn").addEventListener("click", openCommunesModal);
-
     $("communesBody").addEventListener("click", (e) => {
-      const btn = e.target.closest(".commune-btn");
-      if (!btn) return;
+      const btn = e.target.closest(".commune-btn"); if (!btn) return;
       const commune = btn.dataset.commune || btn.dataset.region;
       const input = $("manual");
       const currentVal = input.value.trim();
-      // Si l'input est vide ou contient juste un ancien nom, on remplace
-      if (!currentVal) {
-        input.value = commune;
-      } else {
-        // Sinon on propose d'ajouter après une virgule
-        input.value = commune + ", " + currentVal;
-      }
+      input.value = currentVal ? `${commune}, ${currentVal}` : commune;
       closeCommunesModal();
       input.focus();
-      // Placer le curseur à la fin
       input.setSelectionRange(input.value.length, input.value.length);
     });
+    $("communesModal").addEventListener("click", (e) => { if (e.target === $("communesModal")) closeCommunesModal(); });
 
-    $("communesModal").addEventListener("click", (e) => {
-      if (e.target === $("communesModal")) closeCommunesModal();
-    });
-
-    /* ================================================================
-       MODALE : Permission GPS refusée
-       ================================================================ */
-    function openPermissionModal() {
-      $("permissionModal").classList.add("show");
-    }
-    function closePermissionModal() {
-      $("permissionModal").classList.remove("show");
-    }
+    // GPS modale
+    function openPermissionModal() { $("permissionModal").classList.add("show"); }
+    function closePermissionModal() { $("permissionModal").classList.remove("show"); }
     window.closePermissionModal = closePermissionModal;
-    $("permissionModal").addEventListener("click", (e) => {
-      if (e.target === $("permissionModal")) closePermissionModal();
-    });
+    $("permissionModal").addEventListener("click", (e) => { if (e.target === $("permissionModal")) closePermissionModal(); });
 
-    /* ================================================================
-       GÉOLOCALISATION RENFORCÉE (3 tentatives en cascade)
-       ================================================================ */
+    // GPS renforcé (3 tentatives)
     function geolocPromise(options) {
       return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject({ code: 2, message: "Géolocalisation non supportée" });
-          return;
-        }
+        if (!navigator.geolocation) { reject({ code: 2, message: "Géolocalisation non supportée" }); return; }
         navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
     }
 
-    // Fallback : géolocalisation par IP (3 fournisseurs en secours)
     async function ipGeoloc() {
       const providers = [
-        async () => {
-          const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
-          const d = await res.json();
-          if (d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city };
-          throw new Error("no coords");
-        },
-        async () => {
-          const res = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(4000) });
-          const d = await res.json();
-          if (d.success && d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city };
-          throw new Error("no coords");
-        },
-        async () => {
-          const res = await fetch("https://ipinfo.io/json", { signal: AbortSignal.timeout(4000) });
-          const d = await res.json();
-          if (d.loc) {
-            const [lat, lng] = d.loc.split(",").map(Number);
-            if (lat && lng) return { lat, lng, city: d.city };
-          }
-          throw new Error("no coords");
-        }
+        async () => { const r = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) }); const d = await r.json(); if (d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city }; throw 0; },
+        async () => { const r = await fetch("https://ipwho.is/", { signal: AbortSignal.timeout(4000) }); const d = await r.json(); if (d.success && d.latitude && d.longitude) return { lat: d.latitude, lng: d.longitude, city: d.city }; throw 0; },
+        async () => { const r = await fetch("https://ipinfo.io/json", { signal: AbortSignal.timeout(4000) }); const d = await r.json(); if (d.loc) { const [lat, lng] = d.loc.split(",").map(Number); if (lat && lng) return { lat, lng, city: d.city }; } throw 0; }
       ];
-      for (const p of providers) {
-        try { return await p(); } catch (e) { continue; }
-      }
+      for (const p of providers) { try { return await p(); } catch (e) {} }
       throw new Error("Tous les fournisseurs IP ont échoué");
     }
 
     function applyPosition(lat, lng, source) {
       position = { lat: +Number(lat).toFixed(6), lng: +Number(lng).toFixed(6), source };
       try { localStorage.setItem(POS_KEY, JSON.stringify(position)); } catch (e) {}
-
-      const gpsCard = $("gpsCard");
-      const gpsBtn = $("gpsBtn");
-      const gpsBtnLabel = $("gpsBtnLabel");
-      const gpsTitle = $("gpsTitle");
-      const gpsDesc = $("gpsDesc");
-      const gpsCoords = $("gpsCoords");
-
-      gpsCard.classList.remove("loading", "error");
-      gpsCard.classList.add("active");
-      gpsBtn.disabled = false;
-      gpsBtnLabel.textContent = "Actualiser";
+      const gpsCard = $("gpsCard"), gpsBtn = $("gpsBtn"), gpsBtnLabel = $("gpsBtnLabel"), gpsTitle = $("gpsTitle"), gpsDesc = $("gpsDesc"), gpsCoords = $("gpsCoords");
+      gpsCard.classList.remove("loading", "error"); gpsCard.classList.add("active");
+      gpsBtn.disabled = false; gpsBtnLabel.textContent = "Actualiser";
       gpsTitle.textContent = "Position enregistrée ✓";
       gpsDesc.textContent = `Source : ${source}`;
       gpsCoords.style.display = "block";
@@ -744,104 +836,54 @@
     }
 
     function markGpsError(message) {
-      const gpsCard = $("gpsCard");
-      const gpsBtn = $("gpsBtn");
-      const gpsBtnLabel = $("gpsBtnLabel");
-      const gpsTitle = $("gpsTitle");
-      const gpsDesc = $("gpsDesc");
-
-      gpsCard.classList.remove("loading", "active");
-      gpsCard.classList.add("error");
-      gpsBtn.disabled = false;
-      gpsBtnLabel.textContent = "Réessayer";
+      const gpsCard = $("gpsCard"), gpsBtn = $("gpsBtn"), gpsBtnLabel = $("gpsBtnLabel"), gpsTitle = $("gpsTitle"), gpsDesc = $("gpsDesc");
+      gpsCard.classList.remove("loading", "active"); gpsCard.classList.add("error");
+      gpsBtn.disabled = false; gpsBtnLabel.textContent = "Réessayer";
       gpsTitle.textContent = "Position non disponible";
       gpsDesc.textContent = message;
     }
 
     async function locateUser() {
-      const gpsCard = $("gpsCard");
-      const gpsBtn = $("gpsBtn");
-      const gpsBtnLabel = $("gpsBtnLabel");
-      const gpsTitle = $("gpsTitle");
-      const gpsDesc = $("gpsDesc");
-      const gpsCoords = $("gpsCoords");
-
-      // État : loading
-      gpsCard.classList.remove("active", "error");
-      gpsCard.classList.add("loading");
-      gpsBtn.disabled = true;
-      gpsBtnLabel.textContent = "...";
+      const gpsCard = $("gpsCard"), gpsBtn = $("gpsBtn"), gpsBtnLabel = $("gpsBtnLabel"), gpsTitle = $("gpsTitle"), gpsDesc = $("gpsDesc"), gpsCoords = $("gpsCoords");
+      gpsCard.classList.remove("active", "error"); gpsCard.classList.add("loading");
+      gpsBtn.disabled = true; gpsBtnLabel.textContent = "...";
       gpsTitle.textContent = "Localisation en cours";
       gpsDesc.textContent = "Recherche de votre position (GPS)...";
       gpsCoords.style.display = "none";
 
-      // ---- Tentative 1 : GPS haute précision ----
       try {
         const pos = await geolocPromise({ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
-        applyPosition(pos.coords.latitude, pos.coords.longitude, "GPS haute précision");
-        return;
+        applyPosition(pos.coords.latitude, pos.coords.longitude, "GPS haute précision"); return;
       } catch (e1) {
-        console.log("Tentative 1 (GPS) échouée :", e1.code || e1.message);
-
-        if (e1.code === 1) {
-          // PERMISSION_DENIED : on ne peut pas retenter le GPS
-          gpsDesc.textContent = "Permission refusée. Essai par réseau...";
-        } else {
-          gpsDesc.textContent = "GPS indisponible. Essai par réseau...";
-        }
+        gpsDesc.textContent = e1.code === 1 ? "Permission refusée. Essai par réseau..." : "GPS indisponible. Essai par réseau...";
       }
 
-      // ---- Tentative 2 : réseau/WiFi (moins précise) ----
       try {
         const pos = await geolocPromise({ enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 });
-        applyPosition(pos.coords.latitude, pos.coords.longitude, "Réseau / WiFi");
-        return;
-      } catch (e2) {
-        console.log("Tentative 2 (réseau) échouée :", e2.code || e2.message);
-        gpsDesc.textContent = "Essai par adresse IP (approximatif)...";
-      }
+        applyPosition(pos.coords.latitude, pos.coords.longitude, "Réseau / WiFi"); return;
+      } catch (e2) { gpsDesc.textContent = "Essai par adresse IP..."; }
 
-      // ---- Tentative 3 : IP (fallback ultime) ----
       try {
         const pos = await ipGeoloc();
-        applyPosition(pos.lat, pos.lng, `IP approximatif${pos.city ? " (" + pos.city + ")" : ""}`);
-        return;
-      } catch (e3) {
-        console.log("Tentative 3 (IP) échouée :", e3.message);
-      }
+        applyPosition(pos.lat, pos.lng, `IP approximatif${pos.city ? " (" + pos.city + ")" : ""}`); return;
+      } catch (e3) {}
 
-      // ---- Échec total ----
       markGpsError("Saisissez votre commune ci-dessus, ou autorisez la localisation dans votre navigateur.");
       openPermissionModal();
     }
 
     $("gpsBtn").addEventListener("click", locateUser);
 
-    // Restaurer une position déjà enregistrée au chargement
-    if (position && position.lat && position.lng) {
-      applyPosition(position.lat, position.lng, position.source || "Enregistrée");
-    }
+    if (position && position.lat && position.lng) applyPosition(position.lat, position.lng, position.source || "Enregistrée");
 
-    /* ================================================================
-       CHARGEMENT DES STOCKS
-       ================================================================ */
     const stockMaps = {};
     async function loadStocks() {
       await Promise.all(cart.map(async it => {
         if (!it.id || stockMaps[it.id]) return;
-        try {
-          const snap = await getDoc(doc(db, "produits", it.id));
-          if (snap.exists()) {
-            const d = snap.data();
-            stockMaps[it.id] = d.stock || d.tailles || d.sizes || null;
-          }
-        } catch (e) { console.warn("Stock non lu pour", it.id, e); }
+        try { const snap = await getDoc(doc(db, "produits", it.id)); if (snap.exists()) { const d = snap.data(); stockMaps[it.id] = d.stock || d.tailles || d.sizes || null; } } catch (e) {}
       }));
     }
 
-    /* ================================================================
-       RENDU PANIER
-       ================================================================ */
     function render() {
       const box = $("bands");
       if (cart.length === 0) {
@@ -853,26 +895,17 @@
         $("btnGoCheckoutDesktop").style.display = "";
         box.innerHTML = cart.map((it, i) => {
           const sizesArr = normalizeSizes(stockMaps[it.id] || null);
-          const sizes = sizesArr.length
-            ? sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("")
-            : `<span class="one-size">Taille unique</span>`;
-          return `
-          <article class="band" id="band-${i}">
+          const sizes = sizesArr.length ? sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("") : `<span class="one-size">Taille unique</span>`;
+          return `<article class="band" id="band-${i}">
             <img class="band-img" src="${esc(it.img || "")}" alt="${esc(it.name)}">
             <div class="band-info">
               <p class="band-name">${esc(it.name)}</p>
               <p class="band-price">${fmt(it.price)}</p>
               <div class="sizes-wrap">${sizes}<span class="size-err">Choisissez une taille</span></div>
               <div class="band-bottom">
-                <div class="qty">
-                  <button data-act="minus" data-i="${i}">−</button>
-                  <span>${it.qty}</span>
-                  <button data-act="plus" data-i="${i}">+</button>
-                </div>
+                <div class="qty"><button data-act="minus" data-i="${i}">−</button><span>${it.qty}</span><button data-act="plus" data-i="${i}">+</button></div>
                 <span class="line-total">${fmt(it.price * it.qty)}</span>
-                <button class="trash" data-act="del" data-i="${i}">
-                  <svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
-                </button>
+                <button class="trash" data-act="del" data-i="${i}"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></button>
               </div>
             </div>
           </article>`;
@@ -881,7 +914,6 @@
 
       const nb = cart.reduce((s, x) => s + x.qty, 0);
       const total = cart.reduce((s, x) => s + x.qty * x.price, 0);
-
       $("nbArticlesCart").textContent = nb;
       $("totalCart").textContent = fmt(total);
       $("nbArticlesCheckout").textContent = nb;
@@ -899,40 +931,31 @@
     $("bands").addEventListener("click", e => {
       const b = e.target.closest("[data-act]"); if (!b) return;
       const i = +b.dataset.i, act = b.dataset.act;
-      if (act === "plus") {
-        const st = stockMaps[cart[i].id] || {};
-        const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(cart[i].size || "").toUpperCase());
-        const max = k !== undefined ? Number(st[k]) || 1 : 10;
-        cart[i].qty = Math.min(10, max, cart[i].qty + 1);
-      }
+      if (act === "plus") { const st = stockMaps[cart[i].id] || {}; const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(cart[i].size || "").toUpperCase()); const max = k !== undefined ? Number(st[k]) || 1 : 10; cart[i].qty = Math.min(10, max, cart[i].qty + 1); }
       if (act === "minus") cart[i].qty = Math.max(1, cart[i].qty - 1);
       if (act === "del") cart.splice(i, 1);
       if (act === "size") cart[i].size = b.dataset.size;
       saveCart(); render();
     });
 
-    /* ================================================================
-       VALIDATION FINALE (logique métier intacte)
-       ================================================================ */
     $("validate").addEventListener("click", async () => {
       const msg = $("msg");
       msg.textContent = "";
-      $("nom").classList.remove("err");
-      $("tel").classList.remove("err");
-      $("manual").classList.remove("err");
+      $("wrapNom").classList.remove("error");
+      $("wrapTel").classList.remove("error");
+      $("wrapManual").classList.remove("error");
       document.querySelectorAll(".band.need").forEach(b => b.classList.remove("need"));
 
       if (cart.length === 0) return;
 
       const nom = $("nom").value.trim();
-      const tel = $("tel").value.trim();
+      const telRaw = $("tel").value.trim();
+      const telNorm = normalizePhone(telRaw);
       const manual = $("manual").value.trim();
 
-      if (!nom) { $("nom").classList.add("err"); msg.textContent = "Votre nom est requis."; return; }
-      if (!/^(70|75|76|77|78)\d{7}$/.test(tel.replace(/\D/g, ""))) {
-        $("tel").classList.add("err"); msg.textContent = "Numéro sénégalais invalide."; return;
-      }
-      if (manual.length < 3) { $("manual").classList.add("err"); msg.textContent = "Indiquez votre quartier ou un repère."; return; }
+      if (!nom) { $("wrapNom").classList.add("error"); msg.textContent = "Votre nom est requis."; return; }
+      if (!/^(70|75|76|77|78)\d{7}$/.test(telNorm)) { $("wrapTel").classList.add("error"); msg.textContent = "Numéro sénégalais invalide (9 chiffres, ex : 77 123 45 67)."; return; }
+      if (manual.length < 3) { $("wrapManual").classList.add("error"); msg.textContent = "Indiquez votre adresse ou quartier."; return; }
       if (!$("acceptCgv").checked) { msg.textContent = "Acceptez les CGV pour continuer."; return; }
 
       $("validate").disabled = true;
@@ -942,85 +965,40 @@
       try {
         const snaps = await Promise.all(cart.map(it => {
           if (!it.id) return Promise.resolve({ __missingId: true, name: it.name, __id: null });
-          return getDoc(doc(db, "produits", it.id))
-            .then(snap => ({ snap, name: it.name, __id: it.id }))
-            .catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
+          return getDoc(doc(db, "produits", it.id)).then(snap => ({ snap, name: it.name, __id: it.id })).catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
         }));
 
-        let priceChanged = false;
-        let sizesChanged = false;
-        const freshArticles = [];
-        const errors = [];
+        let priceChanged = false, sizesChanged = false;
+        const freshArticles = [], errors = [];
         let firstBadBand = null;
 
         for (let i = 0; i < cart.length; i++) {
-          const it = cart[i];
-          const result = snaps[i];
-
-          if (!it.id || (result && result.__missingId)) {
-            errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`);
-            continue;
-          }
+          const it = cart[i], result = snaps[i];
+          if (!it.id || (result && result.__missingId)) { errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`); continue; }
           const snap = result.snap;
-          if (!snap.exists()) {
-            errors.push(`Un article n'est plus disponible : "${it.name}". Retirez-le du panier.`);
-            continue;
-          }
+          if (!snap.exists()) { errors.push(`Un article n'est plus disponible : "${it.name}". Retirez-le du panier.`); continue; }
           const data = snap.data();
           const prixServeur = Number(data.prix) || 0;
           const titreServeur = String(data.titre || it.name || "Article");
           const imageServeur = String(data.imageUrl || it.img || "");
           const sizesServeur = normalizeSizes(data.stock ?? data.tailles ?? data.sizes ?? data.taille ?? null);
-
-          if (!Number.isFinite(prixServeur) || prixServeur < 0) {
-            errors.push(`Le prix de "${titreServeur}" est invalide. Contactez-nous.`);
-            continue;
-          }
+          if (!Number.isFinite(prixServeur) || prixServeur < 0) { errors.push(`Le prix de "${titreServeur}" est invalide.`); continue; }
           if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) priceChanged = true;
 
           let tailleFinale = "Taille unique";
           if (sizesServeur.length > 0) {
-            if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) {
-              it.sizes = sizesServeur; sizesChanged = true;
-            }
-            if (!it.size) {
-              errors.push(`Choisissez la taille de "${titreServeur}".`);
-              $("band-" + i).classList.add("need");
-              firstBadBand = firstBadBand || $("band-" + i);
-              continue;
-            }
-            if (!sizesServeur.includes(String(it.size).toUpperCase())) {
-              errors.push(`Taille "${it.size}" indisponible pour "${titreServeur}". Choisissez une autre taille.`);
-              it.size = null;
-              $("band-" + i).classList.add("need");
-              firstBadBand = firstBadBand || $("band-" + i);
-              sizesChanged = true;
-              continue;
-            }
+            if (JSON.stringify(it.sizes) !== JSON.stringify(sizesServeur)) { it.sizes = sizesServeur; sizesChanged = true; }
+            if (!it.size) { errors.push(`Choisissez la taille de "${titreServeur}".`); $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); continue; }
+            if (!sizesServeur.includes(String(it.size).toUpperCase())) { errors.push(`Taille "${it.size}" indisponible pour "${titreServeur}".`); it.size = null; $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); sizesChanged = true; continue; }
             tailleFinale = it.size;
-          } else if (it.sizes && it.sizes.length) {
-            it.sizes = []; it.size = null; sizesChanged = true;
-          }
+          } else if (it.sizes && it.sizes.length) { it.sizes = []; it.size = null; sizesChanged = true; }
 
           let dispo = Infinity;
-          if (sizesServeur.length > 0) {
-            const st = data.stock || data.tailles || data.sizes || {};
-            const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(tailleFinale).toUpperCase());
-            dispo = k !== undefined ? (Number(st[k]) || 0) : 0;
-          }
-          if ((Number(it.qty) || 1) > dispo) {
-            errors.push(`Il ne reste que ${dispo} pièce(s) en taille ${tailleFinale} pour "${titreServeur}".`);
-            it.qty = Math.max(1, dispo); sizesChanged = true;
-            $("band-" + i).classList.add("need");
-            firstBadBand = firstBadBand || $("band-" + i);
-            continue;
-          }
+          if (sizesServeur.length > 0) { const st = data.stock || data.tailles || data.sizes || {}; const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(tailleFinale).toUpperCase()); dispo = k !== undefined ? (Number(st[k]) || 0) : 0; }
+          if ((Number(it.qty) || 1) > dispo) { errors.push(`Il ne reste que ${dispo} pièce(s) en taille ${tailleFinale} pour "${titreServeur}".`); it.qty = Math.max(1, dispo); sizesChanged = true; $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); continue; }
 
           const quantite = Math.max(1, Math.min(10, Number(it.qty) || 1));
-          freshArticles.push({
-            produitId: it.id, titre: titreServeur, prix: prixServeur,
-            prixCatalogue: prixServeur, quantite, taille: tailleFinale, imageUrl: imageServeur
-          });
+          freshArticles.push({ produitId: it.id, titre: titreServeur, prix: prixServeur, prixCatalogue: prixServeur, quantite, taille: tailleFinale, imageUrl: imageServeur });
         }
 
         if (errors.length > 0) {
@@ -1029,28 +1007,16 @@
           $("validate").disabled = false;
           $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
-          if (firstBadBand) {
-            goToCart();
-            setTimeout(() => firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
-          }
+          if (firstBadBand) { goToCart(); setTimeout(() => firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" }), 100); }
           return;
         }
 
         if (priceChanged || sizesChanged) {
-          freshArticles.forEach(fa => {
-            const idx = cart.findIndex(c => c.id === fa.produitId);
-            if (idx >= 0) {
-              cart[idx].price = fa.prix;
-              cart[idx].name = fa.titre;
-              cart[idx].img = fa.imageUrl;
-            }
-          });
+          freshArticles.forEach(fa => { const idx = cart.findIndex(c => c.id === fa.produitId); if (idx >= 0) { cart[idx].price = fa.prix; cart[idx].name = fa.titre; cart[idx].img = fa.imageUrl; } });
           saveCart(); render();
-
           if (priceChanged && sizesChanged) msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
           else if (priceChanged) msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
           else msg.textContent = "Les tailles disponibles ont changé, vérifiez votre panier puis revalidez.";
-
           $("validate").disabled = false;
           $("validateText").textContent = "VALIDER";
           $("validateSpinner").style.display = "none";
@@ -1067,15 +1033,11 @@
           uid: currentUser.uid,
           clientNom: nom,
           clientEmail: currentUser.email || "",
-          telephone: tel,
+          telephone: telNorm,
           articles: freshArticles,
           total: total,
           fraisLivraison: 0,
-          position: position ? {
-            lat: Number(position.lat), lng: Number(position.lng),
-            mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`,
-            source: position.source || "inconnue"
-          } : null,
+          position: position ? { lat: Number(position.lat), lng: Number(position.lng), mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`, source: position.source || "inconnue" } : null,
           adresseTexte: manual,
           statut: "en_attente",
           paiement: "non_paye",
@@ -1085,18 +1047,10 @@
         };
 
         $("validateText").textContent = "ENREGISTREMENT...";
-
         const orderRef = await addDoc(collection(db, "commandes"), orderData);
 
         if (currentUser) {
-          currentUser.getIdToken()
-            .then(token => fetch("/api/nouvelle-commande", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-              body: JSON.stringify({ orderId: orderRef.id }),
-              keepalive: true
-            }))
-            .catch(() => {});
+          currentUser.getIdToken().then(token => fetch("/api/nouvelle-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ orderId: orderRef.id }), keepalive: true })).catch(() => {});
         }
 
         localStorage.removeItem(CART_KEY);
@@ -1107,9 +1061,7 @@
         window.scrollTo(0, 0);
 
         const actionsDiv = $("paymentActions");
-        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR"
-          ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}`
-          : null;
+        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}` : null;
 
         if (paymentMode === "livraison") {
           $("successMessage").textContent = "Vous paierez à la réception de votre commande.";
@@ -1117,28 +1069,15 @@
         } else if (paymentMode === "wave") {
           $("successMessage").textContent = "Votre commande est enregistrée. Finalisez le paiement pour la confirmer.";
           let html = "";
-          if (WAVE_MERCHANT_LINK.startsWith("https://pay.wave.com/")) {
-            const separator = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?";
-            const payUrl = `${WAVE_MERCHANT_LINK}${separator}amount=${total}`;
-            html += `<a href="${payUrl}" class="btn-wave">
-              <img src="image/logowave.jpeg" style="width:24px;height:24px;background:#fff;border-radius:4px;" alt="">
-              Payer avec Wave
-            </a>`;
-          } else if (WAVE_NUMERO !== "À_REMPLIR") {
-            html += `<div class="wave-instructions">
-              Envoyez <b>${fmt(total)}</b> par Wave au <b>${WAVE_NUMERO}</b>,<br>
-              puis envoyez la capture d'écran sur WhatsApp avec votre numéro de commande.
-            </div>`;
-          }
-          if (waLink) {
-            html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">J'ai payé : envoyer la preuve sur WhatsApp</a>`;
-          }
+          if (WAVE_MERCHANT_LINK.startsWith("https://pay.wave.com/")) { const sep = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?"; html += `<a href="${WAVE_MERCHANT_LINK}${sep}amount=${total}" class="btn-wave"><img src="image/logowave.jpeg" style="width:24px;height:24px;background:#fff;border-radius:4px;" alt="">Payer avec Wave</a>`; }
+          else if (WAVE_NUMERO !== "À_REMPLIR") { html += `<div class="wave-instructions">Envoyez <b>${fmt(total)}</b> par Wave au <b>${WAVE_NUMERO}</b>,<br>puis envoyez la capture sur WhatsApp.</div>`; }
+          if (waLink) html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">J'ai payé : envoyer la preuve</a>`;
           html += `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
           actionsDiv.innerHTML = html;
         }
 
       } catch (error) {
-        console.error("Erreur validation panier:", error);
+        console.error("Erreur:", error);
         msg.textContent = "Erreur : " + (error.message || "Vérifiez votre connexion et réessayez.");
         $("validate").disabled = false;
         $("validateText").textContent = "VALIDER";
@@ -1150,7 +1089,6 @@
     loadStocks().then(render);
   </script>
 
-  <!-- ================= FOOTER NUMA ================= -->
   <style>
     .numa-footer { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; background-color: #0a0a0a; color: #fff; margin-top: 60px; padding-bottom: 80px; }
     .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
