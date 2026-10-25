@@ -150,6 +150,12 @@
     .hero-contact{padding:36px 32px}
     .hero-contact h2{font-size:26px}
   }
+ /* iPhone : empêche le zoom automatique quand on touche un champ */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea { font-size: 16px !important; }
+}
+/* Évite aussi le zoom au double-tap sur les boutons et liens */
+html { touch-action: manipulation; }
 </style>
 </head>
 <body>
