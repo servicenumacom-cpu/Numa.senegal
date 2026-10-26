@@ -21,4 +21,4 @@ Disallow: /favoris.html
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://numa.sn/sitemap.xml
+Sitemap: https://numasenegal.vercel.app/sitemap.xml
