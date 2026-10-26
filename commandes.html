@@ -132,7 +132,7 @@
     const db = getFirestore(app);
 
     const $ = id => document.getElementById(id);
-    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/ | /g, ".") + " CFA";
+    const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     try { const c = JSON.parse(localStorage.getItem("numa_cart")) || []; $("cartCount").textContent = c.reduce((s, x) => s + (x.qty || 1), 0); } catch (e) {}
@@ -146,7 +146,11 @@
     ];
 
     onAuthStateChanged(auth, user => {
-      if (!user) { window.location.href = "authentification.html"; return; }
+      // Plus de redirection vers la connexion : un visiteur sans commande voit simplement la liste vide.
+      if (!user) {
+        $("list").innerHTML = `<div class="empty">Vous n'avez pas encore de commande.<br><a href="index.html">Découvrir la boutique</a></div>`;
+        return;
+      }
       // Une seule condition (uid) : pas besoin d'index Firestore ; on trie ici
       const q = query(collection(db, "commandes"), where("uid", "==", user.uid));
       onSnapshot(q, snap => {
