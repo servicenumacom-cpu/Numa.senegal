@@ -197,8 +197,6 @@ module.exports = async function handler(req, res) {
   const emailHtml = buildEmailHtml(orderData, orderId, siteUrl);
   const modeLabel = orderData.modePaiement === "livraison" ? "À LA LIVRAISON" : "WAVE";
   const subject = `Nouvelle commande ${modeLabel} — ${orderData.numero || orderId}`;
-     const k = process.env.RESEND_API_KEY || "";
-     console.log("Cle Resend : longueur=" + k.length + " debut=" + k.slice(0, 3) + " espaces=" + (k !== k.trim()));
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
