@@ -38,6 +38,7 @@
     .pill.ok { background: #e7f6ec; color: var(--green); }
     .pill.no { background: #fde8ed; color: var(--red); }
     .pill.off { background: #eee; color: #888; }
+    .pill.cod { background: #fef3c7; color: #92400e; }
 
     .steps { display: flex; justify-content: space-between; position: relative; margin: 6px 4px 18px; }
     .steps::before { content: ""; position: absolute; top: 9px; left: 8%; right: 8%; height: 3px; background: var(--line); }
@@ -146,12 +147,10 @@
     ];
 
     onAuthStateChanged(auth, user => {
-      // Plus de redirection vers la connexion : un visiteur sans commande voit simplement la liste vide.
       if (!user) {
         $("list").innerHTML = `<div class="empty">Vous n'avez pas encore de commande.<br><a href="index.html">Découvrir la boutique</a></div>`;
         return;
       }
-      // Une seule condition (uid) : pas besoin d'index Firestore ; on trie ici
       const q = query(collection(db, "commandes"), where("uid", "==", user.uid));
       onSnapshot(q, snap => {
         const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -172,17 +171,32 @@
         const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "à l'instant";
         const annulee = o.statut === "annulee";
         const paye = o.paiement === "paye";
+        const modeLivraison = o.modePaiement === "livraison";
         const idx = STEPS.findIndex(s => s[0] === o.statut);
 
-        const pill = annulee ? `<span class="pill off">Annulée</span>` : paye ? `<span class="pill ok">Payée</span>` : `<span class="pill no">En attente de paiement</span>`;
+        const pill = annulee
+          ? `<span class="pill off">Annulée</span>`
+          : paye
+            ? `<span class="pill ok">Payée</span>`
+            : modeLivraison
+              ? `<span class="pill cod">Paiement à la livraison</span>`
+              : `<span class="pill no">En attente de paiement</span>`;
 
         const steps = annulee ? "" : `<div class="steps">${STEPS.map((s, i) =>
           `<div class="step ${i <= idx ? "done" : ""} ${i === idx ? "now" : ""}"><i></i>${s[1]}</div>`).join("")}</div>`;
 
         let info = "";
-        if (annulee) info = `<div class="info cancel">Cette commande a été annulée. Pour toute question, écrivez-nous sur WhatsApp.</div>`;
-        else if (!paye) info = `<div class="info warn"><b>Paiement à finaliser.</b> Payez ${fmt(o.total)} par Wave, puis envoyez-nous la preuve sur WhatsApp avec le numéro ${esc(o.numero)}. Votre commande sera confirmée dès réception.</div>`;
-        else if (o.statut === "livree") info = `<div class="info">Votre commande a été livrée. Merci de votre confiance !</div>`;
+        if (annulee) {
+          info = `<div class="info cancel">Cette commande a été annulée. Pour toute question, écrivez-nous sur WhatsApp.</div>`;
+        } else if (!paye) {
+          if (modeLivraison) {
+            info = `<div class="info">Paiement à la livraison : vous réglerez <b>${fmt(o.total)}</b> en espèces à la réception.</div>`;
+          } else {
+            info = `<div class="info warn"><b>Paiement à finaliser.</b> Payez ${fmt(o.total)} par Wave, puis envoyez-nous la preuve sur WhatsApp avec le numéro ${esc(o.numero)}. Votre commande sera confirmée dès réception.</div>`;
+          }
+        } else if (o.statut === "livree") {
+          info = `<div class="info">Votre commande a été livrée. Merci de votre confiance !</div>`;
+        }
 
         const items = (o.articles || []).map(a => `
           <div class="it">
@@ -193,10 +207,15 @@
 
         let btns = "";
         if (!annulee && !paye) {
-          const sep = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?";
-          btns += `<a class="btn dark" href="${WAVE_MERCHANT_LINK}${sep}amount=${Number(o.total)}">Payer ${fmt(o.total)} avec Wave</a>`;
-          const t = `Bonjour NUMA, j'ai payé la commande ${o.numero} d'un montant de ${o.total} CFA. Nom : ${o.clientNom}.`;
-          btns += `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">J'ai payé : envoyer la preuve</a>`;
+          if (modeLivraison) {
+            const t = `Bonjour NUMA, j'ai une question sur ma commande ${o.numero}.`;
+            btns += `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">Une question ? Écrire à NUMA</a>`;
+          } else {
+            const sep = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?";
+            btns += `<a class="btn dark" href="${WAVE_MERCHANT_LINK}${sep}amount=${Number(o.total)}">Payer ${fmt(o.total)} avec Wave</a>`;
+            const t = `Bonjour NUMA, j'ai payé la commande ${o.numero} d'un montant de ${o.total} CFA. Nom : ${o.clientNom}.`;
+            btns += `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">J'ai payé : envoyer la preuve</a>`;
+          }
         } else {
           const t = `Bonjour NUMA, j'ai une question sur ma commande ${o.numero}.`;
           btns += `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}">Une question ? Écrire à NUMA</a>`;
