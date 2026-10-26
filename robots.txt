@@ -7,10 +7,13 @@ Disallow: /admin-dashboard.html
 Disallow: /admin-produits.html
 Disallow: /admin-produit-edit.html
 Disallow: /ajout-produit.html
+Disallow: /admin.html
+Disallow: /NUMA%20Admin/
 Disallow: /panier.html
 Disallow: /commandes.html
 Disallow: /facture-livraison.html
 Disallow: /authentification.html
+Disallow: /mot-de-passe-oublie.html
 Disallow: /compte.html
 Disallow: /favoris.html
 
