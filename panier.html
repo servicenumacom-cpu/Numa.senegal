@@ -1138,8 +1138,7 @@
         const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}` : null;
 
         if (paymentMode === "livraison") {
-          $("successMessage").textContent = `Commande enregistrée. Vous paierez ${fmt(total)} en espèces à la réception.`;
-          const t = `Bonjour NUMA, j'ai passé la commande ${numero} en paiement à la livraison.`;
+$("successMessage").textContent = `Votre commande est enregistrée. Nous vous appelons pour la confirmer. Vous paierez le livreur à la réception (${fmt(total)}).`;          const t = `Bonjour NUMA, j'ai passé la commande ${numero} en paiement à la livraison.`;
           const wa = `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}`;
           actionsDiv.innerHTML = `
             <a href="${wa}" target="_blank" class="btn-whatsapp">Écrire à NUMA</a>
