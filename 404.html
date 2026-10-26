@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +14,6 @@
   <link rel="manifest" href="/site.webmanifest">
 
   <style>
-<style>
   *{margin:0;padding:0;box-sizing:border-box}
   :root{--black:#0a0a0a;--gray:#f1f1f1;--line:#e5e5e5;--red:#e11d48;--green:#16a34a;--wa:#25D366;--max:1280px}
   body{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;color:var(--black);background:#fff;padding-bottom:76px;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
@@ -53,10 +54,10 @@
   /* ===== CONTENU 404 ===== */
   .error-main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px}
   .error-wrap{max-width:600px;text-align:center;margin:0 auto}
-  
+
   .code-404{font-size:110px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--black);position:relative;display:inline-block;margin-bottom:10px}
   .code-404::after{content:"";position:absolute;left:0;bottom:15px;width:100%;height:8px;background:var(--red);z-index:-1;opacity:.8}
-  
+
   .error-title{font-size:24px;font-weight:800;margin-bottom:12px}
   .error-desc{font-size:14px;color:#555;line-height:1.6;margin-bottom:28px;max-width:420px;margin-left:auto;margin-right:auto}
 
@@ -142,7 +143,7 @@
     <div class="code-404">404</div>
     <h1 class="error-title">Oups ! Cette page s'est perdue.</h1>
     <p class="error-desc">La page que vous recherchez n'existe pas, a été déplacée ou est temporairement indisponible. Pas d'inquiétude, votre panier et vos favoris sont toujours là.</p>
-    
+
     <div class="error-actions">
       <a href="index.html" class="btn-main primary">
         <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3V11z"/></svg>
@@ -186,26 +187,25 @@
   <a href="favoris.html"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>Favoris</a>
   <a href="compte.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Compte</a>
 </nav>
+
 <!-- ================= DÉBUT FOOTER NUMA ================= -->
 <style>
-  /* CSS scopé uniquement pour le footer */
   .numa-footer {
     font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     background-color: #0a0a0a;
     color: #fff;
-    margin-top: 60px; /* Espace avant le footer */
-    padding-bottom: 80px; /* Laisse de la place pour la tabbar mobile */
+    margin-top: 60px;
+    padding-bottom: 80px;
   }
   .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
   .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
-  
+
   .numa-footer-inner {
     max-width: 1280px;
     margin: 0 auto;
     padding: 60px 24px;
   }
-  
-  /* Grille principale */
+
   .numa-footer-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -215,7 +215,6 @@
     .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; }
   }
 
-  /* Colonne Marque */
   .numa-footer-brand .numa-logo {
     font-size: 24px;
     font-weight: 800;
@@ -240,7 +239,6 @@
   }
   .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
 
-  /* Titres colonnes */
   .numa-footer-col h4 {
     font-size: 12px;
     font-weight: 700;
@@ -250,7 +248,6 @@
     margin-bottom: 20px;
   }
 
-  /* Liens */
   .numa-footer-col ul { list-style: none; }
   .numa-footer-col ul li { margin-bottom: 12px; }
   .numa-footer-col ul li a {
@@ -259,7 +256,6 @@
   }
   .numa-footer-col ul li a:hover { color: #fff; }
 
-  /* Réseaux sociaux */
   .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
   .numa-socials a {
     width: 36px; height: 36px;
@@ -271,7 +267,6 @@
   .numa-socials a:hover { background: #e11d48; color: #fff; }
   .numa-socials svg { width: 18px; height: 18px; }
 
-  /* Barre du bas */
   .numa-footer-bottom {
     border-top: 1px solid #262626;
     padding: 24px;
@@ -290,9 +285,9 @@
   }
   @media (min-width: 768px) {
     .numa-footer-bottom-inner { flex-direction: row; }
-    .numa-footer { padding-bottom: 0; } /* Retire l'espace mobile sur PC */
+    .numa-footer { padding-bottom: 0; }
   }
-  
+
   .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
   .numa-payments span {
     background: #1f1f1f;
@@ -307,12 +302,11 @@
 <footer class="numa-footer">
   <div class="numa-footer-inner">
     <div class="numa-footer-grid">
-      
-      <!-- Colonne 1 : Marque & Contact -->
+
       <div class="numa-footer-brand">
         <a href="index.html" class="numa-logo">NUMA.</a>
         <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
-        
+
         <div class="numa-footer-contact">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Petit Mbao, Dakar, Sénégal
@@ -342,7 +336,6 @@
         </div>
       </div>
 
-      <!-- Colonne 2 : Boutique -->
       <div class="numa-footer-col">
         <h4>Boutique</h4>
         <ul>
@@ -354,7 +347,6 @@
         </ul>
       </div>
 
-      <!-- Colonne 3 : Aide -->
       <div class="numa-footer-col">
         <h4>Aide & Services</h4>
         <ul>
@@ -366,7 +358,6 @@
         </ul>
       </div>
 
-      <!-- Colonne 4 : Légal -->
       <div class="numa-footer-col">
         <h4>Informations</h4>
         <ul>
@@ -379,11 +370,10 @@
     </div>
   </div>
 
-  <!-- Barre inférieure -->
   <div class="numa-footer-bottom">
     <div class="numa-footer-bottom-inner">
       <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
-      
+
       <div class="numa-payments">
         <span>Wave</span>
         <span>Orange Money</span>
@@ -394,7 +384,6 @@
 </footer>
 
 <script>
-  // Script ultra-léger pour l'année automatique
   document.getElementById('numaYear').textContent = new Date().getFullYear();
 </script>
 <!-- ================= FIN FOOTER NUMA ================= -->
