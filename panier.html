@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Mes commandes – NUMA</title>
-<meta name="robots" content="noindex, nofollow">
+  <title>Mon panier – NUMA</title>
+  <meta name="robots" content="noindex, nofollow">
 
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -1000,6 +1000,9 @@
       if (manual.length < 3) { $("wrapManual").classList.add("error"); msg.textContent = "Indiquez votre adresse ou quartier."; return; }
       if (!$("acceptCgv").checked) { msg.textContent = "Acceptez les CGV pour continuer."; return; }
 
+      const totalPanier = cart.reduce((s, x) => s + x.qty * x.price, 0);
+      if (paymentMode === "livraison" && totalPanier > 30000) { msg.textContent = "Le paiement à la livraison est limité à 30.000 CFA. Choisissez Wave pour cette commande."; return; }
+
       $("validate").disabled = true;
       $("validateText").textContent = "VÉRIFICATION...";
       $("validateSpinner").style.display = "inline";
@@ -1138,7 +1141,8 @@
         const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}` : null;
 
         if (paymentMode === "livraison") {
-$("successMessage").textContent = `Votre commande est enregistrée. Nous vous appelons pour la confirmer. Vous paierez le livreur à la réception (${fmt(total)}).`;          const t = `Bonjour NUMA, j'ai passé la commande ${numero} en paiement à la livraison.`;
+          $("successMessage").textContent = `Votre commande est enregistrée. Nous vous appelons pour la confirmer. Vous paierez le livreur à la réception (${fmt(total)}).`;
+          const t = `Bonjour NUMA, j'ai passé la commande ${numero} en paiement à la livraison.`;
           const wa = `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(t)}`;
           actionsDiv.innerHTML = `
             <a href="${wa}" target="_blank" class="btn-whatsapp">Écrire à NUMA</a>
