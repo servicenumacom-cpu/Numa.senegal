@@ -224,6 +224,9 @@
       .input-action { padding: 0 14px; }
     }
 
+    /* Petites indications sous les champs */
+    .field-hint { font-size: 11.5px; color: #666; margin-top: 6px; line-height: 1.5; }
+
     /* GPS CARD */
     .gps-card { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; transition: .25s; }
     .gps-card.loading { border-color: var(--black); }
@@ -246,6 +249,42 @@
     .gps-card.error .gps-action { background: var(--red); }
     .gps-coords { margin-top: 10px; padding: 8px 10px; background: var(--gray); border-radius: 6px; font-size: 11px; color: #666; font-family: monospace; word-break: break-all; display: none; }
     .gps-card.active ~ .gps-coords { display: block; }
+
+    /* CARTES MODE DE PAIEMENT */
+    .pay-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .pay-card:last-child { margin-bottom: 0; }
+    .pay-card:hover { border-color: #ccc; }
+    .pay-card.selected { border-color: var(--green); background: #f0fdf4; }
+    .pay-card input { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+    .pay-radio {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--line); background: #fff;
+      display: grid; place-items: center; flex-shrink: 0;
+      transition: all 0.2s; margin-top: 1px;
+    }
+    .pay-radio::after {
+      content: "";
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); transform: scale(0); transition: transform .2s;
+    }
+    .pay-card.selected .pay-radio { border-color: var(--green); }
+    .pay-card.selected .pay-radio::after { transform: scale(1); }
+    .pay-content { flex: 1; min-width: 0; }
+    .pay-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+    .pay-title img { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; background: #fff; }
+    .pay-text { display: block; font-size: 11.5px; color: #666; line-height: 1.5; }
 
     /* CGV CARD */
     .cgv-card {
@@ -514,6 +553,7 @@
             <span class="input-prefix"><span class="flag">🇸🇳</span> +221</span>
             <input id="tel" type="tel" inputmode="numeric" placeholder="77 000 00 00" autocomplete="tel-national" required>
           </div>
+          <p class="field-hint">Nous utilisons ce numéro pour vous contacter par WhatsApp ou SMS : confirmation de commande, paiement et livraison.</p>
         </div>
 
         <div class="form-field">
@@ -543,14 +583,38 @@
             </button>
           </div>
           <div class="gps-coords" id="gpsCoords"></div>
+          <p class="field-hint">Votre position sert uniquement à guider le livreur. Elle n'est jamais revendue.</p>
         </div>
 
-        <label class="cgv-card checked" id="cgvCard">
-          <input type="checkbox" id="acceptCgv" checked>
+        <!-- MODE DE PAIEMENT -->
+        <div class="form-field">
+          <label class="form-label">Mode de paiement <span class="req">*</span></label>
+
+          <label class="pay-card selected" id="payCardWave">
+            <input type="radio" name="payMode" value="wave" checked>
+            <div class="pay-radio"></div>
+            <div class="pay-content">
+              <span class="pay-title"><img src="image/logowave.jpeg" alt="">Payer avec Wave</span>
+              <span class="pay-text">Paiement immédiat sécurisé</span>
+            </div>
+          </label>
+
+          <label class="pay-card" id="payCardLivraison">
+            <input type="radio" name="payMode" value="livraison">
+            <div class="pay-radio"></div>
+            <div class="pay-content">
+              <span class="pay-title">Payer à la livraison</span>
+              <span class="pay-text">Vous payez en espèces au livreur à la réception de votre commande.</span>
+            </div>
+          </label>
+        </div>
+
+        <label class="cgv-card" id="cgvCard">
+          <input type="checkbox" id="acceptCgv">
           <div class="cgv-content">
             <span class="cgv-title">J'accepte les conditions générales</span>
             <span class="cgv-text">
-              J'ai lu et j'accepte les <a href="cgv.html" target="_blank">CGV</a> et la <a href="confidentialite.html" target="_blank">Politique de confidentialité</a>.
+              J'ai lu et j'accepte les <a href="cgv.html" target="_blank">CGV</a> et la <a href="confidentialite.html" target="_blank">Politique de confidentialité</a>. J'accepte que NUMA utilise mon nom, mon téléphone, mon adresse et ma position (si je la partage) pour traiter et livrer ma commande, et me contacter par WhatsApp ou SMS à ce sujet.
             </span>
           </div>
           <div class="cgv-check">
@@ -560,7 +624,7 @@
 
         <div class="msg" id="msg"></div>
 
-        <button type="button" class="btn-confirm" id="validate">
+        <button type="button" class="btn-confirm" id="validate" disabled>
           <span id="validateText">VALIDER</span>
           <svg id="validateSpinner" style="display:none; width:20px; height:20px; animation: spin 1s linear infinite;" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="white" stroke-width="2"/></svg>
         </button>
@@ -696,16 +760,12 @@
       return d;
     }
 
-    // Commande SANS compte obligatoire : plus de redirection vers la connexion.
-    // Si le client est déjà connecté (Google, email ou session anonyme), on le garde en mémoire.
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
         if (user.displayName && !$("nom").value) { $("nom").value = user.displayName; }
       }
     });
-
-    const paymentMode = "wave";
 
     function goToCheckout() { if (cart.length === 0) return; $("viewCart").classList.remove("active"); $("viewCheckout").classList.add("active"); window.scrollTo(0, 0); }
     function goToCart() { $("viewCheckout").classList.remove("active"); $("viewCart").classList.add("active"); window.scrollTo(0, 0); }
@@ -725,6 +785,15 @@
     $("acceptCgv").addEventListener("change", (e) => {
       $("cgvCard").classList.toggle("checked", e.target.checked);
       updateValidate();
+    });
+
+    // Choix du mode de paiement : mise à jour visuelle des cartes radio
+    document.querySelectorAll('input[name="payMode"]').forEach(r => {
+      r.addEventListener("change", () => {
+        document.querySelectorAll(".pay-card").forEach(c => c.classList.remove("selected"));
+        const wrap = r.closest(".pay-card");
+        if (wrap) wrap.classList.add("selected");
+      });
     });
 
     function buildCommunesModal() {
@@ -837,15 +906,7 @@
       }));
     }
 
-    /* ================================================================
-       RENDU — CORRECTIF 3 : sync silencieuse des tailles
-       ----------------------------------------------------------------
-       On met à jour it.sizes en mémoire à partir des données serveur,
-       SANS déclencher de message. Ça évite les faux positifs lors de
-       la validation.
-       ================================================================ */
     function render() {
-      // CORRECTIF 3 : synchronisation silencieuse des tailles en cache
       let needsResync = false;
       cart.forEach(it => {
         if (!it.id || !stockMaps[it.id]) return;
@@ -877,287 +938,4 @@
               <div class="band-bottom">
                 <div class="qty"><button data-act="minus" data-i="${i}">−</button><span>${it.qty}</span><button data-act="plus" data-i="${i}">+</button></div>
                 <span class="line-total">${fmt(it.price * it.qty)}</span>
-                <button class="trash" data-act="del" data-i="${i}"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></button>
-              </div>
-            </div>
-          </article>`;
-        }).join("");
-      }
-
-      const nb = cart.reduce((s, x) => s + x.qty, 0);
-      const total = cart.reduce((s, x) => s + x.qty * x.price, 0);
-      $("nbArticlesCart").textContent = nb;
-      $("totalCart").textContent = fmt(total);
-      $("nbArticlesCheckout").textContent = nb;
-      $("totalCheckout").textContent = fmt(total);
-      $("totalSticky").textContent = fmt(total);
-      $("count").textContent = nb ? `(${nb} article${nb > 1 ? "s" : ""})` : "";
-      $("cartCount").textContent = nb;
-      updateValidate();
-
-      let favs = []; try { favs = JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) {}
-      $("favCount").textContent = favs.length;
-      $("favCount").style.display = favs.length ? "grid" : "none";
-    }
-
-    $("bands").addEventListener("click", e => {
-      const b = e.target.closest("[data-act]"); if (!b) return;
-      const i = +b.dataset.i, act = b.dataset.act;
-      if (act === "plus") { const st = stockMaps[cart[i].id] || {}; const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(cart[i].size || "").toUpperCase()); const max = k !== undefined ? Number(st[k]) || 1 : 10; cart[i].qty = Math.min(10, max, cart[i].qty + 1); }
-      if (act === "minus") cart[i].qty = Math.max(1, cart[i].qty - 1);
-      if (act === "del") cart.splice(i, 1);
-      if (act === "size") cart[i].size = b.dataset.size;
-      saveCart(); render();
-    });
-
-    /* ================================================================
-       VALIDATION — CORRECTIF 1 appliqué
-       ----------------------------------------------------------------
-       On ne signale "tailles changées" QUE si la taille choisie par
-       le client a réellement disparu du stock.
-       ================================================================ */
-    $("validate").addEventListener("click", async () => {
-      const msg = $("msg");
-      msg.textContent = "";
-      $("wrapNom").classList.remove("error");
-      $("wrapTel").classList.remove("error");
-      $("wrapManual").classList.remove("error");
-      document.querySelectorAll(".band.need").forEach(b => b.classList.remove("need"));
-
-      if (cart.length === 0) return;
-
-      const nom = $("nom").value.trim();
-      const telRaw = $("tel").value.trim();
-      const telNorm = normalizePhone(telRaw);
-      const manual = $("manual").value.trim();
-
-      if (!nom) { $("wrapNom").classList.add("error"); msg.textContent = "Votre nom est requis."; return; }
-      if (!/^(70|75|76|77|78)\d{7}$/.test(telNorm)) { $("wrapTel").classList.add("error"); msg.textContent = "Numéro sénégalais invalide (9 chiffres, ex : 77 123 45 67)."; return; }
-      if (manual.length < 3) { $("wrapManual").classList.add("error"); msg.textContent = "Indiquez votre adresse ou quartier."; return; }
-      if (!$("acceptCgv").checked) { msg.textContent = "Acceptez les CGV pour continuer."; return; }
-
-      $("validate").disabled = true;
-      $("validateText").textContent = "VÉRIFICATION...";
-      $("validateSpinner").style.display = "inline";
-
-      try {
-        const snaps = await Promise.all(cart.map(it => {
-          if (!it.id) return Promise.resolve({ __missingId: true, name: it.name, __id: null });
-          return getDoc(doc(db, "produits", it.id)).then(snap => ({ snap, name: it.name, __id: it.id })).catch(err => { throw new Error(`Lecture produit ${it.name} impossible : ${err.message}`); });
-        }));
-
-        let priceChanged = false, sizesChanged = false;
-        const freshArticles = [], errors = [];
-        let firstBadBand = null;
-
-        for (let i = 0; i < cart.length; i++) {
-          const it = cart[i], result = snaps[i];
-          if (!it.id || (result && result.__missingId)) { errors.push(`L'article "${it.name}" n'a pas d'identifiant. Retirez-le du panier.`); continue; }
-          const snap = result.snap;
-          if (!snap.exists()) { errors.push(`Un article n'est plus disponible : "${it.name}". Retirez-le du panier.`); continue; }
-          const data = snap.data();
-          const prixServeur = Number(data.prix) || 0;
-          const titreServeur = String(data.titre || it.name || "Article");
-          const imageServeur = String(data.imageUrl || it.img || "");
-          const sizesServeur = normalizeSizes(data.stock ?? data.tailles ?? data.sizes ?? data.taille ?? null);
-
-          if (!Number.isFinite(prixServeur) || prixServeur < 0) { errors.push(`Le prix de "${titreServeur}" est invalide.`); continue; }
-          if (Math.round(prixServeur) !== Math.round(Number(it.price) || 0)) priceChanged = true;
-
-          let tailleFinale = "Taille unique";
-
-          if (sizesServeur.length > 0) {
-            // CORRECTIF 1 : resynchronisation silencieuse, on ne flag PAS sizesChanged
-            it.sizes = sizesServeur;
-
-            if (!it.size) {
-              errors.push(`Choisissez la taille de "${titreServeur}".`);
-              $("band-" + i).classList.add("need");
-              firstBadBand = firstBadBand || $("band-" + i);
-              continue;
-            }
-            if (!sizesServeur.includes(String(it.size).toUpperCase())) {
-              // SEULE vraie raison de signaler un changement : la taille choisie a disparu
-              errors.push(`La taille "${it.size}" n'est plus disponible pour "${titreServeur}". Choisissez une autre taille.`);
-              it.size = null;
-              $("band-" + i).classList.add("need");
-              firstBadBand = firstBadBand || $("band-" + i);
-              sizesChanged = true;
-              continue;
-            }
-            tailleFinale = it.size;
-          } else if (it.sizes && it.sizes.length) {
-            it.sizes = []; it.size = null; sizesChanged = true;
-          }
-
-          let dispo = Infinity;
-          if (sizesServeur.length > 0) { const st = data.stock || data.tailles || data.sizes || {}; const k = Object.keys(st).find(x => x.trim().toUpperCase() === String(tailleFinale).toUpperCase()); dispo = k !== undefined ? (Number(st[k]) || 0) : 0; }
-          if ((Number(it.qty) || 1) > dispo) { errors.push(`Il ne reste que ${dispo} pièce(s) en taille ${tailleFinale} pour "${titreServeur}".`); it.qty = Math.max(1, dispo); sizesChanged = true; $("band-" + i).classList.add("need"); firstBadBand = firstBadBand || $("band-" + i); continue; }
-
-          const quantite = Math.max(1, Math.min(10, Number(it.qty) || 1));
-          freshArticles.push({ produitId: it.id, titre: titreServeur, prix: prixServeur, prixCatalogue: prixServeur, quantite, taille: tailleFinale, imageUrl: imageServeur });
-        }
-
-        if (errors.length > 0) {
-          if (sizesChanged) { saveCart(); render(); }
-          msg.textContent = errors[0];
-          $("validate").disabled = false;
-          $("validateText").textContent = "VALIDER";
-          $("validateSpinner").style.display = "none";
-          if (firstBadBand) { goToCart(); setTimeout(() => firstBadBand.scrollIntoView({ behavior: "smooth", block: "center" }), 100); }
-          return;
-        }
-
-        if (priceChanged || sizesChanged) {
-          freshArticles.forEach(fa => { const idx = cart.findIndex(c => c.id === fa.produitId); if (idx >= 0) { cart[idx].price = fa.prix; cart[idx].name = fa.titre; cart[idx].img = fa.imageUrl; } });
-          saveCart(); render();
-          if (priceChanged && sizesChanged) msg.textContent = "Les prix et les tailles ont été mis à jour. Vérifiez votre panier puis revalidez.";
-          else if (priceChanged) msg.textContent = "Les prix ont été mis à jour, vérifiez votre total puis revalidez.";
-          else msg.textContent = "Une des tailles de votre panier n'est plus disponible. Choisissez une nouvelle taille puis revalidez.";
-          $("validate").disabled = false;
-          $("validateText").textContent = "VALIDER";
-          $("validateSpinner").style.display = "none";
-          goToCart();
-          return;
-        }
-
-        // COMMANDE SANS COMPTE : si le client n'est pas connecté, on crée un compte
-        // anonyme invisible (aucun écran, aucun mot de passe) juste avant d'enregistrer.
-        if (!currentUser && auth.currentUser) currentUser = auth.currentUser;
-        if (!currentUser) {
-          try {
-            const cred = await signInAnonymously(auth);
-            currentUser = cred.user;
-          } catch (e) {
-            console.error("signInAnonymously:", e);
-            msg.textContent = "Impossible d'enregistrer la commande, réessayez ou contactez-nous sur WhatsApp.";
-            $("validate").disabled = false;
-            $("validateText").textContent = "VALIDER";
-            $("validateSpinner").style.display = "none";
-            return;
-          }
-        }
-
-        const total = freshArticles.reduce((s, a) => s + a.prix * a.quantite, 0);
-        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        const randStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const numero = `NUMA-${dateStr}-${randStr}`;
-
-        const orderData = {
-          uid: currentUser.uid,
-          clientNom: nom,
-          clientEmail: currentUser.email || "",
-          telephone: telNorm,
-          articles: freshArticles,
-          total: total,
-          fraisLivraison: 0,
-          position: position ? { lat: Number(position.lat), lng: Number(position.lng), mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`, source: position.source || "inconnue" } : null,
-          adresseTexte: manual,
-          statut: "en_attente",
-          paiement: "non_paye",
-          modePaiement: paymentMode,
-          numero: numero,
-          createdAt: serverTimestamp()
-        };
-
-        $("validateText").textContent = "ENREGISTREMENT...";
-        const orderRef = await addDoc(collection(db, "commandes"), orderData);
-
-        if (currentUser) {
-          currentUser.getIdToken().then(token => fetch("/api/nouvelle-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ orderId: orderRef.id }), keepalive: true })).catch(() => {});
-        }
-
-        localStorage.removeItem(CART_KEY);
-        $("mainPage").style.display = "none";
-        $("stickyBar").style.display = "none";
-        $("successScreen").classList.add("show");
-        $("orderNumberDisplay").textContent = numero;
-        window.scrollTo(0, 0);
-
-        const actionsDiv = $("paymentActions");
-        const waLink = WHATSAPP_VENDEUR !== "À_REMPLIR" ? `https://wa.me/${WHATSAPP_VENDEUR}?text=${encodeURIComponent(`Bonjour NUMA, j'ai payé la commande ${numero} d'un montant de ${total} CFA. Nom : ${nom}.`)}` : null;
-
-        if (paymentMode === "livraison") {
-          $("successMessage").textContent = "Vous paierez à la réception de votre commande.";
-          actionsDiv.innerHTML = `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
-        } else if (paymentMode === "wave") {
-          $("successMessage").textContent = "Votre commande est enregistrée. Finalisez le paiement pour la confirmer.";
-          let html = "";
-          if (WAVE_MERCHANT_LINK.startsWith("https://pay.wave.com/")) { const sep = WAVE_MERCHANT_LINK.includes("?") ? "&" : "?"; html += `<a href="${WAVE_MERCHANT_LINK}${sep}amount=${total}" class="btn-wave"><img src="image/logowave.jpeg" style="width:24px;height:24px;background:#fff;border-radius:4px;" alt="">Payer avec Wave</a>`; }
-          else if (WAVE_NUMERO !== "À_REMPLIR") { html += `<div class="wave-instructions">Envoyez <b>${fmt(total)}</b> par Wave au <b>${WAVE_NUMERO}</b>,<br>puis envoyez la capture sur WhatsApp.</div>`; }
-          if (waLink) html += `<a href="${waLink}" target="_blank" class="btn-whatsapp">J'ai payé : envoyer la preuve</a>`;
-          html += `<a href="commandes.html" class="btn-orders">Voir mes commandes</a>`;
-          actionsDiv.innerHTML = html;
-        }
-
-      } catch (error) {
-        console.error("Erreur:", error);
-        msg.textContent = "Erreur : " + (error.message || "Vérifiez votre connexion et réessayez.");
-        $("validate").disabled = false;
-        $("validateText").textContent = "VALIDER";
-        $("validateSpinner").style.display = "none";
-      }
-    });
-
-    render();
-    loadStocks().then(render);
-  </script>
-
-  <style>
-    .numa-footer { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; background-color: #0a0a0a; color: #fff; margin-top: 60px; padding-bottom: 80px; }
-    .numa-footer * { box-sizing: border-box; margin: 0; padding: 0; }
-    .numa-footer a { text-decoration: none; color: inherit; transition: color 0.2s; }
-    .numa-footer-inner { max-width: 1280px; margin: 0 auto; padding: 60px 24px; }
-    .numa-footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-    @media (min-width: 768px) { .numa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; } }
-    .numa-footer-brand .numa-logo { font-size: 24px; font-weight: 800; letter-spacing: 0.1em; display: inline-block; margin-bottom: 16px; }
-    .numa-footer-brand p { font-size: 13px; color: #9ca3af; line-height: 1.6; margin-bottom: 20px; max-width: 280px; }
-    .numa-footer-contact { font-size: 13px; color: #d1d5db; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .numa-footer-contact svg { width: 16px; height: 16px; stroke: #e11d48; }
-    .numa-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #fff; margin-bottom: 20px; }
-    .numa-footer-col ul { list-style: none; }
-    .numa-footer-col ul li { margin-bottom: 12px; }
-    .numa-footer-col ul li a { font-size: 13.5px; color: #9ca3af; }
-    .numa-footer-col ul li a:hover { color: #fff; }
-    .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
-    .numa-socials a { width: 36px; height: 36px; border-radius: 50%; background: #1f1f1f; display: grid; place-items: center; color: #d1d5db; }
-    .numa-socials a:hover { background: #e11d48; color: #fff; }
-    .numa-socials svg { width: 18px; height: 18px; }
-    .numa-footer-bottom { border-top: 1px solid #262626; padding: 24px; text-align: center; }
-    .numa-footer-bottom-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; color: #6b7280; }
-    @media (min-width: 768px) { .numa-footer-bottom-inner { flex-direction: row; } .numa-footer { padding-bottom: 0; } }
-    .numa-payments { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-    .numa-payments span { background: #1f1f1f; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #d1d5db; }
-  </style>
-
-  <footer class="numa-footer">
-    <div class="numa-footer-inner">
-      <div class="numa-footer-grid">
-        <div class="numa-footer-brand">
-          <a href="index.html" class="numa-logo">NUMA.</a>
-          <p>La sape et l'élégance à la sénégalaise. Des pièces sélectionnées avec soin, livrées partout au Sénégal.</p>
-          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Petit Mbao, Dakar, Sénégal</div>
-          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6.3 6.3l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>+221 76 658 95 98</div>
-          <div class="numa-footer-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>service.numa.com@gmail.com</div>
-          <div class="numa-socials">
-            <a href="https://wa.me/221766589598" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
-            <a href="#" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
-            <a href="#" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v10.5a3 3 0 1 1-3-3"/><path d="M14 6c.8 2 2.5 3.5 5 3.8"/></svg></a>
-            <a href="#" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-          </div>
-        </div>
-        <div class="numa-footer-col"><h4>Boutique</h4><ul><li><a href="nouveautes.html">Nouveautés</a></li><li><a href="categories.html?sexe=homme">Collection Homme</a></li><li><a href="categories.html?sexe=femme">Collection Femme</a></li><li><a href="promotions.html">Promotions</a></li><li><a href="guide-des-tailles.html">Guide des tailles</a></li></ul></div>
-        <div class="numa-footer-col"><h4>Aide & Services</h4><ul><li><a href="contact.html">Nous contacter</a></li><li><a href="livraison-retours.html">Livraison & Retours</a></li><li><a href="compte.html">Mon compte</a></li><li><a href="favoris.html">Mes favoris</a></li><li><a href="a-propos.html">À propos de NUMA</a></li></ul></div>
-        <div class="numa-footer-col"><h4>Informations</h4><ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="cgv.html">CGV</a></li><li><a href="confidentialite.html">Confidentialité</a></li></ul></div>
-      </div>
-    </div>
-    <div class="numa-footer-bottom">
-      <div class="numa-footer-bottom-inner">
-        <p>© <span id="numaYear"></span> NUMA Sénégal. Tous droits réservés.</p>
-        <div class="numa-payments"><span>Wave</span><span>Orange Money</span><span>Free Money</span></div>
-      </div>
-    </div>
-  </footer>
-  <script>document.getElementById('numaYear').textContent = new Date().getFullYear();</script>
-</body>
-</html>
+                <button class="trash" data-act="del" data
