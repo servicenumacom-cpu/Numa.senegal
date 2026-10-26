@@ -605,6 +605,7 @@
     <h2>Commande enregistrée !</h2>
     <p id="successMessage">Votre commande a bien été prise en compte.</p>
     <div class="order-number" id="orderNumberDisplay">-</div>
+    <p style="font-size:12.5px;color:#666;margin:-8px 0 20px;">Gardez ce numéro de commande. Pour toute question, écrivez-nous sur WhatsApp.</p>
     <div id="paymentActions" class="success-actions"></div>
   </div>
 
@@ -618,7 +619,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/";
@@ -695,9 +696,13 @@
       return d;
     }
 
+    // Commande SANS compte obligatoire : plus de redirection vers la connexion.
+    // Si le client est déjà connecté (Google, email ou session anonyme), on le garde en mémoire.
     onAuthStateChanged(auth, (user) => {
-      if (!user) { window.location.href = "authentification.html"; }
-      else { currentUser = user; if (user.displayName && !$("nom").value) { $("nom").value = user.displayName; } }
+      if (user) {
+        currentUser = user;
+        if (user.displayName && !$("nom").value) { $("nom").value = user.displayName; }
+      }
     });
 
     const paymentMode = "wave";
@@ -1014,6 +1019,23 @@
           $("validateSpinner").style.display = "none";
           goToCart();
           return;
+        }
+
+        // COMMANDE SANS COMPTE : si le client n'est pas connecté, on crée un compte
+        // anonyme invisible (aucun écran, aucun mot de passe) juste avant d'enregistrer.
+        if (!currentUser && auth.currentUser) currentUser = auth.currentUser;
+        if (!currentUser) {
+          try {
+            const cred = await signInAnonymously(auth);
+            currentUser = cred.user;
+          } catch (e) {
+            console.error("signInAnonymously:", e);
+            msg.textContent = "Impossible d'enregistrer la commande, réessayez ou contactez-nous sur WhatsApp.";
+            $("validate").disabled = false;
+            $("validateText").textContent = "VALIDER";
+            $("validateSpinner").style.display = "none";
+            return;
+          }
         }
 
         const total = freshArticles.reduce((s, a) => s + a.prix * a.quantite, 0);
