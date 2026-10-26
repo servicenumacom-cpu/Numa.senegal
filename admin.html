@@ -125,7 +125,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, runTransaction, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2";
 
@@ -243,6 +243,8 @@
         const modeBadge = modeLivraison
           ? `<span class="badge mode-livraison">À la livraison</span>`
           : `<span class="badge mode-wave">Wave</span>`;
+        const encaisseBadge = (modeLivraison && o.paiement !== "paye")
+          ? `<span class="badge pay-no">À encaisser : ${fmt(o.total)}</span>` : "";
         const payBadge = o.paiement === "paye" ? `<span class="badge pay-ok">Payé</span>` : `<span class="badge pay-no">Non payé</span>`;
         const stBadge = `<span class="badge ${STATUT_CLASS[o.statut] || ""}">${STATUT_LABEL[o.statut] || esc(o.statut)}</span>`;
         const maps = o.position && o.position.mapsUrl ? ` · <a class="lnk" href="${esc(o.position.mapsUrl)}" target="_blank" rel="noopener">Voir sur la carte</a>` : "";
@@ -266,9 +268,9 @@
               if (NEXT[o.statut]) {
                 actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
               }
-              if (o.statut === "en_livraison" || o.statut === "livree") {
-                actions += `<p class="hint">Marque la commande payée quand tu as reçu <b>${fmt(o.total)}</b> en espèces.</p>`;
-                actions += `<button class="btn ok" data-act="mark-paid" data-id="${o.id}">Marquer comme payé</button>`;
+              if (o.statut === "livree") {
+                actions += `<p class="hint">Marque la commande encaissée quand tu as reçu <b>${fmt(o.total)}</b> en espèces.</p>`;
+                actions += `<button class="btn ok" data-act="mark-paid" data-id="${o.id}">Encaissé</button>`;
               }
             }
           } else {
@@ -301,12 +303,15 @@
         if (o.statut !== "annulee" && o.statut !== "livree") {
           actions += `<button class="btn danger" data-act="cancel" data-id="${o.id}">Annuler</button>`;
         }
+        if (modeLivraison && o.statut !== "annulee" && o.statut !== "livree" && o.paiement !== "paye") {
+          actions += `<button class="btn danger" data-act="refuse" data-id="${o.id}">Client a refusé</button>`;
+        }
 
         return `
         <article class="card ${isTodo(o) ? "todo" : ""}">
           <div class="head">
             <div><p class="num">${esc(o.numero)}</p><p class="date">${date}</p></div>
-            <div class="badges">${modeBadge}${payBadge}${stBadge}</div>
+            <div class="badges">${modeBadge}${encaisseBadge}${payBadge}${stBadge}</div>
           </div>
           <div class="client">
             <b>${esc(o.clientNom)}</b> · <a class="lnk" href="tel:+${phoneIntl(o.telephone)}">${esc(o.telephone)}</a><br>
@@ -345,6 +350,7 @@
       const b = e.target.closest("[data-act]"); if (!b || busy) return;
       const id = b.dataset.id, act = b.dataset.act;
       if (act === "cancel" && !confirm("Annuler cette commande ? Le stock sera remis si le paiement avait été confirmé.")) return;
+      if (act === "refuse" && !confirm("Client a refusé ? Commande annulée + refus enregistré.")) return;
       busy = true; b.disabled = true;
       try {
         if (act === "pay") { await confirmerPaiement(id); toast("Paiement confirmé, stock mis à jour ✓"); await envoyerSmsConfirmation(id); }
@@ -353,6 +359,7 @@
         if (act === "sms") { await envoyerSmsConfirmation(id); }
         if (act === "next") { await setStatut(id, b.dataset.st); toast("Statut mis à jour ✓"); }
         if (act === "cancel") { await annuler(id); toast("Commande annulée"); }
+        if (act === "refuse") { await clientRefuse(id); toast("Refus enregistré, commande annulée ✓"); }
       } catch (err) {
         console.error(err);
         toast(err.message || "Erreur", true);
@@ -450,7 +457,11 @@
         if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
         if (c.statut !== "en_attente") throw new Error("Cette commande est déjà confirmée.");
         if (c.paiement === "paye") throw new Error("Cette commande est déjà payée.");
-
+        const phone = String(c.telephone || "").replace(/\D/g, "");
+        if (phone) {
+          const lSnap = await tx.get(doc(db, "listeNoire", phone));
+          if (lSnap.exists() && lSnap.data().bloque === true) throw new Error(`Client bloqué (liste noire : ${phone}). Commande refusée.`);
+        }
         await prepareStockTx(tx, c);
         tx.update(cref, { statut: "confirmee", stockDecremente: true, confirmeLe: serverTimestamp(), miseAJourLe: serverTimestamp() });
       });
@@ -465,8 +476,19 @@
         const c = cs.data();
         if (c.paiement === "paye") throw new Error("Cette commande est déjà payée.");
         if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
-        tx.update(cref, { paiement: "paye", statut: "livree", miseAJourLe: serverTimestamp() });
+        tx.update(cref, { paiement: "paye", miseAJourLe: serverTimestamp() });
       });
+    }
+
+    async function clientRefuse(id) {
+      const s = await getDoc(doc(db, "commandes", id));
+      if (!s.exists() || s.data().paiement === "paye") throw new Error("Refus impossible.");
+      const p = String(s.data().telephone || "").replace(/\D/g, "");
+      await annuler(id);
+      if (!p) return;
+      const r = doc(db, "listeNoire", p), rs = await getDoc(r);
+      const n = (rs.data()?.refus || 0) + 1;
+      await setDoc(r, { telephone: p, refus: n, bloque: n >= 2, miseAJourLe: serverTimestamp() }, { merge: true });
     }
 
     async function setStatut(id, statut) {
