@@ -1,9 +1,22 @@
-<!-- Favicon -->
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Facture de livraison – NUMA</title>
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
   <!-- QR code : version figée (stable, > 2 semaines d'ancienneté) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 
@@ -256,13 +269,14 @@
       .maps-link { display: none !important; }
       .inv-table tr { page-break-inside: avoid; }
       .block { page-break-inside: avoid; }
-    } 
+    }
+
     /* iPhone : empêche le zoom automatique quand on touche un champ */
-@supports (-webkit-touch-callout: none) {
-  input, select, textarea { font-size: 16px !important; }
-}
-/* Évite aussi le zoom au double-tap sur les boutons et liens */
-html { touch-action: manipulation; }
+    @supports (-webkit-touch-callout: none) {
+      input, select, textarea { font-size: 16px !important; }
+    }
+    /* Évite aussi le zoom au double-tap sur les boutons et liens */
+    html { touch-action: manipulation; }
   </style>
 </head>
 <body>
