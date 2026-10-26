@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Pages privées à ne jamais indexer
+Disallow: /admin-login.html
+Disallow: /admin-dashboard.html
+Disallow: /admin-produits.html
+Disallow: /admin-produit-edit.html
+Disallow: /ajout-produit.html
+Disallow: /panier.html
+Disallow: /commandes.html
+Disallow: /facture-livraison.html
+Disallow: /authentification.html
+Disallow: /compte.html
+Disallow: /favoris.html
+
+# Endpoints API
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://numa.sn/sitemap.xml
