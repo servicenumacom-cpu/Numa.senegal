@@ -45,6 +45,9 @@ function buildEmailHtml(order, orderId, siteUrl) {
   const total = formatCfa(order.total);
   const adresse = escapeHtml(order.adresseTexte || "—");
   const mapsUrl = order.position?.mapsUrl || "";
+  const modePaiement = order.modePaiement === "livraison"
+    ? "Paiement à la livraison (espèces)"
+    : "Wave";
 
   const articles = Array.isArray(order.articles) ? order.articles : [];
   const articlesHtml = articles.length
@@ -74,6 +77,7 @@ function buildEmailHtml(order, orderId, siteUrl) {
       <p><strong>Numéro :</strong> ${numero}</p>
       <p><strong>Client :</strong> ${clientNom}</p>
       <p><strong>Téléphone :</strong> ${telephone}</p>
+      <p><strong>Paiement :</strong> ${modePaiement}</p>
       <p><strong>Total :</strong> ${total}</p>
       <h3 style="margin-top:24px">Articles</h3>
       <ul>${articlesHtml}</ul>
@@ -191,7 +195,8 @@ module.exports = async function handler(req, res) {
   // 6. Envoi de l'e-mail via Resend
   const siteUrl = (process.env.SITE_URL || "").replace(/\/+$/, "");
   const emailHtml = buildEmailHtml(orderData, orderId, siteUrl);
-  const subject = `Nouvelle commande ${orderData.numero || orderId}`;
+  const modeLabel = orderData.modePaiement === "livraison" ? "À LA LIVRAISON" : "WAVE";
+  const subject = `Nouvelle commande ${modeLabel} — ${orderData.numero || orderId}`;
      const k = process.env.RESEND_API_KEY || "";
      console.log("Cle Resend : longueur=" + k.length + " debut=" + k.slice(0, 3) + " espaces=" + (k !== k.trim()));
   try {
