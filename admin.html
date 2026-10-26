@@ -20,7 +20,6 @@
     .top small { font-size: 12px; color: #aaa; font-weight: 600; }
     .wrap { max-width: 900px; margin: 0 auto; padding: 16px; }
 
-    /* Wrapper flex autour des onglets + bouton imprimer */
     .tabs-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
     .tabs-row .tabs { flex: 1; margin-bottom: 0; }
 
@@ -32,7 +31,6 @@
     .tab.alert b { color: var(--red); }
     .tab.on.alert b { color: #fff; }
 
-    /* Bouton Imprimer les factures */
     .btn-print-tab {
       flex-shrink: 0;
       padding: 10px 14px;
@@ -66,6 +64,8 @@
     .badge.st-liv { background: #e5eeff; color: var(--blue); }
     .badge.st-done { background: #e7f6ec; color: var(--green); }
     .badge.st-cancel { background: #eee; color: #888; text-decoration: line-through; }
+    .badge.mode-wave { background: #e0f2fe; color: #0369a1; }
+    .badge.mode-livraison { background: #fef3c7; color: #92400e; }
 
     .client { font-size: 14px; line-height: 1.6; margin-bottom: 12px; }
     .client b { font-weight: 700; }
@@ -87,7 +87,7 @@
     .btn.wa { background: var(--wa); border-color: var(--wa); color: #fff; }
     .btn.danger { border-color: var(--red); color: var(--red); }
     .btn:disabled { opacity: .5; cursor: wait; }
-    .hint { font-size: 12px; color: #777; margin: 0 0 10px; line-height: 1.5; }
+    .hint { font-size: 12px; color: #777; margin: 0 0 10px; line-height: 1.5; width: 100%; }
 
     .empty, .denied { text-align: center; padding: 60px 16px; color: #777; font-size: 14px; font-weight: 600; }
     .denied h2 { color: var(--red); font-size: 20px; margin-bottom: 8px; }
@@ -104,7 +104,6 @@
   </div>
 
   <div class="wrap" id="app" style="display:none">
-    <!-- Onglets + bouton Imprimer -->
     <div class="tabs-row">
       <div class="tabs" id="tabs"></div>
       <button type="button" class="btn-print-tab" id="btn-print-tab" disabled
@@ -143,7 +142,6 @@
     let filter = "todo";
     let busy = false;
 
-    // ---------- Toast ----------
     let tt;
     function toast(text, bad) {
       const t = $("toast");
@@ -153,7 +151,6 @@
       tt = setTimeout(() => t.classList.remove("show"), bad ? 6000 : 2500);
     }
 
-    // ---------- Connexion / accès ----------
     onAuthStateChanged(auth, user => {
       if (!user) { window.location.href = "authentification.html"; return; }
       if (user.uid !== ADMIN_UID) {
@@ -177,7 +174,6 @@
       });
     }
 
-    // ---------- Filtres ----------
     const isTodo = o => o.paiement !== "paye" && o.statut === "en_attente";
     const isCancel = o => o.statut === "annulee";
     const isDone = o => o.statut === "livree";
@@ -190,7 +186,6 @@
       { k: "all", label: "Toutes", f: () => true }
     ];
 
-    // ---------- Affichage ----------
     const STATUT_LABEL = { en_attente: "En attente", confirmee: "Confirmée", en_preparation: "En préparation", en_livraison: "En livraison", livree: "Livrée", annulee: "Annulée" };
     const STATUT_CLASS = { en_preparation: "st-prep", confirmee: "st-prep", en_livraison: "st-liv", livree: "st-done", annulee: "st-cancel" };
     const NEXT = { confirmee: ["en_preparation", "Passer en préparation"], en_preparation: ["en_livraison", "Passer en livraison"], en_livraison: ["livree", "Marquer livrée"] };
@@ -201,9 +196,14 @@
     }
     function waMessage(o) {
       const n = o.numero;
+      const modeLivraison = o.modePaiement === "livraison";
       const m = {
-        en_attente: `Bonjour ${o.clientNom}, nous avons bien reçu votre commande ${n}. Nous vérifions votre paiement Wave.`,
-        confirmee: `Bonjour ${o.clientNom}, votre paiement est confirmé pour la commande ${n}. Merci !`,
+        en_attente: modeLivraison
+          ? `Bonjour ${o.clientNom}, nous avons bien reçu votre commande ${n}. Elle sera payée à la livraison.`
+          : `Bonjour ${o.clientNom}, nous avons bien reçu votre commande ${n}. Nous vérifions votre paiement Wave.`,
+        confirmee: modeLivraison
+          ? `Bonjour ${o.clientNom}, votre commande ${n} est confirmée. Vous paierez à la réception.`
+          : `Bonjour ${o.clientNom}, votre paiement est confirmé pour la commande ${n}. Merci !`,
         en_preparation: `Bonjour ${o.clientNom}, votre commande ${n} est en préparation.`,
         en_livraison: `Bonjour ${o.clientNom}, votre commande ${n} est en route. Gardez votre téléphone près de vous.`,
         livree: `Bonjour ${o.clientNom}, votre commande ${n} est livrée. Merci de votre confiance, à bientôt chez NUMA !`,
@@ -213,8 +213,6 @@
     }
 
     function render() {
-      // Mise à jour du bouton "Imprimer les factures"
-      // On compte les commandes affichées dans l'onglet actif, hors annulées, max 20.
       const currentFilterFn = FILTERS.find(t => t.k === filter).f;
       const printableCount = orders
         .filter(currentFilterFn)
@@ -241,6 +239,10 @@
 
       $("list").innerHTML = list.map(o => {
         const date = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "à l'instant";
+        const modeLivraison = o.modePaiement === "livraison";
+        const modeBadge = modeLivraison
+          ? `<span class="badge mode-livraison">À la livraison</span>`
+          : `<span class="badge mode-wave">Wave</span>`;
         const payBadge = o.paiement === "paye" ? `<span class="badge pay-ok">Payé</span>` : `<span class="badge pay-no">Non payé</span>`;
         const stBadge = `<span class="badge ${STATUT_CLASS[o.statut] || ""}">${STATUT_LABEL[o.statut] || esc(o.statut)}</span>`;
         const maps = o.position && o.position.mapsUrl ? ` · <a class="lnk" href="${esc(o.position.mapsUrl)}" target="_blank" rel="noopener">Voir sur la carte</a>` : "";
@@ -254,19 +256,41 @@
         let actions = "";
         if (o.statut === "annulee") {
           // rien
-        } else if (o.paiement !== "paye") {
-          actions += `<p class="hint">Vérifie dans ton application Wave que tu as reçu <b>${fmt(o.total)}</b> (référence ${esc(o.numero)}), puis confirme. Le stock baissera automatiquement.</p>`;
-          actions += `<button class="btn ok" data-act="pay" data-id="${o.id}">Confirmer le paiement</button>`;
-        } else if (NEXT[o.statut]) {
-          actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
+        } else if (modeLivraison) {
+          // ---- Flux paiement à la livraison ----
+          if (o.paiement !== "paye") {
+            if (o.statut === "en_attente") {
+              actions += `<p class="hint">Confirme la commande pour lancer la préparation. Le client paiera <b>${fmt(o.total)}</b> en espèces à la livraison. Le stock baissera automatiquement.</p>`;
+              actions += `<button class="btn ok" data-act="confirm-livraison" data-id="${o.id}">Confirmer la commande</button>`;
+            } else {
+              if (NEXT[o.statut]) {
+                actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
+              }
+              if (o.statut === "en_livraison" || o.statut === "livree") {
+                actions += `<p class="hint">Marque la commande payée quand tu as reçu <b>${fmt(o.total)}</b> en espèces.</p>`;
+                actions += `<button class="btn ok" data-act="mark-paid" data-id="${o.id}">Marquer comme payé</button>`;
+              }
+            }
+          } else {
+            // Payée (à la livraison)
+            if (NEXT[o.statut]) {
+              actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
+            }
+          }
+        } else {
+          // ---- Flux Wave (comportement d'origine) ----
+          if (o.paiement !== "paye") {
+            actions += `<p class="hint">Vérifie dans ton application Wave que tu as reçu <b>${fmt(o.total)}</b> (référence ${esc(o.numero)}), puis confirme. Le stock baissera automatiquement.</p>`;
+            actions += `<button class="btn ok" data-act="pay" data-id="${o.id}">Confirmer le paiement</button>`;
+          } else if (NEXT[o.statut]) {
+            actions += `<button class="btn main" data-act="next" data-id="${o.id}" data-st="${NEXT[o.statut][0]}">${NEXT[o.statut][1]}</button>`;
+          }
         }
 
-        // Lien "Facture livreur" pour toutes les commandes non annulées
         if (o.statut !== "annulee") {
           actions += `<a class="btn" target="_blank" rel="noopener" href="facture-livraison.html?id=${esc(o.id)}">Facture livreur</a>`;
         }
 
-        // ===== AJOUT SMS (3/3) : badge "SMS envoyé" ou bouton "Renvoyer le SMS" =====
         if (o.paiement === "paye" && o.statut !== "annulee") {
           actions += o.smsConfirmationEnvoyeLe
             ? `<span class="badge pay-ok">SMS envoyé</span>`
@@ -282,7 +306,7 @@
         <article class="card ${isTodo(o) ? "todo" : ""}">
           <div class="head">
             <div><p class="num">${esc(o.numero)}</p><p class="date">${date}</p></div>
-            <div class="badges">${payBadge}${stBadge}</div>
+            <div class="badges">${modeBadge}${payBadge}${stBadge}</div>
           </div>
           <div class="client">
             <b>${esc(o.clientNom)}</b> · <a class="lnk" href="tel:+${phoneIntl(o.telephone)}">${esc(o.telephone)}</a><br>
@@ -295,15 +319,11 @@
       }).join("");
     }
 
-    // ---------- Clics ----------
     $("tabs").addEventListener("click", e => {
       const b = e.target.closest("[data-tab]"); if (!b) return;
       filter = b.dataset.tab; render();
     });
 
-    // Bouton "Imprimer les factures de l'onglet"
-    // Ouvre facture-livraison.html?ids=id1,id2,... avec les commandes
-    // affichées dans l'onglet actif, hors annulées, maximum 20.
     $("btn-print-tab").addEventListener("click", () => {
       const currentFilterFn = FILTERS.find(t => t.k === filter).f;
       const list = orders
@@ -327,8 +347,9 @@
       if (act === "cancel" && !confirm("Annuler cette commande ? Le stock sera remis si le paiement avait été confirmé.")) return;
       busy = true; b.disabled = true;
       try {
-        // ===== AJOUT SMS (2/3) : envoi du SMS après la confirmation, et bouton "Renvoyer" =====
         if (act === "pay") { await confirmerPaiement(id); toast("Paiement confirmé, stock mis à jour ✓"); await envoyerSmsConfirmation(id); }
+        if (act === "confirm-livraison") { await confirmerLivraison(id); toast("Commande confirmée, stock mis à jour ✓"); }
+        if (act === "mark-paid") { await markAsPaid(id); toast("Commande marquée payée ✓"); }
         if (act === "sms") { await envoyerSmsConfirmation(id); }
         if (act === "next") { await setStatut(id, b.dataset.st); toast("Statut mis à jour ✓"); }
         if (act === "cancel") { await annuler(id); toast("Commande annulée"); }
@@ -338,7 +359,6 @@
       } finally { busy = false; render(); }
     });
 
-    // ===== AJOUT SMS (1/3) : SMS de confirmation au client =====
     async function envoyerSmsConfirmation(id) {
       try {
         const token = await auth.currentUser.getIdToken();
@@ -355,7 +375,6 @@
       }
     }
 
-    // ---------- Actions Firestore ----------
     function findKey(stock, taille) {
       return Object.keys(stock).find(x => x.trim().toUpperCase() === String(taille).toUpperCase());
     }
@@ -368,7 +387,44 @@
       return need;
     }
 
-    // Confirme le paiement ET baisse le stock, en une seule opération (tout ou rien)
+    // Vérifie prix + stock et prépare les updates de stock dans une transaction.
+    // Ne pas appeler deux fois : les statuts bloquent le double appel (cf. confirmer*).
+    async function prepareStockTx(tx, c) {
+      const need = besoins(c);
+      const pids = Object.keys(need);
+      const snaps = await Promise.all(pids.map(pid => tx.get(doc(db, "produits", pid))));
+
+      // 1) Vérifie le total avec les vrais prix du catalogue
+      let attendu = 0;
+      for (const a of c.articles) {
+        const ps = snaps[pids.indexOf(a.produitId)];
+        if (!ps.exists()) throw new Error(`Produit introuvable : ${a.titre}`);
+        attendu += (Number(ps.data().prix) || 0) * Number(a.quantite);
+      }
+      if (Math.round(attendu) !== Math.round(Number(c.total))) {
+        throw new Error(`ALERTE : total de la commande ${fmt(c.total)} différent du catalogue ${fmt(attendu)}. Ne confirme pas, contacte le client ou annule.`);
+      }
+
+      // 2) Vérifie et prépare la baisse de stock
+      const updates = [];
+      snaps.forEach((ps, i) => {
+        const st = ps.data().stock || {};
+        const upd = {};
+        for (const [taille, qte] of Object.entries(need[pids[i]])) {
+          const k = findKey(st, taille);
+          if (k === undefined) continue;
+          const dispo = Number(st[k]) || 0;
+          if (dispo < qte) throw new Error(`Stock insuffisant : ${ps.data().titre} (${taille}) : ${dispo} restant, ${qte} demandé.`);
+          upd["stock." + k] = dispo - qte;
+        }
+        if (Object.keys(upd).length) updates.push([ps.ref, upd]);
+      });
+
+      // 3) Écritures stock
+      updates.forEach(([ref, upd]) => tx.update(ref, upd));
+    }
+
+    // Confirme le paiement Wave ET baisse le stock (tout ou rien)
     async function confirmerPaiement(id) {
       const cref = doc(db, "commandes", id);
       await runTransaction(db, async tx => {
@@ -378,39 +434,38 @@
         if (c.paiement === "paye") throw new Error("Cette commande est déjà confirmée.");
         if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
 
-        const need = besoins(c);
-        const pids = Object.keys(need);
-        const snaps = await Promise.all(pids.map(pid => tx.get(doc(db, "produits", pid))));
-
-        // 1) Vérifie le total avec les vrais prix du catalogue
-        let attendu = 0;
-        for (const a of c.articles) {
-          const ps = snaps[pids.indexOf(a.produitId)];
-          if (!ps.exists()) throw new Error(`Produit introuvable : ${a.titre}`);
-          attendu += (Number(ps.data().prix) || 0) * Number(a.quantite);
-        }
-        if (Math.round(attendu) !== Math.round(Number(c.total))) {
-          throw new Error(`ALERTE : total de la commande ${fmt(c.total)} différent du catalogue ${fmt(attendu)}. Ne confirme pas, contacte le client ou annule.`);
-        }
-
-        // 2) Vérifie et prépare la baisse de stock
-        const updates = [];
-        snaps.forEach((ps, i) => {
-          const st = ps.data().stock || {};
-          const upd = {};
-          for (const [taille, qte] of Object.entries(need[pids[i]])) {
-            const k = findKey(st, taille);
-            if (k === undefined) continue; // taille unique : pas de stock par taille
-            const dispo = Number(st[k]) || 0;
-            if (dispo < qte) throw new Error(`Stock insuffisant : ${ps.data().titre} (${taille}) : ${dispo} restant, ${qte} demandé.`);
-            upd["stock." + k] = dispo - qte;
-          }
-          if (Object.keys(upd).length) updates.push([ps.ref, upd]);
-        });
-
-        // 3) Écritures
-        updates.forEach(([ref, upd]) => tx.update(ref, upd));
+        await prepareStockTx(tx, c);
         tx.update(cref, { paiement: "paye", statut: "confirmee", stockDecremente: true, confirmeLe: serverTimestamp(), miseAJourLe: serverTimestamp() });
+      });
+    }
+
+    // Confirme une commande "paiement à la livraison" : statut=confirmee, stock baissé,
+    // le paiement reste "non_paye" (l'admin marquera payé à la remise des espèces).
+    async function confirmerLivraison(id) {
+      const cref = doc(db, "commandes", id);
+      await runTransaction(db, async tx => {
+        const cs = await tx.get(cref);
+        if (!cs.exists()) throw new Error("Commande introuvable.");
+        const c = cs.data();
+        if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
+        if (c.statut !== "en_attente") throw new Error("Cette commande est déjà confirmée.");
+        if (c.paiement === "paye") throw new Error("Cette commande est déjà payée.");
+
+        await prepareStockTx(tx, c);
+        tx.update(cref, { statut: "confirmee", stockDecremente: true, confirmeLe: serverTimestamp(), miseAJourLe: serverTimestamp() });
+      });
+    }
+
+    // Marque une commande livraison comme payée (remise des espèces)
+    async function markAsPaid(id) {
+      const cref = doc(db, "commandes", id);
+      await runTransaction(db, async tx => {
+        const cs = await tx.get(cref);
+        if (!cs.exists()) throw new Error("Commande introuvable.");
+        const c = cs.data();
+        if (c.paiement === "paye") throw new Error("Cette commande est déjà payée.");
+        if (c.statut === "annulee") throw new Error("Cette commande est annulée.");
+        tx.update(cref, { paiement: "paye", statut: "livree", miseAJourLe: serverTimestamp() });
       });
     }
 
@@ -418,7 +473,6 @@
       await updateDoc(doc(db, "commandes", id), { statut, miseAJourLe: serverTimestamp() });
     }
 
-    // Annule ; remet le stock si on l'avait déjà baissé
     async function annuler(id) {
       const cref = doc(db, "commandes", id);
       await runTransaction(db, async tx => {
