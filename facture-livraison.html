@@ -497,7 +497,7 @@
       let paiementHTML = "";
       if (order.paiement === "paye") {
         paiementHTML = `<div class="payment-box paid">PAYÉ — rien à encaisser</div>`;
-      } else if (order.modePaiement === "livraison") {
+     } else if (order.modePaiement === "livraison" && order.statut !== "en_attente") {
         paiementHTML = `<div class="payment-box cod">À ENCAISSER À LA LIVRAISON : <strong>${fmt(total)}</strong></div>`;
       } else {
         paiementHTML = `<div class="payment-box danger">PAIEMENT NON CONFIRMÉ — NE PAS LIVRER</div>`;
