@@ -103,7 +103,8 @@
     .sticky-bar .total-info span { font-size: 11px; color: #777; font-weight: 600; }
     .sticky-bar .total-info strong { font-size: 20px; font-weight: 800; color: var(--red); line-height: 1; }
     .sticky-bar .btn-validate { background: var(--black); color: #fff; padding: 0 32px; height: 48px; border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; justify-content: center; }
-    .sticky-bar .btn-validate:hover { background: var(--red); }
+    @media (hover: hover) and (pointer: fine) { .sticky-bar .btn-validate:hover { background: var(--red); } }
+    .sticky-bar .btn-validate:active { background: var(--red); }
 
     /* CHECKOUT */
     .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 16px; }
@@ -351,7 +352,8 @@
       transition: .2s;
       box-shadow: 0 4px 12px rgba(10,10,10,.15);
     }
-    .btn-confirm:hover:not(:disabled) { background: var(--red); box-shadow: 0 6px 16px rgba(225,29,72,.25); }
+    @media (hover: hover) and (pointer: fine) { .btn-confirm:hover:not(:disabled) { background: var(--red); box-shadow: 0 6px 16px rgba(225,29,72,.25); } }
+    .btn-confirm:not(:disabled):active { background: var(--red); box-shadow: 0 6px 16px rgba(225,29,72,.25); }
     .btn-confirm:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -617,8 +619,8 @@
           </label>
         </div>
 
-        <label class="cgv-card" id="cgvCard">
-          <input type="checkbox" id="acceptCgv">
+        <label class="cgv-card checked" id="cgvCard">
+          <input type="checkbox" id="acceptCgv" checked>
           <div class="cgv-content">
             <span class="cgv-title">J'accepte les conditions générales</span>
             <span class="cgv-text">
@@ -632,7 +634,7 @@
 
         <div class="msg" id="msg"></div>
 
-        <button type="button" class="btn-confirm" id="validate" disabled>
+        <button type="button" class="btn-confirm" id="validate">
           <span id="validateText">VALIDER</span>
           <svg id="validateSpinner" style="display:none; width:20px; height:20px; animation: spin 1s linear infinite;" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="white" stroke-width="2"/></svg>
         </button>
@@ -692,7 +694,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const WAVE_MERCHANT_LINK = "https://pay.wave.com/m/M_sn_MU-1mC1NaBDo/c/sn/";
     const WAVE_NUMERO = "76 658 95 98";
@@ -1101,33 +1103,15 @@
           }
         }
 
-        const total = freshArticles.reduce((s, a) => s + a.prix * a.quantite, 0);
-        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        const randStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const numero = `NUMA-${dateStr}-${randStr}`;
-
-        const orderData = {
-          uid: currentUser.uid,
-          clientNom: nom,
-          clientEmail: currentUser.email || "",
-          telephone: telNorm,
-          articles: freshArticles,
-          total: total,
-          fraisLivraison: 0,
-          position: position ? { lat: Number(position.lat), lng: Number(position.lng), mapsUrl: `https://www.google.com/maps?q=${position.lat},${position.lng}`, source: position.source || "inconnue" } : null,
-          adresseTexte: manual,
-          statut: "en_attente",
-          paiement: "non_paye",
-          modePaiement: paymentMode,
-          numero: numero,
-          createdAt: serverTimestamp()
-        };
-
+        const token = await currentUser.getIdToken();
         $("validateText").textContent = "ENREGISTREMENT...";
-        const orderRef = await addDoc(collection(db, "commandes"), orderData);
+        const r = await fetch("/api/creer-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ nom, telephone: telNorm, adresse: manual, modePaiement: paymentMode, position, articles: freshArticles.map(a => ({ produitId: a.produitId, quantite: a.quantite, taille: a.taille })) }) });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || !data.ok) throw new Error(data.message || "Commande impossible.");
+        const total = data.total, numero = data.numero, orderId = data.orderId;
 
         if (currentUser) {
-          currentUser.getIdToken().then(token => fetch("/api/nouvelle-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ orderId: orderRef.id }), keepalive: true })).catch(() => {});
+          currentUser.getIdToken().then(token => fetch("/api/nouvelle-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ orderId }), keepalive: true })).catch(() => {});
         }
 
         localStorage.removeItem(CART_KEY);
