@@ -419,7 +419,7 @@
         const upd = {};
         for (const [taille, qte] of Object.entries(need[pids[i]])) {
           const k = findKey(st, taille);
-          if (k === undefined) continue;
+          if (k === undefined) throw new Error(`Taille introuvable dans le stock : ${ps.data().titre} (${taille}). Vérifie le produit avant de confirmer.`);
           const dispo = Number(st[k]) || 0;
           if (dispo < qte) throw new Error(`Stock insuffisant : ${ps.data().titre} (${taille}) : ${dispo} restant, ${qte} demandé.`);
           upd["stock." + k] = dispo - qte;

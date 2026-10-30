@@ -1,8 +1,9 @@
+const crypto = require("crypto");
 const { admin, db, auth } = require("./_lib/admin");
 const MAX_LIVRAISON = 30000;
 const err = (res, s, m) => res.status(s).json({ ok: false, message: m });
 
-module.exports = async function handler(req, res) {
+async function handle(req, res) {
   if (req.method !== "POST") return err(res, 405, "Utiliser POST.");
   const h = req.headers.authorization || "";
   if (!h.startsWith("Bearer ")) return err(res, 401, "Connexion requise.");
@@ -30,7 +31,7 @@ module.exports = async function handler(req, res) {
     articles.push({ produitId: items[i].produitId, titre: String(d.titre || "Article"), prix, prixCatalogue: prix, quantite: q, taille, imageUrl: String(d.imageUrl || "") });
   }
   if (mode === "livraison" && total > MAX_LIVRAISON) return err(res, 400, "Paiement à la livraison limité à 30.000 CFA.");
-  const ip = String(req.headers["x-forwarded-for"] || "inconnue").split(",")[0].trim().replace(/[^A-Za-z0-9]/g, "_").slice(0, 60);
+  const ip = String(req.headers["x-real-ip"] || req.headers["x-forwarded-for"] || "inconnue").split(",")[0].trim().replace(/[^A-Za-z0-9]/g, "_").slice(0, 60);
   const lref = db.collection("limites").doc(ip);
   const ok = await db.runTransaction(async tx => {
     const s = await tx.get(lref), now = Date.now();
@@ -42,7 +43,15 @@ module.exports = async function handler(req, res) {
   const bl = await db.collection("listeNoire").doc(tel).get();
   if (bl.exists && bl.data().bloque === true) return err(res, 403, "Commande impossible avec ce numéro.");
   const p = b.position, pos = p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)) ? { lat: Number(p.lat), lng: Number(p.lng), mapsUrl: `https://www.google.com/maps?q=${Number(p.lat)},${Number(p.lng)}`, source: String(p.source || "inconnue").slice(0, 40) } : null;
-  const numero = `NUMA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  const numero = `NUMA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
   const ref = await db.collection("commandes").add({ uid: user.uid, clientNom: nom, clientEmail: user.email || "", telephone: tel, articles, total, fraisLivraison: 0, position: pos, adresseTexte: adresse, statut: "en_attente", paiement: "non_paye", modePaiement: mode, numero, createdAt: admin.firestore.FieldValue.serverTimestamp() });
   return res.status(200).json({ ok: true, orderId: ref.id, numero, total });
+}
+
+module.exports = async function handler(req, res) {
+  try { return await handle(req, res); }
+  catch (e) {
+    console.error("creer-commande:", e && e.message);
+    if (!res.headersSent) return err(res, 500, "Erreur serveur, réessayez dans un instant.");
+  }
 };

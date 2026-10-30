@@ -205,7 +205,7 @@ module.exports = async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "NUMA <onboarding@resend.dev>",
+        from: process.env.MAIL_FROM || "NUMA <onboarding@resend.dev>",
         to: process.env.ADMIN_EMAIL,
         subject,
         html: emailHtml,

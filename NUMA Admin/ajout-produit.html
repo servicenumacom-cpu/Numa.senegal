@@ -449,7 +449,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2"; // même UID que dans les règles Firestore
 
     /* ================================================================
        4. CATÉGORIES
@@ -512,7 +512,7 @@
         return;
       }
 
-      if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+      if (user.uid !== ADMIN_UID) {
         $("loginError").textContent = `Le compte ${user.email} n'est pas autorisé.`;
         $("loginError").classList.add("show");
         signOut(auth);
