@@ -265,6 +265,8 @@ html { touch-action: manipulation; }
     let favSyncDone = false;
 
     const FIRESTORE_REST_URL = "https://firestore.googleapis.com/v1/projects/numa-com/databases/(default)/documents/produits";
+    // Ne télécharge que les champs utiles aux listes (pas description, matière, galerie)
+    const LIST_MASK = "&mask.fieldPaths=titre&mask.fieldPaths=prix&mask.fieldPaths=imageUrl&mask.fieldPaths=imageUrlSecondaire&mask.fieldPaths=categorie&mask.fieldPaths=sexe&mask.fieldPaths=createdAtLocal&mask.fieldPaths=createdAt&mask.fieldPaths=ancienPrix&mask.fieldPaths=promo&mask.fieldPaths=stock&mask.fieldPaths=tailles&mask.fieldPaths=sizes&mask.fieldPaths=taille";
     const CART_KEY = "numa_cart";
     const FAV_KEY = "numa_favs";
     const PAGE_SIZE = 20;
@@ -392,7 +394,7 @@ html { touch-action: manipulation; }
       while (pageCount < MAX_PAGES) {
         pageCount++;
         try {
-          let url = `${FIRESTORE_REST_URL}?pageSize=${API_PAGE_SIZE}`;
+          let url = `${FIRESTORE_REST_URL}?pageSize=${API_PAGE_SIZE}${LIST_MASK}`;
           if (pageToken) url += `&pageToken=${encodeURIComponent(pageToken)}`;
           const res = await fetch(url, { headers: { Accept: "application/json" } });
           if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
