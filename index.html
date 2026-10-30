@@ -250,6 +250,16 @@ html { touch-action: manipulation; }
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
     const readLS = (key, fb) => { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fb; } catch (e) { return fb; } };
     const writeLS = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} };
 
@@ -539,7 +549,7 @@ html { touch-action: manipulation; }
       grid.innerHTML = visible.map((p, i) => {
         const name = esc(p.nom || "Article");
         const price = Number(p.prix || 0);
-        const img = p.image || "https://via.placeholder.com/700x900?text=Image";
+        const img = optimg(p.image, 600) || PLACEHOLDER_IMG;
         const favOn = isFav(p.id) ? "on" : "";
         
         // --- NOUVEAU CODE CARTE ---

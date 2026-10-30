@@ -549,6 +549,12 @@
 
       <form id="checkoutForm" onsubmit="return false;">
 
+        <!-- Champ piège anti-robots : invisible pour les clients, jamais à remplir -->
+        <div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden">
+          <label for="champPiege">Laisser ce champ vide</label>
+          <input id="champPiege" name="confirmation_site" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
         <div class="form-field">
           <label class="form-label" for="nom">Nom complet <span class="req">*</span></label>
           <div class="input-wrap" id="wrapNom">
@@ -712,6 +718,16 @@
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
 
     let cart = [];
     try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch (e) {}
@@ -940,7 +956,7 @@
           const sizesArr = normalizeSizes(stockMaps[it.id] || null);
           const sizes = sizesArr.length ? sizesArr.map(s => `<button class="chip ${it.size === s ? "sel" : ""}" data-act="size" data-i="${i}" data-size="${esc(s)}">${esc(s)}</button>`).join("") : `<span class="one-size">Taille unique</span>`;
           return `<article class="band" id="band-${i}">
-            <img class="band-img" src="${esc(it.img || "")}" alt="${esc(it.name)}">
+            <img class="band-img" src="${esc(optimg(it.img, 200))}" alt="${esc(it.name)}">
             <div class="band-info">
               <p class="band-name">${esc(it.name)}</p>
               <p class="band-price">${fmt(it.price)}</p>
@@ -981,6 +997,7 @@
       saveCart(); render();
     });
 
+    const PAGE_T0 = Date.now();
     $("validate").addEventListener("click", async () => {
       const msg = $("msg");
       msg.textContent = "";
@@ -1105,7 +1122,7 @@
 
         const token = await currentUser.getIdToken();
         $("validateText").textContent = "ENREGISTREMENT...";
-        const r = await fetch("/api/creer-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ nom, telephone: telNorm, adresse: manual, modePaiement: paymentMode, position, articles: freshArticles.map(a => ({ produitId: a.produitId, quantite: a.quantite, taille: a.taille })) }) });
+        const r = await fetch("/api/creer-commande", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: JSON.stringify({ piege: ($("champPiege") || {}).value || "", delai: Date.now() - PAGE_T0, nom, telephone: telNorm, adresse: manual, modePaiement: paymentMode, position, articles: freshArticles.map(a => ({ produitId: a.produitId, quantite: a.quantite, taille: a.taille })) }) });
         const data = await r.json().catch(() => ({}));
         if (!r.ok || !data.ok) throw new Error(data.message || "Commande impossible.");
         const total = data.total, numero = data.numero, orderId = data.orderId;

@@ -137,6 +137,16 @@
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
+
     try { const c = JSON.parse(localStorage.getItem("numa_cart")) || []; $("cartCount").textContent = c.reduce((s, x) => s + (x.qty || 1), 0); } catch (e) {}
 
     const STEPS = [
@@ -201,7 +211,7 @@
 
         const items = (o.articles || []).map(a => `
           <div class="it">
-            <img src="${esc(a.imageUrl || "")}" alt="">
+            <img src="${esc(optimg(a.imageUrl, 200))}" alt="">
             <div><p class="t">${esc(a.titre)}</p><p class="s">Taille ${esc(a.taille)} · Qté ${esc(a.quantite)}</p></div>
             <span class="p">${fmt(a.prix * a.quantite)}</span>
           </div>`).join("");
