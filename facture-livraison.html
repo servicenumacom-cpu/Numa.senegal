@@ -347,16 +347,13 @@
     const db = getFirestore(app);
 
     /* ============================================================
-       Vérification admin : UID (règles Firestore) + email (pages admin)
+       Vérification admin : UID (identique aux règles Firestore)
        ============================================================ */
     const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2";
-    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
 
     function isAdminUser(user) {
       if (!user) return false;
-      if (user.uid === ADMIN_UID) return true;
-      if (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) return true;
-      return false;
+      return user.uid === ADMIN_UID;
     }
 
     /* ============================================================

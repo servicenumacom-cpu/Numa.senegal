@@ -309,14 +309,14 @@
     };
 
     // ⚠️ CONFIGURATION CLOUDINARY (À REMPLACER PAR TES INFOS)
-    const CLOUDINARY_CLOUD_NAME = "TON_CLOUD_NAME"; // Ex: "dxxxxxx"
+    const CLOUDINARY_CLOUD_NAME = "mqqel0dl";
     const CLOUDINARY_UPLOAD_PRESET = "numa_unsigned"; // Le preset Unsigned que tu as créé
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2"; // même UID que dans les règles Firestore
     const $ = id => document.getElementById(id);
     
     let currentProducts = [];
@@ -365,7 +365,7 @@
       }
       $("userEmail").textContent = user.email;
       
-      if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+      if (user.uid !== ADMIN_UID) {
         $("loginError").textContent = `Le compte ${user.email} n'est pas autorisé.`;
         $("loginError").classList.add("show");
         signOut(auth);

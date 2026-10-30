@@ -1,6 +1,8 @@
 {
   "name": "NUMA Sénégal",
   "short_name": "NUMA",
+  "start_url": "/",
+  "lang": "fr",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

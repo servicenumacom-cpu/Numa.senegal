@@ -206,11 +206,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ⚠️ SEUL CHOSE À MODIFIER SI TU CHANGES D'EMAIL ADMIN
-    // Liste des emails autorisés à accéder au panneau d'administration
-    const ADMIN_EMAILS = [
-      "offxbuba@gmail.com"
-    ];
+    // Compte admin autorisé
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2"; // même UID que dans les règles Firestore
 
     const $ = id => document.getElementById(id);
     let allProducts = [];
@@ -289,11 +286,10 @@
     $("logoutBtn").addEventListener("click", handleLogout);
 
     /* ==========================================================
-       VÉRIFICATION ADMIN PAR EMAIL
+       VÉRIFICATION ADMIN PAR UID
        ========================================================== */
     function checkAdmin(user) {
-      if (!user || !user.email) return false;
-      return ADMIN_EMAILS.includes(user.email.toLowerCase());
+      return !!user && user.uid === ADMIN_UID;
     }
 
     /* ==========================================================

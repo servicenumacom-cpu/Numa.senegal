@@ -290,8 +290,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ⚠️ MODIFIER ICI SI TU CHANGES D'EMAIL
-    const ADMIN_EMAILS = ["offxbuba@gmail.com"];
+    const ADMIN_UID = "sAg3UgQbz9eARcT6k8Tv2i4YDrD2"; // même UID que dans les règles Firestore
 
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
@@ -352,7 +351,7 @@
       }
       $("userEmail").textContent = user.email;
       
-      if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+      if (user.uid !== ADMIN_UID) {
         $("loginError").textContent = `Le compte ${user.email} n'est pas autorisé.`;
         $("loginError").classList.add("show");
         signOut(auth);
