@@ -6,13 +6,13 @@
   <title>Promotions - NUMA</title>
   <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Profitez des promotions NUMA : pièces homme et femme à prix réduits, livraison gratuite au Sénégal en 24-72h.">
-<link rel="canonical" href="https://numasenegal.vercel.app/promotions.html">
+<link rel="canonical" href="https://numasenegal.com/promotions.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NUMA Sénégal">
 <meta property="og:title" content="Promotions — NUMA Sénégal">
 <meta property="og:description" content="Pièces à prix réduits, livraison gratuite au Sénégal. Quantités limitées.">
-<meta property="og:image" content="https://numasenegal.vercel.app/image/logo.jpeg">
-<meta property="og:url" content="https://numasenegal.vercel.app/promotions.html">
+<meta property="og:image" content="https://numasenegal.com/image/logo.jpeg">
+<meta property="og:url" content="https://numasenegal.com/promotions.html">
 <meta property="og:locale" content="fr_SN">
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -247,6 +247,16 @@
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
     const readLS = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fb; } catch (e) { return fb; } };
     const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
@@ -472,8 +482,8 @@
         return `<article class="card" data-index="${i}">
           <div class="thumb" onmouseenter="loadSecondaryImage(this)">
             <span class="tag-promo">PROMO</span>
-            <img class="img-primary" src="${esc(imgPrimary)}" alt="${name}" loading="lazy">
-            <img class="img-secondary" data-src="${esc(imgSecondary)}" alt="${name} secondaire">
+            <img class="img-primary" src="${esc(optimg(imgPrimary, 600))}" alt="${name}" loading="lazy">
+            <img class="img-secondary" data-src="${esc(optimg(imgSecondary, 600))}" alt="${name} secondaire">
             <button class="slider-btn left" data-dir="prev"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
             <button class="slider-btn right" data-dir="next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
           </div>

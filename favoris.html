@@ -243,6 +243,16 @@
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
+
     // Choix de taille en cours de session (non persisté)
     const localSizes = {};
 
@@ -574,7 +584,7 @@
              </div>`
           : `<div class="card-sizes"><span class="one-size">Taille unique</span></div>`;
         const img = p.image
-          ? `<img class="card-img" src="${esc(p.image)}" alt="${esc(p.nom)}" loading="lazy">`
+          ? `<img class="card-img" src="${esc(optimg(p.image, 600))}" alt="${esc(p.nom)}" loading="lazy">`
           : `<div class="card-img placeholder"><svg viewBox="0 0 24 24"><path d="M12 4.5a1.8 1.8 0 1 1 1.8 1.8c-.9 0-1.8.7-1.8 1.7v.5"/><path d="M12 8.5L3.5 15.2c-.7.5-.4 1.4.5 1.4h16c.9 0 1.2-.9.5-1.4L12 8.5z"/></svg></div>`;
 
         return `

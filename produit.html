@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Détail Produit - NUMA</title>
 <meta name="description" content="Découvrez nos pièces NUMA : vêtements homme et femme sélectionnés avec soin, livrés partout au Sénégal en 24-72h.">
-<link rel="canonical" href="https://numasenegal.vercel.app/produit.html">
+<link rel="canonical" href="https://numasenegal.com/produit.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NUMA Sénégal">
 <meta property="og:title" content="NUMA — La sape et l'élégance à la sénégalaise">
 <meta property="og:description" content="Pièces sélectionnées avec soin, livraison gratuite au Sénégal. Paiement Wave ou à la livraison.">
-<meta property="og:image" content="https://numasenegal.vercel.app/image/logo.jpeg">
-<meta property="og:url" content="https://numasenegal.vercel.app/produit.html">
+<meta property="og:image" content="https://numasenegal.com/image/logo.jpeg">
+<meta property="og:url" content="https://numasenegal.com/produit.html">
 <meta property="og:locale" content="fr_SN">
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -624,6 +624,16 @@
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
     const readLS = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fb; } catch (e) { return fb; } };
     const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
@@ -1012,7 +1022,7 @@
       // Slides
       track.innerHTML = images.map((img, i) => `
         <div class="carousel-slide">
-          <img src="${esc(img)}" alt="${esc(p.nom)} — image ${i + 1}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">
+          <img src="${esc(optimg(img, 1000))}" alt="${esc(p.nom)} — image ${i + 1}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">
         </div>
       `).join("");
 
@@ -1031,7 +1041,7 @@
       if (thumbnails) {
         thumbnails.innerHTML = images.map((img, i) => `
           <button class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Voir image ${i + 1}">
-            <img src="${esc(img)}" alt="">
+            <img src="${esc(optimg(img, 160))}" alt="">
           </button>
         `).join("");
       }
@@ -1189,7 +1199,7 @@
         const grid = $("similarGrid");
         grid.innerHTML = similar.map(p => `
           <a href="produit.html?id=${encodeURIComponent(p.id)}" class="card">
-            <div class="thumb-cover"><img src="${esc(p.image)}" alt="${esc(p.nom)}" loading="lazy"></div>
+            <div class="thumb-cover"><img src="${esc(optimg(p.image, 400))}" alt="${esc(p.nom)}" loading="lazy"></div>
             <div class="price">${fmt(p.prix)}</div>
             <p class="name">${esc(p.nom)}</p>
           </a>

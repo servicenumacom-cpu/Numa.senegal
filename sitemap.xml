@@ -2,79 +2,79 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://numasenegal.vercel.app/</loc>
+    <loc>https://numasenegal.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/nouveautes.html</loc>
+    <loc>https://numasenegal.com/nouveautes.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/categories.html?sexe=homme</loc>
+    <loc>https://numasenegal.com/categories.html?sexe=homme</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/categories.html?sexe=femme</loc>
+    <loc>https://numasenegal.com/categories.html?sexe=femme</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/promotions.html</loc>
+    <loc>https://numasenegal.com/promotions.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/produit.html</loc>
+    <loc>https://numasenegal.com/produit.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/a-propos.html</loc>
+    <loc>https://numasenegal.com/a-propos.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/contact.html</loc>
+    <loc>https://numasenegal.com/contact.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/livraison-retours.html</loc>
+    <loc>https://numasenegal.com/livraison-retours.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/guide-des-tailles.html</loc>
+    <loc>https://numasenegal.com/guide-des-tailles.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/cgv.html</loc>
+    <loc>https://numasenegal.com/cgv.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/confidentialite.html</loc>
+    <loc>https://numasenegal.com/confidentialite.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://numasenegal.vercel.app/mentions-legales.html</loc>
+    <loc>https://numasenegal.com/mentions-legales.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

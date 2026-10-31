@@ -13,6 +13,10 @@ async function handle(req, res) {
   let b = req.body;
   if (typeof b === "string") { try { b = JSON.parse(b); } catch (e) { b = {}; } }
   b = b || {};
+  // Anti-robots : champ piège rempli, ou formulaire envoyé en moins de 1,5 s après le chargement de la page
+  if (String(b.piege || "").trim() !== "" || (typeof b.delai === "number" && b.delai < 1500)) {
+    return err(res, 400, "Commande impossible. Réessayez ou contactez-nous sur WhatsApp.");
+  }
   const nom = String(b.nom || "").trim().slice(0, 80);
   const tel = String(b.telephone || "").replace(/\D/g, "");
   const adresse = String(b.adresse || "").trim().slice(0, 200);

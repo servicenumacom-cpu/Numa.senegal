@@ -6,13 +6,13 @@
   <title>Nouveautés - NUMA</title>
   <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Découvrez les dernières nouveautés NUMA : pièces homme et femme fraîchement arrivées, livraison gratuite au Sénégal en 24-72h.">
-<link rel="canonical" href="https://numasenegal.vercel.app/nouveautes.html">
+<link rel="canonical" href="https://numasenegal.com/nouveautes.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NUMA Sénégal">
 <meta property="og:title" content="Nouveautés — NUMA Sénégal">
 <meta property="og:description" content="Les dernières pièces NUMA sont arrivées. Livraison gratuite au Sénégal.">
-<meta property="og:image" content="https://numasenegal.vercel.app/image/logo.jpeg">
-<meta property="og:url" content="https://numasenegal.vercel.app/nouveautes.html">
+<meta property="og:image" content="https://numasenegal.com/image/logo.jpeg">
+<meta property="og:url" content="https://numasenegal.com/nouveautes.html">
 <meta property="og:locale" content="fr_SN">
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -253,6 +253,16 @@ html { touch-action: manipulation; }
     const $ = id => document.getElementById(id);
     const fmt = n => Number(n || 0).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, ".") + " CFA";
     const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    // Cloudinary : sert l'image en WebP/AVIF (f_auto), compressée (q_auto) et à la bonne largeur (c_limit = jamais agrandie)
+    const optimg = (u, w) => {
+      u = String(u || "");
+      if (!/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(u)) return u;
+      if (/\/upload\/[^/]*(f_|q_|w_)/.test(u)) return u;
+      return u.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_" + w + ",c_limit/");
+    };
+    // Image de secours légère, sans dépendance externe
+    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900"><rect width="700" height="900" fill="#f0f0f0"/><text x="350" y="450" font-family="Arial" font-size="28" fill="#999" text-anchor="middle">NUMA</text></svg>');
     const readLS = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fb; } catch (e) { return fb; } };
     const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
@@ -473,7 +483,7 @@ html { touch-action: manipulation; }
       // ===== CORRECTION DU HTML DE LA CARTE =====
       grid.innerHTML = visible.map((p, i) => {
         const name = esc(p.nom || "Article"); const price = Number(p.prix || 0);
-        const imgP = p.image || "https://via.placeholder.com/700x900"; const imgS = p.imageSecondary || imgP;
+        const imgP = optimg(p.image, 600) || PLACEHOLDER_IMG; const imgS = optimg(p.imageSecondary, 600) || imgP;
         const favOn = isFav(p.id) ? "on" : "";
         
         return `<article class="card" data-index="${i}">
