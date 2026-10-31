@@ -4,7 +4,7 @@
  * Toutes les cartes gardent exactement le même cadre (3/4).
  * - Image proche du format 3/4 : elle remplit le cadre (léger zoom, "cover").
  * - Image très large, carrée ou très haute : elle s'affiche en entier ("contain"),
- *   sans zoom sur le produit ; les bords sont remplis par une version floue de la même image.
+ *   sans zoom sur le produit ; les bords sont blancs (couleur du body).
  * Fonctionne aussi pour les cartes créées dynamiquement (Firestore).
  */
 (function () {
@@ -15,16 +15,12 @@
   var BOX = '.card .thumb, .thumb-cover, .card-img-wrap';
 
   // Styles injectés une seule fois (pas besoin de modifier chaque page)
+  // Quand l'image est affichée en entier, les bords sont blancs (même couleur que le body)
   var style = document.createElement('style');
   style.textContent =
-    BOX.split(', ').map(function (s) { return s; }).join(',') + '{position:relative;isolation:isolate}' +
-    '.card .thumb::before,.thumb-cover::before,.card-img-wrap::before{' +
-      'content:"";position:absolute;inset:0;z-index:-1;' +
-      'background:var(--fit-bg) center/cover no-repeat;' +
-      'filter:blur(18px);transform:scale(1.25);opacity:0;transition:opacity .3s}' +
-    '.card .thumb[data-fit="contain"]::before,' +
-    '.thumb-cover[data-fit="contain"]::before,' +
-    '.card-img-wrap[data-fit="contain"]::before{opacity:.6}';
+    '.card .thumb[data-fit="contain"],' +
+    '.thumb-cover[data-fit="contain"],' +
+    '.card-img-wrap[data-fit="contain"]{background:#fff !important}';
   document.head.appendChild(style);
 
   function fit(img) {
@@ -38,10 +34,8 @@
     img.style.setProperty('object-fit', cover ? 'cover' : 'contain', 'important');
     img.style.setProperty('object-position', cover ? 'center 25%' : 'center', 'important');
 
-    // Le fond flou est calculé à partir de la première image de la carte
+    // Le fond de la carte suit la première image (principale)
     if (img === box.querySelector('img')) {
-      var src = (img.currentSrc || img.src || '').replace(/"/g, '%22');
-      if (src) box.style.setProperty('--fit-bg', 'url("' + src + '")');
       box.setAttribute('data-fit', cover ? 'cover' : 'contain');
     }
   }
