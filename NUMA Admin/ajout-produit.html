@@ -769,7 +769,7 @@
       } catch (err) {
         console.error(err);
         let m = err.message || "Erreur inconnue";
-        if (m.toLowerCase().includes("permission")) m = "Firestore a refusé l'écriture. Vérifie les règles (elles doivent utiliser ton email, pas ton UID).";
+        if (m.toLowerCase().includes("permission")) m = "Firestore a refusé l'écriture. Compte connecté : " + (auth.currentUser && auth.currentUser.email ? auth.currentUser.email : "aucun email (compte anonyme ?)") + " — UID : " + (auth.currentUser ? auth.currentUser.uid : "aucun") + ". Cet UID doit être dans la liste de isAdmin() dans les règles Firestore.";
         if (m.toLowerCase().includes("upload preset")) m = "Upload preset introuvable ou non unsigned. Vérifie Cloudinary → Settings → Upload presets.";
         showMsg("❌ " + m, "bad");
       } finally {
