@@ -724,7 +724,38 @@
     }
 
     function renderPage(p) {
-      document.title = `${p.nom} - NUMA`;
+      document.title = `${p.nom} | NUMA Sénégal`;
+
+      // SEO : canonical, description et données structurées propres à chaque produit
+      try {
+        const pageUrl = `https://numasenegal.com/produit.html?id=${encodeURIComponent(p.id)}`;
+        const canon = document.querySelector('link[rel="canonical"]');
+        if (canon) canon.href = pageUrl;
+        const shortDesc = String(p.description || "").replace(/\s+/g, " ").trim().slice(0, 140);
+        const mDesc = document.querySelector('meta[name="description"]');
+        if (mDesc && shortDesc) mDesc.content = `${p.nom} — ${shortDesc}`.slice(0, 160);
+        const inStock = Object.values(p.stock || {}).some(q => q > 0);
+        const ld = {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": p.nom,
+          "image": (p.images && p.images.length ? p.images : [p.image]).filter(Boolean),
+          "description": shortDesc || p.nom,
+          "sku": p.id,
+          "brand": { "@type": "Brand", "name": "NUMA" },
+          "offers": {
+            "@type": "Offer",
+            "url": pageUrl,
+            "priceCurrency": "XOF",
+            "price": String(p.prix),
+            "availability": inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "itemCondition": "https://schema.org/NewCondition"
+          }
+        };
+        let ldEl = document.getElementById("ld-product");
+        if (!ldEl) { ldEl = document.createElement("script"); ldEl.type = "application/ld+json"; ldEl.id = "ld-product"; document.head.appendChild(ldEl); }
+        ldEl.textContent = JSON.stringify(ld);
+      } catch (e) { /* le SEO ne doit jamais bloquer l'affichage */ }
 
       const sizesKeys = Object.keys(p.stock).filter(k => p.stock[k] >= 0);
       const defaultSize = sizesKeys.find(k => p.stock[k] > 0) || null;
