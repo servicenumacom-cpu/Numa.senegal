@@ -26,11 +26,13 @@
   <meta name="twitter:image" content="https://numasenegal.com/image/logo.jpeg">
 
   <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
   <link rel="manifest" href="/site.webmanifest">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,24 +154,22 @@
 /* Évite aussi le zoom au double-tap sur les boutons et liens */
 html { touch-action: manipulation; }
   
-    /* Badges avantages : livraison gratuite, paiement, délai (compacts sur mobile) */
-    .trust-badges { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: var(--max, 1280px); margin: 0 auto; padding: 10px 10px 0; }
-    .trust-badges li { display: flex; flex-direction: row; align-items: center; text-align: left; gap: 6px; padding: 6px 7px; border: 1px solid #fecdd3; border-radius: 10px; background: #fff1f3; color: var(--black, #0a0a0a); font-size: 10px; line-height: 1.15; }
-    .trust-badges svg { width: 17px; height: 17px; flex: none; stroke: var(--red, #e11d48); fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-    .trust-badges strong { display: block; font-weight: 800; font-size: 10px; }
-    .trust-badges small { display: block; font-size: 9px; font-weight: 500; color: #555; }
+    /* Badges avantages : s'adaptent à la largeur disponible (police fluide, « Livré en 24 à 72 h » toujours sur une ligne) */
+    .trust-badges { container-type: inline-size; list-style: none; display: grid; grid-template-columns: 1fr 1fr max-content; gap: 6px; max-width: var(--max, 1280px); margin: 0 auto; padding: 10px 10px 0; }
+    .trust-badges li { display: flex; align-items: center; gap: 6px; padding: 6px 7px; border: 1px solid #fecdd3; border-radius: 10px; background: #fff1f3; color: var(--black, #0a0a0a); font-size: 10px; font-size: clamp(8.5px, 2.6cqw, 10px); line-height: 1.15; }
+    .trust-badges svg { display: none; width: 17px; height: 17px; flex: none; stroke: var(--red, #e11d48); fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .trust-badges strong { display: block; font-weight: 800; font-size: 1em; }
+    .trust-badges small { display: block; font-size: .9em; font-weight: 500; color: #555; }
+    .trust-badges li:last-child strong { white-space: nowrap; }
     .trust-badges.trust-badges--info { max-width: none; margin: 12px 0; padding: 0; }
-    @media (min-width: 768px) {
-      .trust-badges { gap: 12px; padding: 20px 32px 0; }
+    @container (min-width: 460px) {
+      .trust-badges { grid-template-columns: repeat(3, 1fr); }
+      .trust-badges li { font-size: 10px; font-size: clamp(9px, 2cqw, 10.5px); }
+      .trust-badges svg { display: block; }
+    }
+    @container (min-width: 900px) {
       .trust-badges li { gap: 12px; padding: 12px 16px; font-size: 13px; border-radius: 12px; }
       .trust-badges svg { width: 26px; height: 26px; }
-      .trust-badges strong { font-size: 13px; }
-      .trust-badges small { font-size: 12px; }
-      .trust-badges.trust-badges--info { gap: 6px; padding: 0; }
-      .trust-badges.trust-badges--info li { gap: 6px; padding: 6px 7px; font-size: 10px; border-radius: 10px; }
-      .trust-badges.trust-badges--info svg { width: 17px; height: 17px; }
-      .trust-badges.trust-badges--info strong { font-size: 10px; }
-      .trust-badges.trust-badges--info small { font-size: 9px; }
     }
   </style>
 
