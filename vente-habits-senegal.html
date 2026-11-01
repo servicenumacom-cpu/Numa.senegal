@@ -153,14 +153,21 @@
 html { touch-action: manipulation; }
   
     /* Badges avantages : livraison gratuite, paiement, délai */
-    .trust-badges { list-style: none; display: grid; grid-template-columns: 1fr; gap: 8px; max-width: var(--max, 1280px); margin: 0 auto; padding: 14px 16px 0; }
-    .trust-badges li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line, #e5e5e5); border-radius: 10px; background: #fff; font-size: 13px; line-height: 1.3; color: var(--black, #0a0a0a); }
-    .trust-badges svg { width: 26px; height: 26px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .trust-badges strong { display: block; font-weight: 700; }
-    .trust-badges--info { max-width: none; margin: 14px 0; padding: 0; }
+    .trust-badges { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: var(--max, 1280px); margin: 0 auto; padding: 14px 12px 0; }
+    .trust-badges li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 12px 6px; border: 1px solid #fecdd3; border-radius: 12px; background: #fff1f3; color: var(--black, #0a0a0a); font-size: 11px; line-height: 1.25; }
+    .trust-badges svg { width: 26px; height: 26px; flex: none; stroke: var(--red, #e11d48); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .trust-badges strong { display: block; font-weight: 800; font-size: 11.5px; }
+    .trust-badges small { display: block; font-size: 10.5px; font-weight: 500; color: #555; }
+    .trust-badges.trust-badges--info { max-width: none; margin: 14px 0; padding: 0; }
     @media (min-width: 768px) {
-      .trust-badges { grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 20px 32px 0; }
-      .trust-badges--info { grid-template-columns: 1fr; gap: 8px; padding: 0; }
+      .trust-badges { gap: 12px; padding: 20px 32px 0; }
+      .trust-badges li { flex-direction: row; text-align: left; gap: 12px; padding: 12px 16px; font-size: 13px; }
+      .trust-badges strong { font-size: 13px; }
+      .trust-badges small { font-size: 12px; }
+      .trust-badges.trust-badges--info { padding: 0; }
+      .trust-badges.trust-badges--info li { flex-direction: column; text-align: center; gap: 6px; padding: 12px 6px; font-size: 11px; }
+      .trust-badges.trust-badges--info strong { font-size: 11.5px; }
+      .trust-badges.trust-badges--info small { font-size: 10.5px; }
     }
   </style>
 
@@ -251,9 +258,9 @@ html { touch-action: manipulation; }
       </div>
     </section>
     <ul class="trust-badges" aria-label="Nos avantages">
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span><strong>Livraison 100% gratuite</strong>partout au Sénégal</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg><span><strong>Payez à la livraison</strong>ou par Wave</span></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><strong>Livré en 24 à 72 h</strong>directement chez vous</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span><strong>Livraison 100% gratuite</strong><small>partout au Sénégal</small></span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg><span><strong>Payez à la livraison</strong><small>ou par Wave</small></span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><strong>Livré en 24 à 72 h</strong><small>directement chez vous</small></span></li>
     </ul>
     <section class="section">
       <h2 id="sectionTitle">TOUS NOS HABITS</h2>
