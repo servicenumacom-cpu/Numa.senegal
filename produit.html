@@ -324,6 +324,24 @@
     .stock-status.out { color: var(--red); }
     .stock-status.out .stock-dot { background: var(--red); }
 
+    /* Bouton Partager */
+    .share-btn {
+      width: 100%; height: 44px; margin: -8px 0 22px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--black);
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: border-color .2s, background .2s;
+    }
+    .share-btn:hover { border-color: var(--black); background: var(--gray); }
+    .share-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .share-toast {
+      position: fixed; left: 50%; bottom: 96px; transform: translate(-50%, 12px);
+      max-width: calc(100% - 32px); padding: 10px 18px; border-radius: 999px;
+      background: var(--black); color: #fff; font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 300;
+      overflow-wrap: anywhere; text-align: center;
+    }
+    .share-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
     /* Actions */
     .action-row {
       display: flex;
@@ -877,6 +895,13 @@
               </button>
             </div>
 
+            <!-- Partager ce produit -->
+            <button type="button" class="share-btn" id="shareBtn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>
+              Partager ce produit
+            </button>
+            <div class="share-toast" id="shareToast" role="status" aria-live="polite"></div>
+
             <!-- Accordéons -->
             <div class="accordion">
               <div class="acc-item open">
@@ -1069,6 +1094,43 @@
       }
 
       $("buyBtn").addEventListener('click', handleBuy);
+
+      // ---- Partager ce produit ----
+      const shareUrl = `https://numasenegal.com/produit.html?id=${encodeURIComponent(p.id)}`;
+      const shareData = {
+        title: `${p.nom} | NUMA Sénégal`,
+        text: `${p.nom} — ${fmt(p.prix)} sur NUMA Sénégal. Livraison gratuite partout au Sénégal.`,
+        url: shareUrl
+      };
+      let shareToastTimer;
+      function showShareToast(msg) {
+        const t = $("shareToast");
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(shareToastTimer);
+        shareToastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+      }
+      $("shareBtn").addEventListener('click', async () => {
+        // Téléphone : ouvre le menu de partage (WhatsApp, Messenger, SMS, Instagram...)
+        if (navigator.share) {
+          try { await navigator.share(shareData); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+        // Ordinateur (ou partage indisponible) : copie le lien
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showShareToast("Lien copié ✓");
+        } catch (e) {
+          const ta = document.createElement('textarea');
+          ta.value = shareUrl; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          let ok = false;
+          try { ok = document.execCommand('copy'); } catch (_) {}
+          document.body.removeChild(ta);
+          showShareToast(ok ? "Lien copié ✓" : shareUrl);
+        }
+      });
 
       // ---- Sticky buy bar ----
       initStickyBuy(p, handleBuy);
