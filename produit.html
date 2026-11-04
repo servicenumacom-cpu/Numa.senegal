@@ -1098,10 +1098,11 @@
       // ---- Partager ce produit ----
       // Lien /partage/ : les robots (WhatsApp...) y voient la photo et le prix du produit, les clients sont redirigés vers cette fiche
       const shareUrl = `https://numasenegal.com/partage/${encodeURIComponent(p.id)}`;
+      // Le lien est écrit DANS le texte (et pas dans le champ "url") : sur beaucoup de téléphones,
+      // WhatsApp garde le texte et oublie le champ "url", ce qui envoyait un message sans lien.
       const shareData = {
         title: `${p.nom} | NUMA Sénégal`,
-        text: `${p.nom} — ${fmt(p.prix)} sur NUMA Sénégal. Livraison gratuite partout au Sénégal.`,
-        url: shareUrl
+        text: `${p.nom} — ${fmt(p.prix)} sur NUMA Sénégal.\nLivraison gratuite partout au Sénégal.\n${shareUrl}`
       };
       let shareToastTimer;
       function showShareToast(msg) {
