@@ -1,5 +1,8 @@
 {
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/partage/:id", "destination": "/api/produit-apercu?id=:id" }
+  ],
   "headers": [
     {
       "source": "/(panier|commandes|compte|favoris|authentification|mot-de-passe-oublie|facture-livraison|404|ajout-produit|admin[^/]*|NUMA%20Admin)(.*)",
