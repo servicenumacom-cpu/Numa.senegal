@@ -237,6 +237,7 @@ html { touch-action: manipulation; }
         <div class="sort">
           <span id="count">0 articles</span>
           <select id="sort" aria-label="Trier">
+            <option value="mix">Mélange (pour vous)</option>
             <option value="new">Plus récents</option>
             <option value="asc">Prix croissant</option>
             <option value="desc">Prix décroissant</option>
@@ -284,7 +285,7 @@ html { touch-action: manipulation; }
     const LIST_MASK = "&mask.fieldPaths=titre&mask.fieldPaths=prix&mask.fieldPaths=imageUrl&mask.fieldPaths=imageUrlSecondaire&mask.fieldPaths=categorie&mask.fieldPaths=sexe&mask.fieldPaths=createdAtLocal&mask.fieldPaths=createdAt&mask.fieldPaths=ancienPrix&mask.fieldPaths=promo&mask.fieldPaths=stock&mask.fieldPaths=tailles&mask.fieldPaths=sizes&mask.fieldPaths=taille";
     const CART_KEY = "numa_cart";
     const FAV_KEY = "numa_favs";
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 40;
     const CACHE_KEY = "numa_produits_cache";
     const CACHE_TTL = 5 * 60 * 1000;
     const API_PAGE_SIZE = 300;
@@ -570,7 +571,7 @@ html { touch-action: manipulation; }
     let allProducts = [];
     let filteredProducts = [];
     let currentCategory = "all";
-    let sortMode = "new";
+    let sortMode = "mix";
     let visibleCount = PAGE_SIZE;
     let searchQuery = "";
 
@@ -603,6 +604,30 @@ html { touch-action: manipulation; }
       `).join("");
     }
 
+    // Mélange aléatoire "étalé" : chaque catégorie est répartie sur toute la liste,
+    // donc deux produits qui se ressemblent (même catégorie) ne se retrouvent pas côte à côte
+    // et ne remplissent pas toute une page. Chaque produit garde la même valeur au hasard
+    // pendant la visite : l'ordre ne saute pas quand on filtre ou qu'on clique sur « Voir plus ».
+    const mixRand = new Map();
+    const rnd = id => { if (!mixRand.has(id)) mixRand.set(id, Math.random()); return mixRand.get(id); };
+    function mixProducts(list) {
+      const groups = new Map();
+      list.forEach(p => {
+        const k = p.categorie || "";
+        if (!groups.has(k)) groups.set(k, []);
+        groups.get(k).push(p);
+      });
+      const placed = [];
+      groups.forEach(items => {
+        items.sort((a, b) => rnd(a.id) - rnd(b.id));
+        const n = items.length;
+        // position = rang dans la catégorie (réparti de 0 à 1) + petit décalage aléatoire
+        items.forEach((p, i) => placed.push({ p, pos: (i + rnd(p.id + "#")) / n }));
+      });
+      placed.sort((a, b) => a.pos - b.pos);
+      return placed.map(x => x.p);
+    }
+
     function applyFilters() {
       let list = allProducts;
       
@@ -618,7 +643,9 @@ html { touch-action: manipulation; }
         list = list.filter(p => matchesSearch(p.nom || "", searchQuery));
       }
 
-      if (sortMode === "new") {
+      if (sortMode === "mix") {
+        list = mixProducts(list);
+      } else if (sortMode === "new") {
         list = [...list].sort((a, b) => b.date - a.date);
       } else if (sortMode === "asc") {
         list = [...list].sort((a, b) => a.prix - b.prix);
