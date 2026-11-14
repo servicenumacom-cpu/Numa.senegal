@@ -87,7 +87,10 @@
     .status-label { font-size: 12px; font-weight: 700; }
     .status-label.active { color: var(--green); }
     .status-label.inactive { color: #888; }
-    .status-cell { display: flex; align-items: center; gap: 12px; justify-content: flex-end; }
+    .status-cell { display: flex; align-items: center; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+    .btn-delete { background: #fff; color: var(--red); border: 1.5px solid var(--red); padding: 7px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; transition: 0.2s; }
+    .btn-delete:hover { background: var(--red); color: #fff; }
+    .btn-delete:disabled { opacity: .5; cursor: not-allowed; }
 
     .loading, .empty { text-align: center; padding: 60px 0; color: #888; font-weight: 600; font-size: 14px; }
 
@@ -158,7 +161,7 @@
       <div class="page-head">
         <div>
           <h1>Gestion des produits</h1>
-          <p>Activez, désactivez et modifiez les prix.</p>
+          <p>Activez, masquez, modifiez les prix ou supprimez un produit.</p>
         </div>
       </div>
 
@@ -191,7 +194,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDwANGMWqawTG1XBz-49mFgoUYVJNxh2kI",
@@ -386,6 +389,7 @@
                 <input type="checkbox" class="toggle-active" data-id="${p.id}" ${p.actif ? 'checked' : ''}>
                 <span class="slider"></span>
               </label>
+              <button class="btn-delete" data-id="${p.id}" title="Supprimer définitivement ce produit">Supprimer</button>
             </div>
           </td>
         </tr>
@@ -456,11 +460,49 @@
     }
 
     /* ==========================================================
+       SUPPRIMER UN PRODUIT
+       ========================================================== */
+    async function deleteProduct(id, btn) {
+      if (!isVerifiedAdmin) return;
+      const p = allProducts.find(x => x.id === id);
+      const nom = p ? p.nom : "ce produit";
+
+      const ok = window.confirm(
+        "Supprimer définitivement « " + nom + " » ?\n\n" +
+        "Cette action est irréversible.\n" +
+        "• Les commandes déjà passées gardent leur historique.\n" +
+        "• Une commande encore en attente contenant ce produit ne pourra plus être confirmée (il faudra la refuser).\n" +
+        "• Pour seulement le retirer de la vente, utilisez plutôt l'interrupteur « En ligne / Masqué »."
+      );
+      if (!ok) return;
+
+      btn.disabled = true;
+      btn.textContent = "...";
+      try {
+        await deleteDoc(doc(db, "produits", id));
+        allProducts = allProducts.filter(x => x.id !== id);
+        renderTable($("searchInput").value);
+        showToast("Produit supprimé ✓");
+      } catch (err) {
+        console.error("Erreur suppression:", err);
+        if (err.code === "permission-denied") {
+          showToast("Suppression refusée : vérifie que tu es connecté avec le compte admin", true);
+        } else {
+          showToast("Erreur : " + err.code, true);
+        }
+        btn.disabled = false;
+        btn.textContent = "Supprimer";
+      }
+    }
+
+    /* ==========================================================
        ÉVÉNEMENTS
        ========================================================== */
     $("searchInput").addEventListener("input", (e) => renderTable(e.target.value));
 
     $("productsBody").addEventListener("click", (e) => {
+      const del = e.target.closest(".btn-delete");
+      if (del) { deleteProduct(del.dataset.id, del); return; }
       const btn = e.target.closest(".btn-save-price");
       if (!btn) return;
       const input = btn.previousElementSibling;
