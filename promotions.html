@@ -33,7 +33,18 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    :root { --black: #0a0a0a; --gray: #f1f1f1; --line: #e5e5e5; --red: #e11d48; --red-deep: #b01340; --green: #16a34a; --max: 1280px; }
+    :root {
+      --black: #0a0a0a;
+      --gray: #f1f1f1;
+      --line: #e5e5e5;
+      --red: #e11d48;
+      --red-deep: #b01340;
+      --green: #16a34a;
+      --pink: #f472b6;
+      --pink-soft: #fbcfe8;
+      --pink-glow: rgba(244, 114, 182, 0.35);
+      --max: 1280px;
+    }
     body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--black); background: #fff; padding-bottom: 76px; }
     a { color: inherit; text-decoration: none; }
     button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
@@ -61,11 +72,11 @@
     .search-bar.open { display: block; }
     .search-inner { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; gap: 12px; }
     .search-inner input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--line); border-radius: 8px; font: inherit; font-size: 15px; outline: none; transition: border-color .2s; }
-    .search-inner input:focus { border-color: var(--black); }
+    .search-inner input:focus { border-color: var(--pink); }
     .search-close { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; }
     .search-close:hover { background: var(--gray); }
 
-    /* ============ HERO DÉCEMBRE (ÉLARGI +30%) ============ */
+    /* ============ HERO DÉCEMBRE FESTIF ============ */
     .december-hero {
       position: relative;
       background: #0a0a0a;
@@ -75,13 +86,38 @@
       overflow: hidden;
       isolation: isolate;
     }
+    /* Glow rose & rouge en arrière-plan */
     .december-hero::before {
       content: "";
       position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse at 15% 0%, rgba(225,29,72,0.22) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 100%, rgba(225,29,72,0.14) 0%, transparent 55%);
+      background-image:
+        radial-gradient(ellipse at 15% 0%, rgba(244, 114, 182, 0.30) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(225, 29, 72, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(244, 114, 182, 0.06) 0%, transparent 70%);
+      z-index: -2;
+      pointer-events: none;
+    }
+    /* Étoiles scintillantes */
+    .december-hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 12% 22%, rgba(251, 207, 232, 0.95) 0%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 32% 68%, rgba(255, 255, 255, 0.75) 0%, transparent 50%),
+        radial-gradient(2.5px 2.5px at 52% 18%, rgba(244, 114, 182, 0.9) 0%, transparent 50%),
+        radial-gradient(2px 2px at 72% 76%, rgba(255, 255, 255, 0.7) 0%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 88% 32%, rgba(251, 207, 232, 0.9) 0%, transparent 50%),
+        radial-gradient(2px 2px at 8% 76%, rgba(255, 255, 255, 0.7) 0%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 42% 42%, rgba(244, 114, 182, 0.65) 0%, transparent 50%),
+        radial-gradient(2px 2px at 68% 52%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 92% 68%, rgba(244, 114, 182, 0.7) 0%, transparent 50%);
       z-index: -1;
+      animation: twinkle 3.5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.55; }
+      100% { opacity: 1; }
     }
     .december-hero-inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
     .december-hero-title {
@@ -90,12 +126,17 @@
       line-height: 1.05;
       letter-spacing: -0.3px;
       text-transform: uppercase;
-      color: #fff;
       margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 30%, #fbcfe8 70%, #f472b6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      display: inline-block;
     }
     .december-hero-sub {
       font-size: 13px;
-      color: rgba(255,255,255,0.72);
+      color: rgba(255,255,255,0.78);
       line-height: 1.5;
       max-width: 480px;
       margin: 0 auto 18px;
@@ -112,10 +153,15 @@
       font-weight: 600;
       color: #fff;
       padding: 5px 11px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(244, 114, 182, 0.14);
+      border: 1px solid rgba(244, 114, 182, 0.35);
       border-radius: 99px;
       letter-spacing: 0.2px;
+      transition: all .25s;
+    }
+    .december-hero-features span:hover {
+      background: rgba(244, 114, 182, 0.25);
+      border-color: rgba(244, 114, 182, 0.55);
     }
     .december-ctas {
       display: flex; justify-content: center; gap: 10px;
@@ -129,7 +175,11 @@
       letter-spacing: 1.2px; text-transform: uppercase;
       transition: all .25s;
     }
-    .btn-primary:hover { background: var(--red); color: #fff; }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--red) 0%, var(--pink) 100%);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(244, 114, 182, 0.35);
+    }
     .btn-secondary {
       display: inline-flex; align-items: center; justify-content: center;
       background: transparent; color: #fff;
@@ -139,37 +189,42 @@
       letter-spacing: 1.2px; text-transform: uppercase;
       transition: all .25s;
     }
-    .btn-secondary:hover { border-color: #fff; background: rgba(255,255,255,0.06); }
+    .btn-secondary:hover {
+      border-color: var(--pink);
+      background: rgba(244, 114, 182, 0.10);
+      color: var(--pink-soft);
+    }
 
-    /* ============ BANDEAU OFFRES (COMPACT) ============ */
-    .december-band {
+    /* ============ SÉPARATEUR DÉCORATIF ============ */
+    .section-divider {
+      position: relative;
+      text-align: center;
+      padding: 22px 20px 4px;
+      color: var(--pink);
+      font-size: 14px;
+      line-height: 1;
       background: #fff;
-      border-bottom: 1px solid var(--line);
-      padding: 14px 16px;
+      user-select: none;
     }
-    .band-inner {
-      max-width: var(--max); margin: 0 auto;
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      gap: 8px;
+    .section-divider::before,
+    .section-divider::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      height: 1px;
+      width: 34%;
+      background: linear-gradient(to right, transparent, rgba(244, 114, 182, 0.5), transparent);
     }
-    .band-text h2 {
-      font-size: 11px; font-weight: 800; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--black);
-      margin-bottom: 3px;
+    .section-divider::before { left: 6%; }
+    .section-divider::after { right: 6%; }
+    .section-divider .divider-stars {
+      display: inline-block;
+      letter-spacing: 10px;
+      animation: shimmer 3s ease-in-out infinite;
     }
-    .band-text p {
-      font-size: 12.5px; color: #666; line-height: 1.35;
-    }
-    .band-features {
-      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
-    }
-    .band-features span {
-      font-size: 10.5px; font-weight: 600;
-      color: var(--black);
-      padding: 4px 10px;
-      background: var(--gray);
-      border-radius: 99px;
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
     }
 
     /* ============ SECTION PRODUITS ============ */
@@ -180,6 +235,11 @@
       gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
     }
     .list-head h2 { font-size: 18px; font-weight: 800; margin: 0; letter-spacing: 0.4px; }
+    .list-head h2::before {
+      content: "✦ ";
+      color: var(--pink);
+      font-weight: 700;
+    }
     .sort { display: flex; align-items: center; gap: 8px; font-size: 12px; }
     .count-label {
       font-weight: 800; font-size: 11px;
@@ -201,7 +261,7 @@
       background-size: 12px;
       transition: all .2s;
     }
-    .sort select:hover, .sort select:focus { outline: none; border-color: var(--red); }
+    .sort select:hover, .sort select:focus { outline: none; border-color: var(--pink); }
 
     /* ============ FILTRES PILLS ============ */
     .filters-bar {
@@ -226,10 +286,11 @@
       letter-spacing: 0.3px;
       transition: all .2s;
     }
-    .filter-pill:hover { border-color: var(--black); }
+    .filter-pill:hover { border-color: var(--pink); color: var(--red-deep); }
     .filter-pill.active {
       background: var(--black); color: #fff; border-color: var(--black);
     }
+    .filter-pill.active:hover { color: #fff; }
 
     /* ============ GRILLE & CARTES ============ */
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
@@ -248,13 +309,17 @@
 
     .tag-promo {
       position: absolute; top: 10px; left: 10px; z-index: 2;
-      background: var(--red); color: #fff;
+      background: linear-gradient(135deg, var(--red) 0%, var(--pink) 100%);
+      color: #fff;
       font-size: 10.5px; font-weight: 800;
       padding: 5px 10px; border-radius: 4px;
       letter-spacing: 0.6px;
       text-transform: uppercase;
     }
-    .tag-promo.soft { background: var(--black); }
+    .tag-promo.soft {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
+      border: 1px solid rgba(244, 114, 182, 0.45);
+    }
 
     .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
     .price-group { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
@@ -317,11 +382,7 @@
       .december-hero-features span { font-size: 11.5px; padding: 6px 14px; }
       .btn-primary { padding: 14px 36px; font-size: 12px; }
       .btn-secondary { padding: 14px 28px; font-size: 12px; }
-      .december-band { padding: 16px 40px; }
-      .band-inner { flex-direction: row; justify-content: space-between; text-align: left; gap: 24px; }
-      .band-text h2 { font-size: 11.5px; margin-bottom: 2px; }
-      .band-text p { font-size: 13px; }
-      .band-features { justify-content: flex-end; }
+      .section-divider { padding: 32px 40px 8px; font-size: 16px; }
       #products-section { scroll-margin-top: 90px; }
       .section { padding: 24px 40px 48px; }
       .list-head h2 { font-size: 22px; }
@@ -369,7 +430,7 @@
   </header>
 
   <main>
-    <!-- HERO ÉLARGI AVEC CONTENU PROMOTIONNEL -->
+    <!-- HERO FESTIF -->
     <section class="december-hero">
       <div class="december-hero-inner">
         <h1 class="december-hero-title">Offres de décembre</h1>
@@ -387,21 +448,10 @@
       </div>
     </section>
 
-    <!-- BANDEAU OFFRES (CONSERVÉ) -->
-    <section class="december-band">
-      <div class="band-inner">
-        <div class="band-text">
-          <h2>Offres de décembre</h2>
-          <p>Les pièces qu'il vous faut pour vos sorties, fêtes et soirées.</p>
-        </div>
-        <div class="band-features">
-          <span>✨ Sélection fêtes</span>
-          <span>🔥 Prix réduits</span>
-          <span>👔 Homme &amp; femme</span>
-          <span>⏳ Quantités limitées</span>
-        </div>
-      </div>
-    </section>
+    <!-- SÉPARATEUR DÉCORATIF -->
+    <div class="section-divider" aria-hidden="true">
+      <span class="divider-stars">✦ ✦ ✦</span>
+    </div>
 
     <!-- SECTION PRODUITS -->
     <section class="section" id="products-section">
@@ -883,8 +933,17 @@
     .numa-footer-col ul li a { font-size: 13.5px; color: #9ca3af; }
     .numa-footer-col ul li a:hover { color: #fff; }
     .numa-socials { display: flex; gap: 12px; margin-top: 24px; }
-    .numa-socials a { width: 36px; height: 36px; border-radius: 50%; background: #1f1f1f; display: grid; place-items: center; color: #d1d5db; }
-    .numa-socials a:hover { background: #e11d48; color: #fff; }
+    .numa-socials a {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1f1f1f; display: grid; place-items: center;
+      color: #d1d5db;
+      transition: all .25s;
+    }
+    .numa-socials a:hover {
+      background: linear-gradient(135deg, #e11d48 0%, #f472b6 100%);
+      color: #fff;
+      transform: translateY(-2px);
+    }
     .numa-socials svg { width: 18px; height: 18px; }
     .numa-footer-bottom { border-top: 1px solid #262626; padding: 24px; text-align: center; }
     .numa-footer-bottom-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; color: #6b7280; }
