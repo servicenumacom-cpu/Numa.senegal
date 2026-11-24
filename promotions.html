@@ -65,13 +65,13 @@
     .search-close { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; }
     .search-close:hover { background: var(--gray); }
 
-    /* ============ HERO DÉCEMBRE (COMPACT) ============ */
+    /* ============ HERO DÉCEMBRE (ÉLARGI +30%) ============ */
     .december-hero {
       position: relative;
       background: #0a0a0a;
       color: #fff;
       text-align: center;
-      padding: 24px 20px 28px;
+      padding: 32px 20px 36px;
       overflow: hidden;
       isolation: isolate;
     }
@@ -84,37 +84,47 @@
       z-index: -1;
     }
     .december-hero-inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
-    .december-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 99px;
-      background: rgba(225,29,72,0.14);
-      border: 1px solid rgba(225,29,72,0.45);
+    .december-hero-title {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.3px;
+      text-transform: uppercase;
       color: #fff;
-      font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px;
-      text-transform: uppercase;
+      margin-bottom: 10px;
     }
-    .december-title {
-      margin: 12px 0 6px;
-      font-size: 26px; font-weight: 900;
-      line-height: 1.05; letter-spacing: -0.4px;
-      text-transform: uppercase;
+    .december-hero-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.5;
+      max-width: 480px;
+      margin: 0 auto 18px;
     }
-    .december-discount-info {
-      margin-top: 4px; font-size: 11.5px;
-      font-weight: 700; letter-spacing: 0.8px;
-      color: var(--red);
-      text-transform: uppercase;
-      min-height: 14px;
+    .december-hero-features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+    .december-hero-features span {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #fff;
+      padding: 5px 11px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 99px;
+      letter-spacing: 0.2px;
     }
     .december-ctas {
       display: flex; justify-content: center; gap: 10px;
       flex-wrap: wrap;
-      margin-top: 16px;
     }
     .btn-primary {
       display: inline-flex; align-items: center; justify-content: center;
       background: #fff; color: var(--black);
-      padding: 12px 28px; border-radius: 8px;
+      padding: 13px 30px; border-radius: 8px;
       font-weight: 800; font-size: 11.5px;
       letter-spacing: 1.2px; text-transform: uppercase;
       transition: all .25s;
@@ -123,7 +133,7 @@
     .btn-secondary {
       display: inline-flex; align-items: center; justify-content: center;
       background: transparent; color: #fff;
-      padding: 12px 22px; border-radius: 8px;
+      padding: 13px 24px; border-radius: 8px;
       border: 1.5px solid rgba(255,255,255,0.35);
       font-weight: 700; font-size: 11.5px;
       letter-spacing: 1.2px; text-transform: uppercase;
@@ -284,12 +294,13 @@
       .btn-primary, .btn-secondary { width: 100%; }
     }
     @media (min-width: 480px) {
-      .december-title { font-size: 32px; }
+      .december-hero-title { font-size: 32px; }
     }
     @media (min-width: 640px) {
       .grid, .skeleton { grid-template-columns: repeat(3, 1fr); }
-      .december-title { font-size: 38px; }
-      .december-hero { padding: 30px 24px 32px; }
+      .december-hero-title { font-size: 36px; }
+      .december-hero { padding: 38px 24px 42px; }
+      .december-hero-sub { font-size: 14px; }
     }
     @media (min-width: 1024px) {
       body { padding-bottom: 0; }
@@ -299,12 +310,13 @@
       .nav-desktop a { position: relative; padding: 6px 0; }
       .nav-desktop a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--black); transition: width .25s; }
       .nav-desktop a:hover::after, .nav-desktop a.current::after { width: 100%; }
-      .december-hero { padding: 34px 40px 38px; }
-      .december-title { font-size: 46px; letter-spacing: -0.8px; }
-      .december-badge { padding: 7px 16px; font-size: 11px; }
-      .december-ctas { margin-top: 18px; }
-      .btn-primary { padding: 13px 34px; font-size: 12px; }
-      .btn-secondary { padding: 13px 26px; font-size: 12px; }
+      .december-hero { padding: 44px 40px 50px; }
+      .december-hero-title { font-size: 44px; letter-spacing: -0.5px; }
+      .december-hero-sub { font-size: 15px; max-width: 540px; margin-bottom: 22px; }
+      .december-hero-features { gap: 8px; margin-bottom: 26px; }
+      .december-hero-features span { font-size: 11.5px; padding: 6px 14px; }
+      .btn-primary { padding: 14px 36px; font-size: 12px; }
+      .btn-secondary { padding: 14px 28px; font-size: 12px; }
       .december-band { padding: 16px 40px; }
       .band-inner { flex-direction: row; justify-content: space-between; text-align: left; gap: 24px; }
       .band-text h2 { font-size: 11.5px; margin-bottom: 2px; }
@@ -357,20 +369,25 @@
   </header>
 
   <main>
-    <!-- HERO COMPACT -->
+    <!-- HERO ÉLARGI AVEC CONTENU PROMOTIONNEL -->
     <section class="december-hero">
       <div class="december-hero-inner">
-        <span class="december-badge">🎄 Édition Décembre</span>
-        <h1 class="december-title">Prix réduits pour les fêtes</h1>
-        <p class="december-discount-info" id="decemberDiscount"></p>
+        <h1 class="december-hero-title">Offres de décembre</h1>
+        <p class="december-hero-sub">Les pièces qu'il vous faut pour vos sorties, fêtes et soirées.</p>
+        <div class="december-hero-features">
+          <span>✨ Sélection fêtes</span>
+          <span>🔥 Prix réduits</span>
+          <span>👔 Homme &amp; femme</span>
+          <span>⏳ Quantités limitées</span>
+        </div>
         <div class="december-ctas">
           <a href="#products-section" class="btn-primary">Découvrir les offres</a>
-          <a href="#products-section" class="btn-secondary" id="ctaLooks">Voir tous les looks</a>
+          <a href="#products-section" class="btn-secondary">Voir tous les looks</a>
         </div>
       </div>
     </section>
 
-    <!-- BANDEAU OFFRES COMPACT -->
+    <!-- BANDEAU OFFRES (CONSERVÉ) -->
     <section class="december-band">
       <div class="band-inner">
         <div class="band-text">
@@ -754,19 +771,6 @@
       if (!img.src || img.src === window.location.href) img.src = img.getAttribute('data-src');
     };
 
-    /* --- MISE À JOUR HERO DISCOUNT (calcul réel, jamais faux) --- */
-    function updateHeroDiscount() {
-      const info = $("decemberDiscount");
-      if (!info) return;
-      const promos = allProducts.filter(p => p.promo === true || (p.ancienPrix && Number(p.ancienPrix) > Number(p.prix)));
-      const discounts = promos.map(getDiscount).filter(d => d !== null);
-      if (discounts.length > 0) {
-        const max = Math.max(...discounts);
-        if (max >= 15) { info.textContent = `Jusqu'à -${max} % sur la sélection de décembre`; return; }
-      }
-      info.textContent = "Prix exceptionnels pour vos fêtes de fin d'année";
-    }
-
     /* --- FILTRES PILLS --- */
     function setFilter(name) {
       activeFilter = name;
@@ -792,7 +796,6 @@
         try {
           allProducts = await loadAllProducts(true);
           applyFilters();
-          updateHeroDiscount();
         } catch (err) { console.error(err); }
       }
     }
@@ -804,7 +807,6 @@
         allProducts = await loadAllProducts();
         applyFilters();
         updateBadges();
-        updateHeroDiscount();
       } catch (err) {
         $("grid").innerHTML = `<div class="empty">Erreur de chargement. <button onclick="location.reload()">Réessayer</button></div>`;
       }
